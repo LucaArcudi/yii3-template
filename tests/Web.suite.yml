@@ -1,0 +1,8 @@
+actor: WebTester
+extensions:
+  enabled:
+    - App\Tests\Support\Extension\PhpBuiltInServerExtension
+modules:
+  enabled:
+    - PhpBrowser:
+        url: http://127.0.0.1:8080
