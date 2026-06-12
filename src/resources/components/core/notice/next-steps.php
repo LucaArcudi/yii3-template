@@ -37,7 +37,7 @@ $items2 = [
     <hr>
 
     <p class="mb-3 text-muted">
-        Attivita post rilascio 1.0.0.
+        Attivita post 1.0.0.
     </p>
 
         <ul class="list-group list-group-flush app-dashboard-checklist">

@@ -15,10 +15,6 @@ use Yiisoft\User\CurrentUser;
 
 $items = [
     [
-        'title' => 'Modifiche ruolo Admin.',
-        'meta' => 'Il ruolo admin potra gestire utenti, ruoli e permessi, ma con alcune limitazioni: non puo creare, eliminare o modificare permessi o ruoli, ma solo associare i permessi ai ruoli e i ruoli agli utenti consentendo comunque una gestione piena degli utenti.',
-    ],
-    [
         'title' => 'Utente super.',
         'meta' => 'Introduzione flag is_super nella tabella core_user e esclusione da liste.',
     ],
@@ -36,7 +32,7 @@ $items = [
     ],
     [
         'title' => 'Migration e seeder',
-        'meta' => 'Creare migration e seeder per i dati di base e un utente admin (default admin:admin).',
+        'meta' => 'Creare migration e seeder per i dati di base e un utente admin.',
     ],
     [
         'title' => 'Traduzioni',
@@ -45,13 +41,6 @@ $items = [
     [
         'title' => 'Documentazione',
         'meta' => 'Chiudere README e CHANGELOG. Creare documentazione per sviluppatori e utenti.',
-    ],
-];
-
-$items2 = [
-    [
-        'title' => 'Integrazione stripe per pagamenti',
-        'meta' => 'Implementare l\'integrazione con Stripe per la gestione dei pagamenti online.',
     ],
 ];
 ?>

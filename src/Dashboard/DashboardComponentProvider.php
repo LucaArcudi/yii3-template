@@ -53,6 +53,12 @@ final readonly class DashboardComponentProvider
     {
         return [
             new DashboardComponentDefinition(
+                code: 'project-guide',
+                viewName: 'guide/project-structure',
+                width: 'col-12',
+                sortOrder: 5,
+            ),
+            new DashboardComponentDefinition(
                 code: 'admin-control',
                 viewName: 'metric/admin-control',
                 width: 'col-12 col-xl-4',
