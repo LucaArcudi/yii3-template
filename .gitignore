@@ -22,5 +22,11 @@ Thumbs.db
 # composer vendor dir
 /vendor
 
+# local Docker Compose environment
+.env
+
 # Codeception C3
 c3.php
+
+# Local-only files
+.local/

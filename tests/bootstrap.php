@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+$_ENV['APP_ENV'] = 'test';
+$_SERVER['APP_ENV'] = 'test';
+putenv('APP_ENV=test');
+
 $sessionPath = dirname(__DIR__) . '/runtime/sessions';
 
 if (!is_dir($sessionPath)) {

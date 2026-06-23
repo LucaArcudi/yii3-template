@@ -1,6 +1,6 @@
 FROM composer/composer:2-bin AS composer
 
-FROM dunglas/frankenphp:1-php8.2-bookworm AS base
+FROM dunglas/frankenphp:1-php8.4-bookworm AS base
 
 RUN apt update && apt -y install \
     unzip
@@ -17,7 +17,8 @@ RUN install-php-extensions \
     xml \
     xmlwriter \
     simplexml \
-    pdo
+    pdo \
+    pdo_mysql
 
 ENV LC_ALL=C.UTF-8
 

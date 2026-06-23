@@ -1,0 +1,53 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: dev
+      args:
+        USER_ID: ${LOCAL_UID:-1000}
+        GROUP_ID: ${LOCAL_GID:-1000}
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APP_ENV: dev
+      APP_DEBUG: "true"
+      SERVER_NAME: ":80"
+      XDEBUG_MODE: ${XDEBUG_MODE:-off}
+      COMPOSER_CACHE_DIR: /app/runtime/cache/composer
+      DB_DSN: mysql:host=db;port=3306;dbname=${DB_DATABASE:-yii3_template}
+      DB_USERNAME: ${DB_USERNAME:-root}
+      DB_PASSWORD: ${DB_PASSWORD:-}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${DEV_PORT:-8080}:80"
+    volumes:
+      - ./:/app
+      - ./runtime:/app/runtime
+      - caddy_data:/data
+      - caddy_config:/config
+    tty: true
+
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-yii3_template}
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database/migrations/release_1_0_0.sql:/docker-entrypoint-initdb.d/01-release_1_0_0.sql:ro
+      - ./database/seeders/release_1_0_0.sql:/docker-entrypoint-initdb.d/02-release_1_0_0.sql:ro
+
+volumes:
+  caddy_data:
+  caddy_config:
+  db_data:
