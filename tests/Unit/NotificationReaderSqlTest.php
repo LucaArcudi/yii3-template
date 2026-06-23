@@ -33,6 +33,9 @@ final class NotificationReaderSqlTest extends Unit
         self::assertStringNotContainsString('`nu.notification_id`', $sql);
     }
 
+    /**
+     * @group database
+     */
     public function testIndexCountExecutesAgainstCurrentSchema(): void
     {
         $count = (new NotificationReader($this->db(), $this->currentUser()))

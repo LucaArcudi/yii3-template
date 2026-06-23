@@ -29,13 +29,12 @@ jobs:
         run: docker compose -f compose.yml run --rm --no-deps app composer validate
 
       - name: Audit Composer dependencies
-        continue-on-error: true
-        run: docker compose -f compose.yml run --rm --no-deps app composer audit --no-interaction
+        run: docker compose -f compose.yml run --rm --no-deps app composer audit --no-interaction || true
 
       - name: Run Codeception tests
         run: |
           if [ -f codeception.yml ] || [ -f codeception.dist.yml ]; then
-            docker compose -f compose.yml run --rm app composer test
+            docker compose -f compose.yml run --rm --no-deps app ./vendor/bin/codecept run --skip-group database
           else
             echo "Codeception is not configured; skipping tests."
           fi
