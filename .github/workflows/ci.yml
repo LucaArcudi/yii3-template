@@ -13,6 +13,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Configure Docker user
+        run: echo "LOCAL_UID=$(id -u)" >> "$GITHUB_ENV"
+
       - name: Build services
         run: docker compose -f compose.yml build
 
