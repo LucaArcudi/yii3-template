@@ -23,14 +23,14 @@ jobs:
         run: docker compose -f compose.yml build
 
       - name: Install Composer dependencies
-        run: docker compose -f compose.yml run --rm app composer install --no-interaction --prefer-dist
+        run: docker compose -f compose.yml run --rm --no-deps app composer install --no-interaction --prefer-dist
 
       - name: Validate Composer configuration
-        run: docker compose -f compose.yml run --rm app composer validate
+        run: docker compose -f compose.yml run --rm --no-deps app composer validate
 
       - name: Audit Composer dependencies
         continue-on-error: true
-        run: docker compose -f compose.yml run --rm app composer audit --no-interaction
+        run: docker compose -f compose.yml run --rm --no-deps app composer audit --no-interaction
 
       - name: Run Codeception tests
         run: |
