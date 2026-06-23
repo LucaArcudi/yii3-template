@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    name: Docker Compose CI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build services
+        run: docker compose -f compose.yml build
+
+      - name: Install Composer dependencies
+        run: docker compose -f compose.yml run --rm app composer install --no-interaction --prefer-dist
+
+      - name: Validate Composer configuration
+        run: docker compose -f compose.yml run --rm app composer validate
+
+      - name: Audit Composer dependencies
+        continue-on-error: true
+        run: docker compose -f compose.yml run --rm app composer audit --no-interaction
+
+      - name: Run Codeception tests
+        run: |
+          if [ -f codeception.yml ] || [ -f codeception.dist.yml ]; then
+            docker compose -f compose.yml run --rm app composer test
+          else
+            echo "Codeception is not configured; skipping tests."
+          fi
+
+      - name: Stop services
+        if: always()
+        run: docker compose -f compose.yml down --remove-orphans
