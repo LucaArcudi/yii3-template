@@ -4,6 +4,12 @@ on:
   push:
   pull_request:
 
+env:
+  REGISTRY: ghcr.io
+
+permissions:
+  contents: read
+
 jobs:
   test:
     name: Docker Compose CI
@@ -66,3 +72,43 @@ jobs:
       - name: Stop services
         if: always()
         run: docker compose -f compose.yml down --remove-orphans
+
+  publish-image:
+    name: Publish app image to GHCR
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Configure Docker user
+        run: |
+          echo "LOCAL_UID=$(id -u)" >> "$GITHUB_ENV"
+          echo "LOCAL_GID=$(id -g)" >> "$GITHUB_ENV"
+
+      - name: Prepare image tags
+        run: |
+          image_name="${REGISTRY}/${GITHUB_REPOSITORY,,}"
+          echo "IMAGE_TAG_SHA=${image_name}:${GITHUB_SHA}" >> "$GITHUB_ENV"
+          echo "IMAGE_TAG_LATEST=${image_name}:latest" >> "$GITHUB_ENV"
+
+      - name: Build app image
+        run: APP_DOCKER_IMAGE="$IMAGE_TAG_SHA" docker compose -f compose.yml build app
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push app image
+        run: |
+          docker tag "$IMAGE_TAG_SHA" "$IMAGE_TAG_LATEST"
+          docker push "$IMAGE_TAG_SHA"
+          docker push "$IMAGE_TAG_LATEST"

@@ -48,3 +48,7 @@ make trivy-image
 ```
 
 Sono esclusi `.local`, `dump`, `dumps`, `backup`, `backups`, `.git`, `vendor`, `.env` e i dump compressi/locali configurati in `trivy.yaml`. In CI l'action e pinnata a `aquasecurity/trivy-action@v0.36.0`; per contesti piu rigidi sostituire il tag con un commit SHA verificato.
+
+## GitHub Container Registry
+
+La CI pubblica l'immagine del servizio `app` su `ghcr.io/<owner>/<repo>` solo su `push` verso `main`, dopo il job di test e Trivy. Usa `GITHUB_TOKEN` con permessi `contents: read` e `packages: write`, e pubblica i tag `${GITHUB_SHA}` e `latest`.

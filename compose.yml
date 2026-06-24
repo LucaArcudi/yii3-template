@@ -1,6 +1,6 @@
 services:
   app:
-    image: yii3-template-app:latest
+    image: ${APP_DOCKER_IMAGE:-yii3-template-app:latest}
     build:
       context: .
       dockerfile: docker/Dockerfile
