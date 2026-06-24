@@ -30,3 +30,16 @@ c3.php
 
 # Local-only files
 .local/
+
+# Trivy local cache
+.cache/trivy/
+
+# Local dumps and backups
+dump/
+dumps/
+backup/
+backups/
+*.sql.gz
+*.sql.zip
+*.dump
+*.bak

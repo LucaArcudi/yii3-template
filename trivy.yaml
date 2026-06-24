@@ -1,0 +1,27 @@
+# Repository scan defaults for local development and CI.
+# Keep exit-code 0 while Trivy runs in report-only mode.
+format: table
+exit-code: 0
+severity:
+  - UNKNOWN
+  - LOW
+  - MEDIUM
+  - HIGH
+  - CRITICAL
+
+scan:
+  skip-dirs:
+    - .git
+    - .local
+    - vendor
+    - dump
+    - dumps
+    - backup
+    - backups
+  skip-files:
+    - .env
+    - .env.*
+    - "**/*.sql.gz"
+    - "**/*.sql.zip"
+    - "**/*.dump"
+    - "**/*.bak"

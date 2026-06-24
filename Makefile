@@ -20,6 +20,12 @@ endif
 export COMPOSE_PROJECT_NAME=${STACK_NAME}
 DOCKER_COMPOSE_DEV := docker compose -f docker/compose.yml -f docker/dev/compose.yml
 DOCKER_COMPOSE_TEST := docker compose -f docker/compose.yml -f docker/test/compose.yml
+TRIVY_VERSION := 0.71.2
+TRIVY_IMAGE := aquasec/trivy:${TRIVY_VERSION}
+TRIVY_APP_IMAGE := yii3-template-app:latest
+TRIVY_CACHE_DIR := $(CURDIR)/.cache/trivy
+TRIVY_RUN := docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$(CURDIR):/work" -v "$(TRIVY_CACHE_DIR):/root/.cache/trivy" -w /work $(TRIVY_IMAGE)
+TRIVY_IMAGE_SCAN_FLAGS := --format table --exit-code 0 --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL --scanners vuln,misconfig,secret
 
 #
 # Development
@@ -103,6 +109,27 @@ endif
 ifeq ($(PRIMARY_GOAL),composer-dependency-analyser)
 composer-dependency-analyser: ## Run Composer Dependency Analyser
 	$(DOCKER_COMPOSE_DEV) run --rm app ./vendor/bin/composer-dependency-analyser --config=composer-dependency-analyser.php $(CLI_ARGS)
+endif
+
+ifeq ($(PRIMARY_GOAL),trivy)
+trivy: ## Run Trivy filesystem and configuration scans
+	$(MAKE) trivy-fs
+	$(MAKE) trivy-config
+endif
+
+ifeq ($(PRIMARY_GOAL),trivy-fs)
+trivy-fs: ## Run Trivy filesystem scan
+	$(TRIVY_RUN) fs --config trivy.yaml --scanners vuln,secret .
+endif
+
+ifeq ($(PRIMARY_GOAL),trivy-config)
+trivy-config: ## Run Trivy configuration scan
+	$(TRIVY_RUN) fs --config trivy.yaml --scanners misconfig .
+endif
+
+ifeq ($(PRIMARY_GOAL),trivy-image)
+trivy-image: ## Run Trivy image scan for yii3-template-app:latest
+	$(TRIVY_RUN) image $(TRIVY_IMAGE_SCAN_FLAGS) $(TRIVY_APP_IMAGE)
 endif
 
 #

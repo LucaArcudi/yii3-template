@@ -13,6 +13,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Run Trivy filesystem and config scan
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          trivy-config: trivy.yaml
+          scanners: vuln,misconfig,secret
+          exit-code: '0'
+          version: v0.71.2
+          cache: 'true'
+
       - name: Configure Docker user
         run: |
           mkdir -p runtime/cache/composer
@@ -21,6 +32,19 @@ jobs:
 
       - name: Build services
         run: docker compose -f compose.yml build
+
+      - name: Run Trivy image scan
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: image
+          image-ref: yii3-template-app:latest
+          scanners: vuln,misconfig,secret
+          format: table
+          exit-code: '0'
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          version: v0.71.2
+          cache: 'true'
+          skip-setup-trivy: 'true'
 
       - name: Install Composer dependencies
         run: docker compose -f compose.yml run --rm --no-deps app composer install --no-interaction --prefer-dist

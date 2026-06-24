@@ -31,3 +31,20 @@ Per smoke test manuale:
 ```powershell
 $env:APP_ENV='dev'; php yii serve --port=8088
 ```
+
+## Trivy
+
+Le scansioni locali usano l'immagine ufficiale `aquasec/trivy:0.71.2`, quindi non richiedono una installazione locale di Trivy. In questa fase sono in modalita report-only con `exit-code 0`.
+
+```bash
+make trivy
+```
+
+Per scansionare anche l'immagine Docker:
+
+```bash
+docker compose -f compose.yml build app
+make trivy-image
+```
+
+Sono esclusi `.local`, `dump`, `dumps`, `backup`, `backups`, `.git`, `vendor`, `.env` e i dump compressi/locali configurati in `trivy.yaml`. In CI l'action e pinnata a `aquasecurity/trivy-action@v0.36.0`; per contesti piu rigidi sostituire il tag con un commit SHA verificato.

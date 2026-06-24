@@ -1,5 +1,6 @@
 services:
   app:
+    image: yii3-template-app:latest
     build:
       context: .
       dockerfile: docker/Dockerfile
