@@ -57,6 +57,25 @@ docker compose --env-file .env.prod -f docker/prod/compose.yml exec -T db sh -lc
 
 Se si usa un override locale, aggiungere anche `-f docker/prod/compose.local.yml`.
 
+## Accesso Database
+
+Per accedere al DB di produzione con HeidiSQL, non esporre MySQL pubblicamente. Creare un override locale sul server:
+
+```bash
+cp docker/prod/compose.local.example.yml docker/prod/compose.local.yml
+docker compose --env-file .env.prod -f docker/prod/compose.yml -f docker/prod/compose.local.yml up -d db
+```
+
+Poi dal PC aprire un tunnel SSH:
+
+```bash
+ssh -N -L 3307:127.0.0.1:3307 root@173.212.248.57
+```
+
+In HeidiSQL usare `127.0.0.1`, porta `3307`, utente `DB_USERNAME`, password `DB_PASSWORD`, database `DB_DATABASE` dal file `.env.prod`.
+
+Per il DB Docker locale usare `127.0.0.1`, porta `${DB_PORT:-3306}`, utente `root`, password vuota, database `${DB_DATABASE:-yii3_template}`.
+
 ## Rollback Base
 
 Per tornare a un tag precedente, impostare l'immagine nota come buona e riavviare il servizio `app`:
