@@ -222,9 +222,9 @@ ON DUPLICATE KEY UPDATE
 DROP TEMPORARY TABLE IF EXISTS `bootstrap_permission`;
 
 CREATE TEMPORARY TABLE `bootstrap_permission` (
-    `group_code` VARCHAR(100) NOT NULL,
-    `name` VARCHAR(100) NOT NULL,
-    `code` VARCHAR(100) NOT NULL,
+    `group_code` VARCHAR(100) COLLATE 'utf8mb4_unicode_ci' NOT NULL,
+    `name` VARCHAR(100) COLLATE 'utf8mb4_unicode_ci' NOT NULL,
+    `code` VARCHAR(100) COLLATE 'utf8mb4_unicode_ci' NOT NULL,
     `weight` INT NOT NULL DEFAULT 1
 );
 
