@@ -52,3 +52,9 @@ Sono esclusi `.local`, `dump`, `dumps`, `backup`, `backups`, `.git`, `vendor`, `
 ## GitHub Container Registry
 
 La CI pubblica l'immagine del servizio `app` su `ghcr.io/<owner>/<repo>` solo su `push` verso `main`, dopo il job di test e Trivy. Usa `GITHUB_TOKEN` con permessi `contents: read` e `packages: write`, e pubblica i tag `${GITHUB_SHA}` e `latest`.
+
+## Produzione
+
+La configurazione Docker di produzione usa l'immagine GHCR `ghcr.io/tuo-user/yii3-template:latest` tramite `docker/prod/compose.yml`. Non esegue build locali dell'app nel compose di produzione. Per sovrascrivere il riferimento senza cambiare il file, usare `PROD_IMAGE` e `PROD_IMAGE_TAG`.
+
+Per il deploy manuale ripetibile vedere `README_DEPLOY.md`.

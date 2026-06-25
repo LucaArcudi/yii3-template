@@ -24,6 +24,7 @@ Thumbs.db
 
 # local Docker Compose environment
 .env
+.env.prod
 
 # Codeception C3
 c3.php
