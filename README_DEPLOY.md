@@ -47,6 +47,16 @@ docker compose --env-file .env.prod -f docker/prod/compose.yml logs --tail=200 a
 docker compose --env-file .env.prod -f docker/prod/compose.yml logs --tail=200 db
 ```
 
+## Aggiornamento Database
+
+Su un database gia inizializzato, gli script in `/docker-entrypoint-initdb.d` non vengono rieseguiti. Applicare le patch idempotenti manualmente:
+
+```bash
+docker compose --env-file .env.prod -f docker/prod/compose.yml exec -T db sh -lc 'mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' < database/migrations/release_1_0_1.sql
+```
+
+Se si usa un override locale, aggiungere anche `-f docker/prod/compose.local.yml`.
+
 ## Rollback Base
 
 Per tornare a un tag precedente, impostare l'immagine nota come buona e riavviare il servizio `app`:
