@@ -53,12 +53,13 @@ USER ${USER_NAME}
 
 FROM base AS prod-builder
 COPY --from=composer /composer /usr/bin/composer
-COPY .. /app
+COPY . /app
 RUN --mount=type=cache,target=/tmp/cache \
     composer install --no-dev --no-progress --no-interaction --classmap-authoritative && \
     rm composer.lock composer.json
 
 FROM base AS prod
-ENV APP_ENV=prod
+ENV APP_ENV=prod \
+    SERVER_ROOT=/app/public
 COPY --from=prod-builder --chown=www-data:www-data /app /app
 USER www-data
