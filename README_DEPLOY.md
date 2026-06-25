@@ -52,7 +52,7 @@ docker compose --env-file .env.prod -f docker/prod/compose.yml logs --tail=200 d
 Su un database gia inizializzato, gli script in `/docker-entrypoint-initdb.d` non vengono rieseguiti. Applicare le patch idempotenti manualmente:
 
 ```bash
-docker compose --env-file .env.prod -f docker/prod/compose.yml exec -T db sh -lc 'mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' < database/migrations/release_1_0_1.sql
+docker compose --env-file .env.prod -f docker/prod/compose.yml exec -T db sh -lc 'mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' < database/migrations/release_1_0_2.sql
 ```
 
 Se si usa un override locale, aggiungere anche `-f docker/prod/compose.local.yml`.
