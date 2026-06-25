@@ -1,6 +1,6 @@
 services:
   app:
-    image: ${PROD_IMAGE:-ghcr.io/tuo-user/yii3-template}:${PROD_IMAGE_TAG:-latest}
+    image: ${APP_IMAGE:-ghcr.io/lucaarcudi/yii3-template:latest}
     depends_on:
       db:
         condition: service_healthy

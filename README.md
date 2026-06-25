@@ -55,6 +55,6 @@ La CI pubblica l'immagine del servizio `app` su `ghcr.io/<owner>/<repo>` solo su
 
 ## Produzione
 
-La configurazione Docker di produzione usa l'immagine GHCR `ghcr.io/tuo-user/yii3-template:latest` tramite `docker/prod/compose.yml`. Non esegue build locali dell'app nel compose di produzione. Per sovrascrivere il riferimento senza cambiare il file, usare `PROD_IMAGE` e `PROD_IMAGE_TAG`.
+La configurazione Docker di produzione usa l'immagine GHCR `ghcr.io/lucaarcudi/yii3-template:latest` tramite `docker/prod/compose.yml`. Non esegue build locali dell'app nel compose di produzione. Per sovrascrivere il riferimento senza cambiare il file, usare `APP_IMAGE`.
 
 Per il deploy manuale ripetibile vedere `README_DEPLOY.md`.

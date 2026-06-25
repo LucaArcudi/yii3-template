@@ -5,7 +5,7 @@ Questo progetto usa Docker Compose per un deploy manuale ripetibile. Non ci sono
 ## Prerequisiti
 
 - Docker e Docker Compose plugin installati sul server.
-- Accesso in pull a `ghcr.io/tuo-user/yii3-template`.
+- Accesso in pull a `ghcr.io/lucaarcudi/yii3-template`.
 - Rete Docker esterna `caddy_public` gia presente se si usano le label Caddy:
 
 ```bash
@@ -49,12 +49,12 @@ docker compose --env-file .env.prod -f docker/prod/compose.yml logs --tail=200 d
 
 ## Rollback Base
 
-Per tornare a un tag precedente, impostare il tag noto come buono e riavviare il servizio `app`:
+Per tornare a un tag precedente, impostare l'immagine nota come buona e riavviare il servizio `app`:
 
 ```bash
-PROD_IMAGE_TAG=<tag-precedente> docker compose --env-file .env.prod -f docker/prod/compose.yml pull app
-PROD_IMAGE_TAG=<tag-precedente> docker compose --env-file .env.prod -f docker/prod/compose.yml up -d app
-PROD_IMAGE_TAG=<tag-precedente> docker compose --env-file .env.prod -f docker/prod/compose.yml logs -f --tail=200 app
+APP_IMAGE=ghcr.io/lucaarcudi/yii3-template:<tag-precedente> docker compose --env-file .env.prod -f docker/prod/compose.yml pull app
+APP_IMAGE=ghcr.io/lucaarcudi/yii3-template:<tag-precedente> docker compose --env-file .env.prod -f docker/prod/compose.yml up -d app
+APP_IMAGE=ghcr.io/lucaarcudi/yii3-template:<tag-precedente> docker compose --env-file .env.prod -f docker/prod/compose.yml logs -f --tail=200 app
 ```
 
-Per rendere il rollback persistente, aggiornare `PROD_IMAGE_TAG` in `.env.prod` dopo la verifica.
+Per rendere il rollback persistente, aggiornare `APP_IMAGE` in `.env.prod` dopo la verifica.
