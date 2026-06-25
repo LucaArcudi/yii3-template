@@ -62,4 +62,6 @@ FROM base AS prod
 ENV APP_ENV=prod \
     SERVER_ROOT=/app/public
 COPY --from=prod-builder --chown=www-data:www-data /app /app
+RUN mkdir -p /app/runtime /data/caddy /config/caddy && \
+    chown -R www-data:www-data /app/runtime /data/caddy /config/caddy
 USER www-data
