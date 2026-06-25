@@ -41,6 +41,8 @@ services:
       - app_internal
     volumes:
       - db_data:/var/lib/mysql
+      - ../../database/migrations/release_1_0_0.sql:/docker-entrypoint-initdb.d/01-release_1_0_0.sql:ro
+      - ../../database/seeders/release_1_0_0.sql:/docker-entrypoint-initdb.d/02-release_1_0_0.sql:ro
     restart: unless-stopped
 
 volumes:

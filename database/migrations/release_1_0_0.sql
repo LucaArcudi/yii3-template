@@ -36,6 +36,21 @@ CREATE TABLE IF NOT EXISTS `core_notification_user` (
 COLLATE='utf8mb4_unicode_ci'
 ENGINE=InnoDB;
 
+CREATE TABLE IF NOT EXISTS `core_auth_rate_limit` (
+    `rate_key` CHAR(64) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+    `scope` VARCHAR(64) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+    `attempts` INT UNSIGNED NOT NULL DEFAULT 0,
+    `window_started_at` DATETIME NOT NULL,
+    `blocked_until` DATETIME NULL DEFAULT NULL,
+    `last_attempt_at` DATETIME NOT NULL,
+    PRIMARY KEY (`rate_key`),
+    INDEX `idx_auth_rate_limit_scope` (`scope`),
+    INDEX `idx_auth_rate_limit_last_attempt_at` (`last_attempt_at`),
+    INDEX `idx_auth_rate_limit_blocked_until` (`blocked_until`)
+)
+COLLATE='utf8mb4_unicode_ci'
+ENGINE=InnoDB;
+
 DROP TABLE IF EXISTS `core_component`;
 
 DROP TABLE IF EXISTS `core_menu`;
