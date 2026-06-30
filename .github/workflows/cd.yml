@@ -2,6 +2,12 @@ name: CD
 
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -11,9 +17,12 @@ jobs:
     name: Deploy to VPS
     runs-on: ubuntu-latest
 
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+
     steps:
-      - name: Configure SSH
-        shell: bash
+      - name: Setup SSH
         run: |
           set -euo pipefail
           install -m 700 -d ~/.ssh
@@ -21,18 +30,49 @@ jobs:
           chmod 600 ~/.ssh/vps_key
           ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
 
-      - name: Deploy on VPS
-        shell: bash
+      - name: Backup DB on VPS
         run: |
-          set -euo pipefail
-          ssh -i ~/.ssh/vps_key -o IdentitiesOnly=yes "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" <<'EOF'
-          set -euo pipefail
+          ssh -i ~/.ssh/vps_key -o IdentitiesOnly=yes -o BatchMode=yes "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" << 'EOF'
+            set -euo pipefail
 
-          cd /opt/yii3
+            cd /opt/yii3
 
-          docker compose --env-file .env.prod -f docker/prod/compose.yml pull
-          docker compose --env-file .env.prod -f docker/prod/compose.yml up -d
-          docker compose --env-file .env.prod -f docker/prod/compose.yml ps
+            mkdir -p /opt/yii3/backups
 
-          curl -I http://127.0.0.1:8080
+            docker compose \
+              --env-file .env.prod \
+              -f docker/prod/compose.yml \
+              -f docker/prod/compose.local.yml \
+              exec -T db sh -lc 'mysqldump --no-tablespaces -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' \
+              > /opt/yii3/backups/db_$(date +%F_%H-%M-%S).sql
+
+            ls -lh /opt/yii3/backups | tail
+          EOF
+
+      - name: Deploy on VPS
+        run: |
+          ssh -i ~/.ssh/vps_key -o IdentitiesOnly=yes -o BatchMode=yes "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" << 'EOF'
+            set -euo pipefail
+
+            cd /opt/yii3
+
+            docker compose \
+              --env-file .env.prod \
+              -f docker/prod/compose.yml \
+              -f docker/prod/compose.local.yml \
+              pull
+
+            docker compose \
+              --env-file .env.prod \
+              -f docker/prod/compose.yml \
+              -f docker/prod/compose.local.yml \
+              up -d
+
+            docker compose \
+              --env-file .env.prod \
+              -f docker/prod/compose.yml \
+              -f docker/prod/compose.local.yml \
+              ps
+
+            curl -I http://127.0.0.1:8080
           EOF
