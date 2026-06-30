@@ -16,7 +16,7 @@ use Yiisoft\User\CurrentUser;
 $sections = [
     [
         'path' => 'config/',
-        'title' => 'Configurazione applicativa',
+        'title' => 'Configurazione applicativa dddd',
         'description' => 'Alias, container DI, route, parametri e configurazioni separate per web, console e ambienti.',
         'examples' => ['config/common/di/db.php', 'config/common/routes.php', 'config/environments/dev/params.php'],
     ],
