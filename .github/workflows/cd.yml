@@ -1,0 +1,38 @@
+name: CD
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure SSH
+        shell: bash
+        run: |
+          set -euo pipefail
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/vps_key
+          chmod 600 ~/.ssh/vps_key
+          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy on VPS
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -i ~/.ssh/vps_key -o IdentitiesOnly=yes "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" <<'EOF'
+          set -euo pipefail
+
+          cd /opt/yii3
+
+          docker compose --env-file .env.prod -f docker/prod/compose.yml pull
+          docker compose --env-file .env.prod -f docker/prod/compose.yml up -d
+          docker compose --env-file .env.prod -f docker/prod/compose.yml ps
+
+          curl -I http://127.0.0.1:8080
+          EOF
