@@ -1,89 +1,256 @@
-# Deploy Manuale
+Deploy Yii3 Template
 
-Questo progetto usa Docker Compose per un deploy manuale ripetibile. Non ci sono ancora automazioni GitHub Actions per il deploy, Terraform o Ansible.
+Questo progetto usa Docker Compose, GitHub Actions e GHCR per una pipeline CI/CD semplice su VPS.
 
-## Prerequisiti
+Flusso attuale:
 
-- Docker e Docker Compose plugin installati sul server.
-- Accesso in pull a `ghcr.io/lucaarcudi/yii3-template`.
-- Rete Docker esterna `caddy_public` gia presente se si usano le label Caddy:
+push su main
+→ CI
+→ Trivy
+→ build immagine Docker
+→ push su GHCR
+→ CD automatico
+→ backup DB
+→ pull immagine su VPS
+→ docker compose up -d
+→ health check
+Server
 
-```bash
-docker network inspect caddy_public >/dev/null 2>&1 || docker network create caddy_public
-```
+VPS Contabo:
 
-## Configurazione
+IP: 173.212.248.57
+Percorso progetto: /opt/yii3
+Utente deploy: deploy
 
-Preparare il file runtime dei valori di produzione partendo dall'esempio, poi sostituire host e password:
+L’utente deploy è usato per deploy, Docker Compose, backup e tunnel DB.
 
-```bash
-cp .env.prod.example .env.prod
-editor .env.prod
-```
+Root va tenuto solo come accesso di emergenza.
 
-Il file `.env.prod` non va committato.
+File importanti
+.env.prod                         segreti reali di produzione, NON committare
+.env.prod.example                 esempio sicuro versionabile
+docker/prod/compose.yml           compose produzione versionato
+docker/prod/compose.local.yml     override locale VPS, NON committare se contiene config specifica
+.github/workflows/ci.yml          CI, Trivy, build e push immagine GHCR
+.github/workflows/cd.yml          CD automatico/manuale
+backups/                          backup DB generati sul server
+Accesso SSH
 
-## Login GHCR
+Da PC locale:
 
-Usare un token con permesso di lettura dei package, oppure un login gia configurato sul server:
+ssh deploy@173.212.248.57
 
-```bash
+Se configurato in ~/.ssh/config:
+
+ssh yii3-vps
+Verifica stato VPS
+cd /opt/yii3
+
+docker compose \
+  --env-file .env.prod \
+  -f docker/prod/compose.yml \
+  -f docker/prod/compose.local.yml \
+  ps
+
+Log app:
+
+docker compose \
+  --env-file .env.prod \
+  -f docker/prod/compose.yml \
+  -f docker/prod/compose.local.yml \
+  logs app --tail=100
+
+Log DB:
+
+docker compose \
+  --env-file .env.prod \
+  -f docker/prod/compose.yml \
+  -f docker/prod/compose.local.yml \
+  logs db --tail=100
+Deploy automatico
+
+Il deploy parte automaticamente dopo CI verde su branch main.
+
+Il workflow CD:
+
+entra in SSH sulla VPS come deploy;
+entra in /opt/yii3;
+crea un backup DB;
+esegue docker compose pull;
+esegue docker compose up -d;
+verifica container;
+fa health check HTTP locale.
+Deploy manuale da GitHub Actions
+
+È ancora possibile lanciare il deploy manualmente:
+
+GitHub → Actions → CD → Run workflow
+
+Serve se vuoi rilanciare un deploy senza fare un nuovo push.
+
+Deploy manuale da VPS
+
+Da VPS:
+
+ssh deploy@173.212.248.57
+cd /opt/yii3
+
+Pull immagine:
+
+docker compose \
+  --env-file .env.prod \
+  -f docker/prod/compose.yml \
+  -f docker/prod/compose.local.yml \
+  pull
+
+Riavvio container:
+
+docker compose \
+  --env-file .env.prod \
+  -f docker/prod/compose.yml \
+  -f docker/prod/compose.local.yml \
+  up -d
+
+Verifica:
+
+docker compose \
+  --env-file .env.prod \
+  -f docker/prod/compose.yml \
+  -f docker/prod/compose.local.yml \
+  ps
+
+Health check:
+
+curl -fsS http://127.0.0.1:8080 > /dev/null
+Backup manuale DB
+
+Il CD esegue già un backup prima del deploy.
+
+Per fare un backup manuale:
+
+cd /opt/yii3
+
+mkdir -p /opt/yii3/backups
+
+docker compose \
+  --env-file .env.prod \
+  -f docker/prod/compose.yml \
+  -f docker/prod/compose.local.yml \
+  exec -T db sh -lc 'mysqldump --no-tablespaces -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' \
+  > /opt/yii3/backups/db_$(date +%F_%H-%M-%S).sql
+
+Verifica backup:
+
+ls -lh /opt/yii3/backups
+head -n 20 /opt/yii3/backups/*.sql
+tail -n 20 /opt/yii3/backups/*.sql
+
+Retention consigliata:
+
+find /opt/yii3/backups -type f -name "db_*.sql" -mtime +7 -delete
+Tunnel DB
+
+Il DB non deve essere esposto pubblicamente.
+
+Da PC locale:
+
+ssh -N -L 3307:127.0.0.1:3307 deploy@173.212.248.57
+
+Se il terminale resta fermo, il tunnel è attivo.
+
+In DBeaver/HeidiSQL:
+
+Host: 127.0.0.1
+Port: 3307
+User: valore MYSQL_USER da .env.prod
+Password: valore MYSQL_PASSWORD da .env.prod
+Database: valore MYSQL_DATABASE da .env.prod
+Login GHCR sulla VPS
+
+La VPS deve poter fare pull da GHCR.
+
+Login manuale:
+
 docker login ghcr.io
-```
 
-## Pull e Avvio
+L’immagine attuale è:
 
-```bash
-docker compose --env-file .env.prod -f docker/prod/compose.yml pull
-docker compose --env-file .env.prod -f docker/prod/compose.yml up -d
-docker compose --env-file .env.prod -f docker/prod/compose.yml logs -f --tail=200
-```
+ghcr.io/lucaarcudi/yii3-template:latest
+Secrets GitHub Actions
 
-## Verifica
+Repository secrets necessari:
 
-```bash
-docker compose --env-file .env.prod -f docker/prod/compose.yml ps
-docker compose --env-file .env.prod -f docker/prod/compose.yml logs --tail=200 app
-docker compose --env-file .env.prod -f docker/prod/compose.yml logs --tail=200 db
-```
+VPS_HOST
+VPS_USER
+VPS_SSH_KEY
 
-## Aggiornamento Database
+Esempio:
 
-Su un database gia inizializzato, gli script in `/docker-entrypoint-initdb.d` non vengono rieseguiti. Applicare le patch idempotenti manualmente:
+VPS_HOST=173.212.248.57
+VPS_USER=deploy
+VPS_SSH_KEY=chiave privata SSH dedicata a GitHub Actions
 
-```bash
-docker compose --env-file .env.prod -f docker/prod/compose.yml exec -T db sh -lc 'mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' < database/migrations/release_1_0_2.sql
-```
+La chiave pubblica corrispondente deve essere presente sulla VPS in:
 
-Se si usa un override locale, aggiungere anche `-f docker/prod/compose.local.yml`.
+/home/deploy/.ssh/authorized_keys
+Aggiornamento database
 
-## Accesso Database
+Gli script in /docker-entrypoint-initdb.d vengono eseguiti solo alla prima inizializzazione del volume DB.
 
-Per accedere al DB di produzione con HeidiSQL, non esporre MySQL pubblicamente. Creare un override locale sul server:
+Su database già esistente, applicare eventuali patch manualmente:
 
-```bash
-cp docker/prod/compose.local.example.yml docker/prod/compose.local.yml
-docker compose --env-file .env.prod -f docker/prod/compose.yml -f docker/prod/compose.local.yml up -d db
-```
+cd /opt/yii3
 
-Poi dal PC aprire un tunnel SSH:
+docker compose \
+  --env-file .env.prod \
+  -f docker/prod/compose.yml \
+  -f docker/prod/compose.local.yml \
+  exec -T db sh -lc 'mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' \
+  < database/migrations/release_1_0_2.sql
+Rollback base
 
-```bash
-ssh -N -L 3307:127.0.0.1:3307 root@173.212.248.57
-```
+Attualmente il deploy usa latest.
 
-In HeidiSQL usare `127.0.0.1`, porta `3307`, utente `DB_USERNAME`, password `DB_PASSWORD`, database `DB_DATABASE` dal file `.env.prod`.
+Rollback manuale possibile usando un tag noto:
 
-Per il DB Docker locale usare `127.0.0.1`, porta `${DB_PORT:-3306}`, utente `root`, password vuota, database `${DB_DATABASE:-yii3_template}`.
+cd /opt/yii3
 
-## Rollback Base
+APP_IMAGE=ghcr.io/lucaarcudi/yii3-template:<tag-precedente> docker compose \
+  --env-file .env.prod \
+  -f docker/prod/compose.yml \
+  -f docker/prod/compose.local.yml \
+  pull app
 
-Per tornare a un tag precedente, impostare l'immagine nota come buona e riavviare il servizio `app`:
+APP_IMAGE=ghcr.io/lucaarcudi/yii3-template:<tag-precedente> docker compose \
+  --env-file .env.prod \
+  -f docker/prod/compose.yml \
+  -f docker/prod/compose.local.yml \
+  up -d app
 
-```bash
-APP_IMAGE=ghcr.io/lucaarcudi/yii3-template:<tag-precedente> docker compose --env-file .env.prod -f docker/prod/compose.yml pull app
-APP_IMAGE=ghcr.io/lucaarcudi/yii3-template:<tag-precedente> docker compose --env-file .env.prod -f docker/prod/compose.yml up -d app
-APP_IMAGE=ghcr.io/lucaarcudi/yii3-template:<tag-precedente> docker compose --env-file .env.prod -f docker/prod/compose.yml logs -f --tail=200 app
-```
+Verifica:
 
-Per rendere il rollback persistente, aggiornare `APP_IMAGE` in `.env.prod` dopo la verifica.
+curl -fsS http://127.0.0.1:8080 > /dev/null
+
+Per rendere persistente il rollback, aggiornare APP_IMAGE in .env.prod.
+
+Note pre-Ansible
+
+Prima di introdurre Ansible, lo stato attuale deve rimanere chiaro:
+
+deploy manuale funzionante
+deploy automatico funzionante
+backup DB pre-deploy funzionante
+utente deploy funzionante
+root solo emergenza
+DB accessibile solo via tunnel SSH
+
+Ansible servirà dopo per automatizzare provisioning e configurazione server:
+
+install Docker
+creazione utente deploy
+configurazione SSH
+firewall
+directory /opt/yii3
+file compose
+backup
+hardening base
