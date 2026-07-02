@@ -20,8 +20,7 @@ final readonly class DeleteProfileAction
         private CurrentUser $currentUser,
         private RememberMeCookieService $rememberMeCookie,
         private FlashInterface $flash,
-    ) {
-    }
+    ) {}
 
     public function __invoke(ServerRequestInterface $request): ResponseInterface
     {

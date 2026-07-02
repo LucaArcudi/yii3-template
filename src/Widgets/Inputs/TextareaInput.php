@@ -37,7 +37,5 @@ final class TextareaInput extends BaseInput
         return (string) self::decorate($field, 'textarea', $icon, $hint, $validationErrors);
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

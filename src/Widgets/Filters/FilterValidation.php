@@ -201,7 +201,5 @@ final class FilterValidation
         $values[$value] = $value;
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

@@ -16,8 +16,7 @@ final readonly class UserRepository
     public function __construct(
         private ConnectionInterface $db,
         private EntityLogRepository $entityLogRepository,
-    ) {
-    }
+    ) {}
 
     public function findById(int|string $id): ?UserEntity
     {
@@ -112,7 +111,7 @@ final readonly class UserRepository
             ->orderBy(['role_id' => SORT_ASC])
             ->column();
 
-        return array_map(static fn (mixed $id): int => (int) $id, $ids);
+        return array_map(static fn(mixed $id): int => (int) $id, $ids);
     }
 
     public function createWithRoles(UserEntity $user, array $roleIds): int

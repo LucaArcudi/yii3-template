@@ -15,6 +15,7 @@ final class ArchitectUiAsset extends AssetBundle
     public array $css = [
         'styles/main.css',
         'styles/app-overrides.css',
+        'styles/app-theme.css',
     ];
 
     public array $js = [
@@ -23,7 +24,6 @@ final class ArchitectUiAsset extends AssetBundle
         'scripts/chart_js.js',
         'scripts/demo.js',
         'scripts/fullcalendar.js',
-        'scripts/scrollbar.js',
         'scripts/toastr.js',
         'scripts/app.js',
     ];

@@ -19,8 +19,7 @@ final class RedirectGuestToLoginMiddleware implements MiddlewareInterface
         private CurrentUser $currentUser,
         private FlashInterface $flash,
         private RememberedUrlService $rememberedUrl,
-    ) {
-    }
+    ) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -35,6 +34,6 @@ final class RedirectGuestToLoginMiddleware implements MiddlewareInterface
         $this->flash->set('warning', 'Effettua il login per continuare.');
 
         return new RedirectResponse('login');
-        
+
     }
 }

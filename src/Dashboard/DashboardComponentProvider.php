@@ -12,8 +12,7 @@ final readonly class DashboardComponentProvider
     public function __construct(
         private CurrentUser $currentUser,
         private AuthorizationService $authorizationService,
-    ) {
-    }
+    ) {}
 
     /**
      * @return list<DashboardComponentDefinition>
@@ -22,12 +21,12 @@ final readonly class DashboardComponentProvider
     {
         $components = array_values(array_filter(
             self::definitions(),
-            fn (DashboardComponentDefinition $component): bool => $component->active && $this->hasAccess($component),
+            fn(DashboardComponentDefinition $component): bool => $component->active && $this->hasAccess($component),
         ));
 
         usort(
             $components,
-            static fn (DashboardComponentDefinition $left, DashboardComponentDefinition $right): int => $left->sortOrder <=> $right->sortOrder,
+            static fn(DashboardComponentDefinition $left, DashboardComponentDefinition $right): int => $left->sortOrder <=> $right->sortOrder,
         );
 
         return $components;

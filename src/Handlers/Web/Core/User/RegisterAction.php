@@ -40,8 +40,7 @@ final readonly class RegisterAction
         private FlashInterface $flash,
         private MathCaptchaService $captcha,
         private AuthRateLimiter $rateLimiter,
-    ) {
-    }
+    ) {}
 
     public function __invoke(ServerRequestInterface $request, RegisterInput $input): ResponseInterface
     {
@@ -176,7 +175,7 @@ final readonly class RegisterAction
                 parameters: [
                     'name' => $name,
                     'loginUrl' => $loginUrl,
-                    'preheader' => 'Il tuo account e pronto per il login.',
+                    'preheader' => 'Il tuo account è pronto per il login.',
                 ],
                 textBody: sprintf(
                     "Ciao %s,\n\nIl tuo account è stato creato correttamente.\nAccedi da: %s\n",
@@ -190,7 +189,7 @@ final readonly class RegisterAction
                 'exception' => $exception,
             ]);
 
-            $this->flash->set('warning', 'Account creato, ma non e stato possibile inviare l\'email di conferma.');
+            $this->flash->set('warning', 'Account creato, ma non è stato possibile inviare l\'email di conferma.');
         }
     }
 }

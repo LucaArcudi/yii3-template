@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Handlers\Web\Core\NotFound\NotFoundHandler;
 use App\Handlers\Middleware\Core\PasswordExpiredMiddleware;
 use App\Handlers\Middleware\Core\SameOriginRequestMiddleware;
+use App\Handlers\Middleware\Core\SecurityHeadersMiddleware;
 use App\Handlers\Middleware\Core\StatusPageMiddleware;
 use Yiisoft\Cookies\CookieMiddleware;
 use Yiisoft\Csrf\CsrfTokenMiddleware;
@@ -33,6 +34,7 @@ return [
                 'withMiddlewares()' => [
                     [
                         ErrorCatcher::class,
+                        SecurityHeadersMiddleware::class,
                         SessionMiddleware::class,
                         CookieMiddleware::class,
                         CookieLoginMiddleware::class,

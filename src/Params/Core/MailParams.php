@@ -17,6 +17,5 @@ final readonly class MailParams
         public string $smtpPassword,
         public string $smtpEncryption,
         public int $smtpTimeout,
-    ) {
-    }
+    ) {}
 }

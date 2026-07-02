@@ -14,8 +14,7 @@ final readonly class RoleRepository
     public function __construct(
         private ConnectionInterface $db,
         private EntityLogRepository $entityLogRepository,
-    ) {
-    }
+    ) {}
 
     public function exists(int $id): bool
     {
@@ -99,7 +98,7 @@ final readonly class RoleRepository
             ->where(['id' => $ids])
             ->column();
 
-        return array_map(static fn (mixed $id): int => (int) $id, $existingIds);
+        return array_map(static fn(mixed $id): int => (int) $id, $existingIds);
     }
 
     public function findSelectableOptions(): array
@@ -154,7 +153,7 @@ final readonly class RoleRepository
             ->orderBy(['permission_id' => SORT_ASC])
             ->column();
 
-        return array_map(static fn (mixed $id): int => (int) $id, $ids);
+        return array_map(static fn(mixed $id): int => (int) $id, $ids);
     }
 
     public function createWithPermissions(RoleEntity $role, array $permissionIds): int

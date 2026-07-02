@@ -107,7 +107,5 @@ final class CheckboxGroupInput
         return $html;
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

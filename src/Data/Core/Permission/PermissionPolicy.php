@@ -20,8 +20,7 @@ final readonly class PermissionPolicy
     public function __construct(
         private CurrentUser $currentUser,
         private AuthorizationService $authorizationService,
-    ) {
-    }
+    ) {}
 
     public function canAccess(): bool
     {

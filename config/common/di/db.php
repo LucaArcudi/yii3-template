@@ -12,7 +12,7 @@ use Yiisoft\Db\Mysql\Driver;
 return [
     CacheInterface::class => ArrayCache::class,
 
-    SchemaCache::class => static fn (CacheInterface $cache) => new SchemaCache($cache),
+    SchemaCache::class => static fn(CacheInterface $cache) => new SchemaCache($cache),
 
     ConnectionInterface::class => static function (SchemaCache $schemaCache): ConnectionInterface {
         $driver = new Driver(

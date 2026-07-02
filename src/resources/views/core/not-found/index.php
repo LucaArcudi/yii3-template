@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 use Yiisoft\Yii\View\WebView;
+
 /** @var WebView $this */
 $this->setTitle('404 Not Found');
 $this->setParameter('pageIcon', 'pe-7s-way');

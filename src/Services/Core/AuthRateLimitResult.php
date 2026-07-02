@@ -12,8 +12,7 @@ final readonly class AuthRateLimitResult
     private function __construct(
         public bool $allowed,
         public int $retryAfterSeconds = 0,
-    ) {
-    }
+    ) {}
 
     public static function allowed(): self
     {

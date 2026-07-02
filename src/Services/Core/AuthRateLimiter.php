@@ -25,8 +25,7 @@ final readonly class AuthRateLimiter
     public function __construct(
         private ConnectionInterface $db,
         private AuthParams $authParams,
-    ) {
-    }
+    ) {}
 
     public function consumeLogin(ServerRequestInterface $request, ?string $email): AuthRateLimitResult
     {

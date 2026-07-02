@@ -18,7 +18,7 @@ final class Menu
     {
         $items = NavigationTreeVisibility::filter(
             $items,
-            static fn (array $item): bool => self::isVisibleByCondition($item, $visibility),
+            static fn(array $item): bool => self::isVisibleByCondition($item, $visibility),
         );
 
         if ($items === []) {
@@ -162,7 +162,5 @@ final class Menu
         return $currentPath === $url || str_starts_with($currentPath, $url . '/');
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

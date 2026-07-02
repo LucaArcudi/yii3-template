@@ -33,7 +33,5 @@ final class NavigationItemType
         return $type === self::HEADER || $type === self::TOGGLE;
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

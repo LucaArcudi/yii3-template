@@ -20,8 +20,7 @@ final readonly class RememberedUrlService
 
     public function __construct(
         private SessionInterface $session,
-    ) {
-    }
+    ) {}
 
     public function remember(string $key, string $url): void
     {

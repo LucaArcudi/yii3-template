@@ -20,6 +20,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Yiisoft\Http\Method;
 use Yiisoft\Http\Status;
 use Yiisoft\Session\Flash\FlashInterface;
+use Yiisoft\Session\SessionInterface;
 use Yiisoft\User\CurrentUser;
 use Yiisoft\Yii\View\Renderer\WebViewRenderer;
 use Throwable;
@@ -28,6 +29,12 @@ use function date;
 
 final readonly class LoginAction
 {
+    /**
+     * Hash Argon2id fittizio: la verifica viene eseguita anche quando l'email non
+     * esiste, così il tempo di risposta non rivela quali utenti sono registrati.
+     */
+    private const DUMMY_PASSWORD_HASH = '$argon2id$v=19$m=65536,t=4,p=1$Q0hkQnJrZjBCRWN5MjNQbQ$9E0TwhLIB/ENFoFCQ2sPBdibL7Zva6A+VR8M+jCqiyw';
+
     public function __construct(
         private WebViewRenderer $viewRenderer,
         private UserRepository $userRepository,
@@ -39,14 +46,14 @@ final readonly class LoginAction
         private RememberedUrlService $rememberedUrl,
         private AuthRateLimiter $rateLimiter,
         private NotificationRepository $notificationRepository,
-    ) {
-    }
+        private SessionInterface $session,
+    ) {}
 
-    public function __invoke(ServerRequestInterface $request, LoginInput $input, CurrentUser $currentUser): ResponseInterface
+    public function __invoke(ServerRequestInterface $request, LoginInput $input): ResponseInterface
     {
         $renderer = $this->viewRenderer->withLayout('@resources/layouts/guest');
 
-        if (!$currentUser->isGuest()) {
+        if (!$this->currentUser->isGuest()) {
             return (new Response(302))
                 ->withHeader('Location', '/');
         }
@@ -68,10 +75,15 @@ final readonly class LoginAction
             if ($errors === []) {
                 $user = $this->userRepository->findByEmail((string) $input->email);
 
+                $passwordValid = $this->passwordHasher->verify(
+                    (string) $input->password,
+                    $user->passwordHash ?? self::DUMMY_PASSWORD_HASH,
+                );
+
                 if (
                     $user === null ||
                     !$user->isActive() ||
-                    !$this->passwordHasher->verify((string) $input->password, $user->passwordHash)
+                    !$passwordValid
                 ) {
                     $errors['password'][] = 'Credenziali non valide.';
                 } else {
@@ -93,6 +105,8 @@ final readonly class LoginAction
                     );
 
                     if ($this->currentUser->login($identity)) {
+                        // Previene la session fixation: nuovo ID al cambio di privilegio.
+                        $this->session->regenerateId();
                         $this->rateLimiter->clearLoginIdentity($user->email);
                         $this->userRepository->updateLastLogin((int) $user->id, date('Y-m-d H:i:s'));
                         $this->notifyLogin((int) $user->id);
@@ -103,7 +117,7 @@ final readonly class LoginAction
                         if ($user->isPasswordExpired()) {
                             $this->rememberedUrl->remember('auth.password_return', $returnUrl);
                             $location = '/change-password?reason=expired';
-                            $this->flash->set('warning', 'La password e scaduta: impostane una nuova per continuare.');
+                            $this->flash->set('warning', 'La password è scaduta: impostane una nuova per continuare.');
                         } else {
                             $this->flash->set('success', 'Bentornato, ' . $user->name . '.');
                         }

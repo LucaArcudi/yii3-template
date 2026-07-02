@@ -100,8 +100,7 @@ class FilterBar
         array $filters,
         array $fields,
         string $labelClass,
-    ): array
-    {
+    ): array {
         $html = [];
 
         foreach ($fields as $field) {
@@ -225,7 +224,7 @@ class FilterBar
                         writeState('collapsed');
                     });
                 })();
-            JS
+            JS,
         );
     }
 
@@ -249,7 +248,5 @@ class FilterBar
         return 'admin-filter-bar:' . sha1($action . '|' . $title . '|' . implode('|', $fieldNames));
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

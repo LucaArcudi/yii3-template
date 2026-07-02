@@ -118,7 +118,7 @@ $menu = $menuTreeProvider->getVisibleTree();
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta http-equiv="Content-Language" content="it">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="<?= Html::encode($applicationParams->name) ?>">
     <title><?= Html::encode($title) ?></title>
     <link rel="icon" href="/favicon.ico">

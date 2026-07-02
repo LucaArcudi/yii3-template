@@ -92,8 +92,7 @@ final readonly class StaticResponseHandler implements RequestHandlerInterface
         private string $body,
         private int $status = Status::OK,
         private array $headers = [],
-    ) {
-    }
+    ) {}
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {

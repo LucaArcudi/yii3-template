@@ -120,7 +120,5 @@ final class InputValidation
         return $value !== null && $value !== '';
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

@@ -37,7 +37,5 @@ final class EmailInput extends BaseInput
         return (string) self::decorate($field, 'email', $icon, $hint, $validationErrors);
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

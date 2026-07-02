@@ -17,8 +17,7 @@ final readonly class UserIdentity implements IdentityInterface, CookieLoginIdent
         private string $name,
         private ?string $cookieLoginKeyHash = null,
         private ?string $cookieLoginKey = null,
-    ) {
-    }
+    ) {}
 
     public function getId(): string
     {

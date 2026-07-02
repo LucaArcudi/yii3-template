@@ -8,7 +8,7 @@ declare(strict_types=1);
  * @var string $resetUrl
  */
 
-$encode = static fn (mixed $value): string => htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+$encode = static fn(mixed $value): string => htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 ?>
 <h1 style="color:#343a40;font-size:24px;line-height:1.25;margin:0 0 16px;">
     Ciao <?= $encode($name) ?>,

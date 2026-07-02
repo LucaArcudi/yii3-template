@@ -18,8 +18,7 @@ final readonly class OwnershipScope implements OwnershipScopeInterface
     public function __construct(
         private CurrentUser $currentUser,
         private AuthorizationService $authorizationService,
-    ) {
-    }
+    ) {}
 
     public function apply(Query $query, string $permissionGroup, string $ownerColumn = 'created_by'): Query
     {

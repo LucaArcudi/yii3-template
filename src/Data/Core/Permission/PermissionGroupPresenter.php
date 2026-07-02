@@ -11,8 +11,7 @@ final readonly class PermissionGroupPresenter
 {
     public function __construct(
         private PermissionGroupEntity|array $data,
-    ) {
-    }
+    ) {}
 
     public function id(): ?int
     {

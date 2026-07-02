@@ -21,8 +21,7 @@ final readonly class MathCaptchaService
 
     public function __construct(
         private SessionInterface $session,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array{question: string}

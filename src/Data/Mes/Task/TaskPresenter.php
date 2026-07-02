@@ -10,8 +10,7 @@ final readonly class TaskPresenter
 {
     public function __construct(
         private TaskEntity|array $data,
-    ) {
-    }
+    ) {}
 
     private function get(string $key, mixed $default = null): mixed
     {

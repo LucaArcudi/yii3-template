@@ -15,8 +15,7 @@ final readonly class LogPolicy
     public function __construct(
         private CurrentUser $currentUser,
         private AuthorizationService $authorizationService,
-    ) {
-    }
+    ) {}
 
     public function canAccess(): bool
     {

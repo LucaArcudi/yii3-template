@@ -95,7 +95,7 @@ final class MultiSelectReaderFilterTest extends Unit
 
     private function noopOwnershipScope(): OwnershipScopeInterface
     {
-        return new class () implements OwnershipScopeInterface {
+        return new class implements OwnershipScopeInterface {
             public function apply(Query $query, string $permissionGroup, string $ownerColumn = 'created_by'): Query
             {
                 return $query;

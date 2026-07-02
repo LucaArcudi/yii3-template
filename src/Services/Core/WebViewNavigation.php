@@ -9,8 +9,7 @@ final readonly class WebViewNavigation
     public function __construct(
         public string $currentUrl,
         public string $backUrl,
-    ) {
-    }
+    ) {}
 
     public function parameters(): array
     {

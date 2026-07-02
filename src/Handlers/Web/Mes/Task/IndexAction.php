@@ -31,8 +31,7 @@ final readonly class IndexAction
         private TaskPolicy $taskPolicy,
         private UrlGeneratorInterface $urlGenerator,
         private WebActionService $webAction,
-    ) {
-    }
+    ) {}
 
     public function __invoke(ServerRequestInterface $request): ResponseInterface
     {
@@ -79,7 +78,7 @@ final readonly class IndexAction
             return $this->urlGenerator->generate(
                 'task/index',
                 [],
-                $this->webAction->query($mergedQueryParameters)
+                $this->webAction->query($mergedQueryParameters),
             );
         };
 

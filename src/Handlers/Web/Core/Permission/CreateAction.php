@@ -25,8 +25,7 @@ final readonly class CreateAction
         private CurrentActorProvider $currentActorProvider,
         private FlashInterface $flash,
         private WebActionService $webAction,
-    ) {
-    }
+    ) {}
 
     public function __invoke(ServerRequestInterface $request, PermissionInput $input): ResponseInterface
     {

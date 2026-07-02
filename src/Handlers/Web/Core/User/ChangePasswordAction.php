@@ -43,8 +43,7 @@ final readonly class ChangePasswordAction
         private FlashInterface $flash,
         private RememberedUrlService $rememberedUrl,
         private AuthRateLimiter $rateLimiter,
-    ) {
-    }
+    ) {}
 
     public function __invoke(ServerRequestInterface $request, ChangePasswordInput $input): ResponseInterface
     {

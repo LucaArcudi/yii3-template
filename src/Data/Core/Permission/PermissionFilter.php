@@ -28,8 +28,7 @@ final class PermissionFilter implements RulesProviderInterface
 
     public function __construct(
         private readonly ValidatorInterface $validator,
-    ) {
-    }
+    ) {}
 
     public function fill(array $data): self
     {
@@ -68,7 +67,7 @@ final class PermissionFilter implements RulesProviderInterface
                 new Length(max: 100, skipOnEmpty: true),
             ],
             'weight' => [
-                new Integer(min: 1,max: 1000, skipOnEmpty: true),
+                new Integer(min: 1, max: 1000, skipOnEmpty: true),
             ],
             'createdAt' => [
                 new Date(format: 'php:Y-m-d', skipOnEmpty: true),

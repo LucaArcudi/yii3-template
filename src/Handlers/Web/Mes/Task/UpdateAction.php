@@ -24,8 +24,7 @@ final readonly class UpdateAction
         private CurrentActorProvider $currentActorProvider,
         private FlashInterface $flash,
         private WebActionService $webAction,
-    ) {
-    }
+    ) {}
 
     public function __invoke(ServerRequestInterface $request, #[RouteArgument('id')] int $id, TaskInput $input): ResponseInterface
     {

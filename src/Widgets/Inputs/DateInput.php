@@ -49,7 +49,5 @@ final class DateInput extends BaseInput
             ->addInputContainerClass('app-filter-control', 'app-filter-control--date');
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

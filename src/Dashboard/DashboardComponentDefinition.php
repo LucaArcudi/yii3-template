@@ -16,6 +16,5 @@ final readonly class DashboardComponentDefinition
         public int $sortOrder = 0,
         public bool $active = true,
         public array $roleCodes = [],
-    ) {
-    }
+    ) {}
 }

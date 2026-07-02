@@ -15,8 +15,7 @@ final readonly class NotificationRepository
 {
     public function __construct(
         private ConnectionInterface $db,
-    ) {
-    }
+    ) {}
 
     /**
      * @param int[] $userIds

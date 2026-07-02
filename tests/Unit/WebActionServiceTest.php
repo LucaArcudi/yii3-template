@@ -67,7 +67,7 @@ final class WebActionServiceTest extends Unit
 
     private function session(): SessionInterface
     {
-        return new class () implements SessionInterface {
+        return new class implements SessionInterface {
             private array $data = [];
 
             public function get(string $key, $default = null): mixed
@@ -80,13 +80,9 @@ final class WebActionServiceTest extends Unit
                 $this->data[$key] = $value;
             }
 
-            public function close(): void
-            {
-            }
+            public function close(): void {}
 
-            public function open(): void
-            {
-            }
+            public function open(): void {}
 
             public function isActive(): bool
             {
@@ -98,17 +94,11 @@ final class WebActionServiceTest extends Unit
                 return 'test';
             }
 
-            public function setId(string $sessionId): void
-            {
-            }
+            public function setId(string $sessionId): void {}
 
-            public function regenerateId(): void
-            {
-            }
+            public function regenerateId(): void {}
 
-            public function discard(): void
-            {
-            }
+            public function discard(): void {}
 
             public function getName(): string
             {
@@ -157,7 +147,7 @@ final class WebActionServiceTest extends Unit
 
     private function urlGenerator(): UrlGeneratorInterface
     {
-        return new class () implements UrlGeneratorInterface {
+        return new class implements UrlGeneratorInterface {
             public function generate(
                 string $name,
                 array $arguments = [],
@@ -198,13 +188,9 @@ final class WebActionServiceTest extends Unit
                 return '';
             }
 
-            public function setUriPrefix(string $name): void
-            {
-            }
+            public function setUriPrefix(string $name): void {}
 
-            public function setDefaultArgument(string $name, bool|float|int|string|Stringable|null $value): void
-            {
-            }
+            public function setDefaultArgument(string $name, bool|float|int|string|Stringable|null $value): void {}
         };
     }
 }

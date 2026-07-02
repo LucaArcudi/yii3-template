@@ -31,8 +31,7 @@ final readonly class CreateAction
         private AuthParams $authParams,
         private FlashInterface $flash,
         private WebActionService $webAction,
-    ) {
-    }
+    ) {}
 
     public function __invoke(ServerRequestInterface $request, UserInput $input): ResponseInterface
     {

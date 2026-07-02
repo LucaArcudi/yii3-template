@@ -40,7 +40,7 @@ $this->setParameter(
     <div class="app-error-state__code">422</div>
     <h1 class="app-error-state__title">Richiesta non valida</h1>
     <p class="app-error-state__message">
-        Il modulo non e piu valido, la pagina e stata inviata piu volte, oppure la sessione e scaduta.
+        Il modulo non è più valido, la pagina è stata inviata più volte, oppure la sessione è scaduta.
         Ricarica la pagina e riprova.
     </p>
     <?= Html::a($returnLabel, $returnUrl, ['class' => 'btn btn-primary btn-shadow'])->render() ?>

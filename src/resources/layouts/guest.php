@@ -32,7 +32,7 @@ $this->addJsVars($assetManager->getJsVars());
 $title = $this->getTitle() ?: $applicationParams->name;
 $flashHtml = FlashMessages::render($flash);
 $logoUrl = PublicAssetResolver::url($layoutParams->logo);
-$headerSubtitle = (string) $this->getParameter('guestHeaderSubtitle', 'Area di accesso ArchitectUI');
+$headerSubtitle = (string) $this->getParameter('guestHeaderSubtitle', 'Area di accesso alla piattaforma');
 $cardSubtitle = (string) $this->getParameter(
     'guestCardSubtitle',
     'Accedi o crea un nuovo account per entrare nell\'area gestionale.',
@@ -49,7 +49,7 @@ $pageModals = is_string($pageModalsParameter) && $pageModalsParameter !== ''
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta http-equiv="Content-Language" content="it">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= Html::encode($title) ?></title>
     <link rel="icon" href="/favicon.ico">
     <?php $this->head() ?>
@@ -57,7 +57,7 @@ $pageModals = is_string($pageModalsParameter) && $pageModalsParameter !== ''
 <body>
 <?php $this->beginBody() ?>
 
-<div class="app-container app-theme-white body-tabs-shadow">
+<div class="app-container app-theme-white body-tabs-shadow app-guest">
     <div class="app-main">
         <div class="app-main__outer w-100">
             <div class="app-main__inner">
@@ -74,18 +74,22 @@ $pageModals = is_string($pageModalsParameter) && $pageModalsParameter !== ''
 
                         <div class="main-card mb-3 card">
                             <div class="card-body p-4">
-                        <div class="mb-4 text-center">
-                            <h2 class="card-title mb-1"><?= Html::encode($title) ?></h2>
-                            <p class="text-muted mb-0"><?= Html::encode($cardSubtitle) ?></p>
+                                <div class="mb-4 text-center">
+                                    <h2 class="card-title mb-1"><?= Html::encode($title) ?></h2>
+                                    <p class="text-muted mb-0"><?= Html::encode($cardSubtitle) ?></p>
+                                </div>
+
+                                <?php if ($flashHtml !== ''): ?>
+                                    <?= $flashHtml ?>
+                                <?php endif; ?>
+
+                                <?= $content ?>
+                            </div>
                         </div>
 
-                        <?php if ($flashHtml !== ''): ?>
-                            <?= $flashHtml ?>
-                        <?php endif; ?>
-
-                        <?= $content ?>
-                    </div>
-                </div>
+                        <div class="app-guest-footer">
+                            <?= Html::encode($applicationParams->name) ?> &middot; Accesso riservato
+                        </div>
                     </div>
                 </div>
             </div>

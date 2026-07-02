@@ -25,8 +25,7 @@ final class PermissionInput implements RulesProviderInterface
 
     public function __construct(
         private readonly ValidatorInterface $validator,
-    ) {
-    }
+    ) {}
 
     public function fill(array $data): self
     {

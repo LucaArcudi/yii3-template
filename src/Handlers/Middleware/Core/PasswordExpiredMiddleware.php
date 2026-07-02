@@ -32,8 +32,7 @@ final readonly class PasswordExpiredMiddleware implements MiddlewareInterface
         private UserRepository $userRepository,
         private FlashInterface $flash,
         private RememberedUrlService $rememberedUrl,
-    ) {
-    }
+    ) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -58,7 +57,7 @@ final readonly class PasswordExpiredMiddleware implements MiddlewareInterface
             $this->rememberedUrl->rememberCurrent('auth.password_return', $request);
         }
 
-        $this->flash->set('warning', 'La password e scaduta: impostane una nuova per continuare.');
+        $this->flash->set('warning', 'La password è scaduta: impostane una nuova per continuare.');
 
         return new RedirectResponse('/change-password?reason=expired');
     }

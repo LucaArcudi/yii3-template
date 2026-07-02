@@ -11,8 +11,7 @@ final readonly class PermissionGroupScope
 {
     public function __construct(
         private OwnershipScopeInterface $ownershipScope,
-    ) {
-    }
+    ) {}
 
     public function apply(Query $query): Query
     {

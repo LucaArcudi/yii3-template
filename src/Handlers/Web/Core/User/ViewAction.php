@@ -26,12 +26,12 @@ final readonly class ViewAction
         private LogReader $logReader,
         private LogPolicy $logPolicy,
         private WebActionService $webAction,
-    ) {
-    }
+    ) {}
 
     public function __invoke(
         ServerRequestInterface $request,
-        #[RouteArgument('id')] int $id,
+        #[RouteArgument('id')]
+        int $id,
     ): ResponseInterface {
         if (!$this->userPolicy->canView()) {
             return $this->webAction->forbidden();

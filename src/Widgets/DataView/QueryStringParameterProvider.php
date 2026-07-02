@@ -13,8 +13,7 @@ final class QueryStringParameterProvider implements UrlParameterProviderInterfac
 {
     public function __construct(
         private readonly ?array $queryParameters = null,
-    ) {
-    }
+    ) {}
 
     public function get(string $name, UrlParameterType $type): ?string
     {

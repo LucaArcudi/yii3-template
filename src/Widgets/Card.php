@@ -85,7 +85,5 @@ class Card
         return (string) Html::div($content, ['class' => 'app-admin-card__heading'])->encode(false);
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

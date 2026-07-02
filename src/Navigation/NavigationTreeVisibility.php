@@ -76,7 +76,5 @@ final class NavigationTreeVisibility
         return $pruned;
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

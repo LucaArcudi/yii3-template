@@ -11,6 +11,5 @@ final readonly class LayoutParams
         public string $logoSmall = 'images/logo_small.png',
         public string $footerLeft = 'Yii3 + ArchitectUI template',
         public string $footerRight = 'ver 0.1.0',
-    ) {
-    }
+    ) {}
 }

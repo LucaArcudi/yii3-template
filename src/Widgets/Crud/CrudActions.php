@@ -73,7 +73,7 @@ final class CrudActions
 
     public static function group(array $buttons, string $ariaLabel, string $empty = '-'): string
     {
-        $buttons = array_filter($buttons, static fn (mixed $button): bool => is_string($button) && $button !== '');
+        $buttons = array_filter($buttons, static fn(mixed $button): bool => is_string($button) && $button !== '');
 
         if ($buttons === []) {
             return (string) Html::span($empty, ['class' => 'text-muted']);
@@ -219,7 +219,5 @@ final class CrudActions
         return $footer;
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

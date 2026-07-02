@@ -10,8 +10,7 @@ final readonly class CurrentActorProvider
 {
     public function __construct(
         private CurrentUser $currentUser,
-    ) {
-    }
+    ) {}
 
     public function id(): ?int
     {

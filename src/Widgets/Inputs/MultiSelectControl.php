@@ -129,7 +129,5 @@ final class MultiSelectControl
         )->encode(false);
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

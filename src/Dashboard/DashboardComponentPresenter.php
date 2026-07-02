@@ -10,8 +10,7 @@ final readonly class DashboardComponentPresenter
 {
     public function __construct(
         private DashboardComponentDefinition $component,
-    ) {
-    }
+    ) {}
 
     public function code(): string
     {

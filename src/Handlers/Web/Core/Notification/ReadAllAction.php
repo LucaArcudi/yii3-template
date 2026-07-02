@@ -18,8 +18,7 @@ final readonly class ReadAllAction
         private NotificationPolicy $notificationPolicy,
         private CurrentUser $currentUser,
         private WebActionService $webAction,
-    ) {
-    }
+    ) {}
 
     public function __invoke(ServerRequestInterface $request): ResponseInterface
     {

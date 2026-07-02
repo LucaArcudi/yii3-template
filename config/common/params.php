@@ -50,6 +50,15 @@ if (!is_dir($sessionSavePath)) {
     mkdir($sessionSavePath, 0775, true);
 }
 
+$defaultCookieSecretKey = 'change-this-cookie-secret-key-before-prod-32-bytes';
+$cookieSecretKey = $env('AUTH_COOKIE_SECRET_KEY', $defaultCookieSecretKey);
+
+if ($env('APP_ENV', 'dev') === 'prod' && $cookieSecretKey === $defaultCookieSecretKey) {
+    throw new RuntimeException(
+        'AUTH_COOKIE_SECRET_KEY must be set to a unique secret value in production.',
+    );
+}
+
 return [
     'application' => $application,
 
@@ -66,10 +75,7 @@ return [
     ],
 
     'cookies' => [
-        'secretKey' => $env(
-            'AUTH_COOKIE_SECRET_KEY',
-            'change-this-cookie-secret-key-before-prod-32-bytes',
-        ),
+        'secretKey' => $cookieSecretKey,
     ],
 
     'entityLog' => [

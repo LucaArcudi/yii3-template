@@ -18,9 +18,8 @@ final class LoginInput implements RulesProviderInterface
     public bool $rememberMe = true;
 
     public function __construct(
-        private ValidatorInterface $validator
-    ){
-    }
+        private ValidatorInterface $validator,
+    ) {}
 
     public function validateLogin(): Result
     {

@@ -44,13 +44,13 @@ echo Grid::render(
         new DataColumn(
             property: 'is_read',
             header: 'Stato',
-            content: static fn (array|object $row): string => (new NotificationPresenter($row))->statusBadge(),
+            content: static fn(array|object $row): string => (new NotificationPresenter($row))->statusBadge(),
             encodeContent: false,
         ),
         new DataColumn(
             property: 'created_at',
             header: 'Data',
-            content: static fn (array|object $row): string => (new NotificationPresenter($row))->createdAt(),
+            content: static fn(array|object $row): string => (new NotificationPresenter($row))->createdAt(),
         ),
         new DataColumn(
             header: 'Risorsa',

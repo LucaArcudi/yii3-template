@@ -37,7 +37,5 @@ final class PasswordInput extends BaseInput
         return (string) self::decorate($field, 'password', $icon, $hint, $validationErrors);
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

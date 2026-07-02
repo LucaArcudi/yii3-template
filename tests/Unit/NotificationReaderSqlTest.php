@@ -67,13 +67,13 @@ final class NotificationReaderSqlTest extends Unit
     private function currentUser(): CurrentUser
     {
         $currentUser = new CurrentUser(
-            new class () implements IdentityRepositoryInterface {
+            new class implements IdentityRepositoryInterface {
                 public function findIdentity(string $id): ?IdentityInterface
                 {
                     return null;
                 }
             },
-            new class () implements EventDispatcherInterface {
+            new class implements EventDispatcherInterface {
                 public function dispatch(object $event): object
                 {
                     return $event;

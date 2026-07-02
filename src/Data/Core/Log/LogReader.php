@@ -11,8 +11,7 @@ final readonly class LogReader
 {
     public function __construct(
         private ConnectionInterface $db,
-    ) {
-    }
+    ) {}
 
     public function findByEntity(string $entityType, int|string $entityId, int $limit = 10): array
     {

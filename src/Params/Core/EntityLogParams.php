@@ -11,8 +11,7 @@ final readonly class EntityLogParams
         public bool $webEnabled = true,
         public bool $consoleEnabled = false,
         public bool $systemEnabled = true,
-    ) {
-    }
+    ) {}
 
     public function isEnabledFor(string $source): bool
     {

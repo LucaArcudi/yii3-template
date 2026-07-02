@@ -26,12 +26,12 @@ final readonly class UpdateAction
         private CurrentActorProvider $currentActorProvider,
         private FlashInterface $flash,
         private WebActionService $webAction,
-    ) {
-    }
+    ) {}
 
     public function __invoke(
         ServerRequestInterface $request,
-        #[RouteArgument('id')] int $id,
+        #[RouteArgument('id')]
+        int $id,
         PermissionInput $input,
     ): ResponseInterface {
         if (!$this->permissionPolicy->canUpdate()) {

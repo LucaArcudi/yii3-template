@@ -120,7 +120,5 @@ final class Breadcrumb
         return $content;
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

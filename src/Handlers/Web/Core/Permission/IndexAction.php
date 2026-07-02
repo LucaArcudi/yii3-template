@@ -20,8 +20,7 @@ final readonly class IndexAction
         private PermissionFilter $permissionFilter,
         private PermissionPolicy $permissionPolicy,
         private WebActionService $webAction,
-    ) {
-    }
+    ) {}
 
     public function __invoke(ServerRequestInterface $request): ResponseInterface
     {

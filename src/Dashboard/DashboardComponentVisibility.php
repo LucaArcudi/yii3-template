@@ -51,7 +51,5 @@ final class DashboardComponentVisibility
         return $code !== '' ? [$code, 'code:' . $code] : [];
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

@@ -49,7 +49,5 @@ class Badge
         };
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

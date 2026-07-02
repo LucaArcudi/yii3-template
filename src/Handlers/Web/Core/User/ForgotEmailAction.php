@@ -11,8 +11,7 @@ final readonly class ForgotEmailAction
 {
     public function __construct(
         private WebViewRenderer $viewRenderer,
-    ) {
-    }
+    ) {}
 
     public function __invoke(): ResponseInterface
     {

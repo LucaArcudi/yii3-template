@@ -18,8 +18,7 @@ final readonly class PermissionReader
     public function __construct(
         private ConnectionInterface $db,
         private PermissionScope $scope,
-    ) {
-    }
+    ) {}
 
     public function getIndex(
         array $filters = [],

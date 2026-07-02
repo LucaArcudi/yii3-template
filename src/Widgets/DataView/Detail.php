@@ -64,7 +64,5 @@ class Detail
         );
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

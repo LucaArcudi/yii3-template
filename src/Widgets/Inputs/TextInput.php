@@ -38,7 +38,5 @@ final class TextInput extends BaseInput
         return (string) self::decorate($field, 'text', $icon, $hint, $validationErrors);
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

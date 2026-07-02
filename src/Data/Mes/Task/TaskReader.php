@@ -21,8 +21,7 @@ final readonly class TaskReader
     public function __construct(
         private ConnectionInterface $db,
         private TaskScope $scope,
-    ) {
-    }
+    ) {}
 
     public function getIndex(
         array $filters = [],

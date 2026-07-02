@@ -22,8 +22,7 @@ final readonly class IndexAction
         private RoleRepository $roleRepository,
         private UserPolicy $userPolicy,
         private WebActionService $webAction,
-    ) {
-    }
+    ) {}
 
     public function __invoke(ServerRequestInterface $request): ResponseInterface
     {

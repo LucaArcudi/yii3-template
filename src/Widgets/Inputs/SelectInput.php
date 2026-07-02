@@ -245,7 +245,5 @@ final class SelectInput
         return $normalized !== '' ? $normalized : 'select';
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

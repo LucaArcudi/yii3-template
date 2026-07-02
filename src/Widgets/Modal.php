@@ -107,7 +107,5 @@ final class Modal
         };
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

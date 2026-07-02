@@ -28,7 +28,5 @@ class FormTheme
         self::$initialized = true;
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

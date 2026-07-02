@@ -13,8 +13,7 @@ final readonly class Mailer
         private EmailRenderer $renderer,
         private EmailTransportInterface $transport,
         private MailParams $mailParams,
-    ) {
-    }
+    ) {}
 
     public function send(EmailMessage $message): void
     {

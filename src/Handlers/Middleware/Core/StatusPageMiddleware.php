@@ -25,8 +25,7 @@ final readonly class StatusPageMiddleware implements MiddlewareInterface
         private RequestHandlerInterface $accessDeniedHandler,
         private RequestHandlerInterface $tooManyRequestsHandler,
         private RequestHandlerInterface $invalidRequestHandler,
-    ) {
-    }
+    ) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

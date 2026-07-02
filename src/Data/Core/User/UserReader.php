@@ -21,8 +21,7 @@ final readonly class UserReader
     public function __construct(
         private ConnectionInterface $db,
         private UserScope $scope,
-    ) {
-    }
+    ) {}
 
     public function getIndex(
         array $filters = [],

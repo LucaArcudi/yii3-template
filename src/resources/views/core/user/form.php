@@ -125,7 +125,7 @@ $form .= SelectInput::render(
 $form .= MultiSelectInput::render(
     name: 'role_ids',
     label: 'Ruoli associati',
-    values: array_map(static fn (int $id): string => (string) $id, $input->roleIds),
+    values: array_map(static fn(int $id): string => (string) $id, $input->roleIds),
     options: $roleOptions,
     icon: 'fa-solid fa-user-tag',
     hint: $roleOptions === []

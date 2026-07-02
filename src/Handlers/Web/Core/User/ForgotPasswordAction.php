@@ -37,8 +37,7 @@ final readonly class ForgotPasswordAction
         private FlashInterface $flash,
         private CurrentUser $currentUser,
         private AuthRateLimiter $rateLimiter,
-    ) {
-    }
+    ) {}
 
     public function __invoke(ServerRequestInterface $request, ForgotPasswordInput $input): ResponseInterface
     {
@@ -79,7 +78,7 @@ final readonly class ForgotPasswordAction
 
                 $this->flash->set(
                     'info',
-                    'Se l\'account esiste ed e attivo, riceverai un link per cambiare la password.',
+                    'Se l\'account esiste ed è attivo, riceverai un link per cambiare la password.',
                 );
 
                 return new RedirectResponse('/login');

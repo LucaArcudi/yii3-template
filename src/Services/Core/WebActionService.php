@@ -20,8 +20,7 @@ final readonly class WebActionService
     public function __construct(
         private UrlGeneratorInterface $urlGenerator,
         private RememberedUrlService $rememberedUrl,
-    ) {
-    }
+    ) {}
 
     public function forbidden(string $message = 'Access denied.'): ResponseInterface
     {
@@ -161,7 +160,7 @@ final readonly class WebActionService
     {
         return array_filter(
             $query,
-            static fn (mixed $value): bool => $value !== null && $value !== '',
+            static fn(mixed $value): bool => $value !== null && $value !== '',
         );
     }
 }

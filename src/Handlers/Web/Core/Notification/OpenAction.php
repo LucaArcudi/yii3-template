@@ -18,8 +18,7 @@ final readonly class OpenAction
         private NotificationPolicy $notificationPolicy,
         private CurrentUser $currentUser,
         private WebActionService $webAction,
-    ) {
-    }
+    ) {}
 
     public function __invoke(#[RouteArgument('id')] int $id): ResponseInterface
     {

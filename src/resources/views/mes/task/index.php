@@ -176,13 +176,13 @@ $grid = Grid::render(
             property: 'start_date',
             header: 'Inizio',
             bodyAttributes: ['class' => 'align-middle text-nowrap'],
-            content: static fn (array|object $row): string => (new TaskPresenter($row))->startDate(),
+            content: static fn(array|object $row): string => (new TaskPresenter($row))->startDate(),
         ),
         new DataColumn(
             property: 'end_date',
             header: 'Fine',
             bodyAttributes: ['class' => 'align-middle text-nowrap'],
-            content: static fn (array|object $row): string => (new TaskPresenter($row))->endDate(),
+            content: static fn(array|object $row): string => (new TaskPresenter($row))->endDate(),
         ),
         new DataColumn(
             header: 'Azioni',

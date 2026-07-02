@@ -18,8 +18,7 @@ final readonly class RoleReader
     public function __construct(
         private ConnectionInterface $db,
         private RoleScope $scope,
-    ) {
-    }
+    ) {}
 
     public function getIndex(
         array $filters = [],

@@ -19,8 +19,7 @@ final readonly class AuthParams
         public int $passwordResetMaxAttempts,
         public int $passwordChangeMaxAttempts,
         public string $defaultRegistrationRoleCode,
-    ) {
-    }
+    ) {}
 
     public function passwordExpiresAt(?string $from = null): ?string
     {

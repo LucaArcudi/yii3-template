@@ -18,8 +18,7 @@ final readonly class PermissionGroupReader
     public function __construct(
         private ConnectionInterface $db,
         private PermissionGroupScope $scope,
-    ) {
-    }
+    ) {}
 
     public function getIndex(array $filters = [], string $sort = '-id'): QueryDataReader
     {

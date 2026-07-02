@@ -11,11 +11,14 @@ services:
       DB_DSN: "mysql:host=db;port=3306;dbname=${DB_DATABASE:-yii3_template}"
       DB_USERNAME: "${DB_USERNAME:-yii3_template}"
       DB_PASSWORD: "${DB_PASSWORD:?Set DB_PASSWORD in .env.prod}"
+      AUTH_COOKIE_SECRET_KEY: "${AUTH_COOKIE_SECRET_KEY:?Set AUTH_COOKIE_SECRET_KEY in .env.prod}"
     networks:
       - app_internal
       - caddy_public
     ports:
-      - "${APP_PORT:-8080}:80"
+      # Solo loopback: il traffico pubblico passa dal reverse proxy Caddy (TLS);
+      # la porta locale resta per healthcheck e debug dal VPS.
+      - "127.0.0.1:${APP_PORT:-8080}:80"
     volumes:
       - runtime:/app/runtime
       - caddy_data:/data

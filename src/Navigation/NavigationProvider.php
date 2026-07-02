@@ -12,12 +12,11 @@ final readonly class NavigationProvider
     public function __construct(
         private CurrentUser $currentUser,
         private AuthorizationService $authorizationService,
-    ) {
-    }
+    ) {}
 
     public function getVisibleTree(): array
     {
-        return NavigationTreeVisibility::filter(self::tree(), fn (array $item): bool => $this->hasPermission($item));
+        return NavigationTreeVisibility::filter(self::tree(), fn(array $item): bool => $this->hasPermission($item));
     }
 
     private function hasPermission(array $item): bool

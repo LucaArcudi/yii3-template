@@ -13,8 +13,7 @@ abstract class BaseEntity
         public ?string $updatedAt = null,
         public ?int $createdBy = null,
         public ?int $updatedBy = null,
-    ) {
-    }
+    ) {}
 
     public function stampCreated(?int $actorId, ?string $dateTime = null): void
     {

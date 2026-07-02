@@ -19,8 +19,7 @@ final readonly class IndexAction
         private DashboardComponentRenderer $componentRenderer,
         private CurrentUser $currentUser,
         private WebActionService $webAction,
-    ) {
-    }
+    ) {}
 
     public function __invoke(): ResponseInterface
     {

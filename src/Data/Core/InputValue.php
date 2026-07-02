@@ -92,7 +92,5 @@ final class InputValue
         return $left <=> $right;
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

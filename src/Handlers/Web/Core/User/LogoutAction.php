@@ -19,8 +19,7 @@ final readonly class LogoutAction
         private UserRepository $userRepository,
         private RememberMeCookieService $rememberMeCookie,
         private FlashInterface $flash,
-    ) {
-    }
+    ) {}
 
     public function __invoke(ServerRequestInterface $request): ResponseInterface
     {

@@ -19,8 +19,7 @@ final readonly class PermissionGroupRepository
     public function __construct(
         private ConnectionInterface $db,
         private EntityLogRepository $entityLogRepository,
-    ) {
-    }
+    ) {}
 
     public function exists(int $id): bool
     {

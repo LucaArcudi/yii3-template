@@ -13,8 +13,7 @@ final readonly class PermissionRepository
     public function __construct(
         private ConnectionInterface $db,
         private EntityLogRepository $entityLogRepository,
-    ) {
-    }
+    ) {}
 
     public function exists(int $id): bool
     {
@@ -94,7 +93,7 @@ final readonly class PermissionRepository
             ->orderBy(['p.id' => SORT_DESC])
             ->all();
 
-        return array_map(fn (array $row) => $this->mapRow($row), $rows);
+        return array_map(fn(array $row) => $this->mapRow($row), $rows);
     }
 
     /**
@@ -112,7 +111,7 @@ final readonly class PermissionRepository
             ->where(['id' => $ids])
             ->column();
 
-        return array_map(static fn (mixed $id): int => (int) $id, $existingIds);
+        return array_map(static fn(mixed $id): int => (int) $id, $existingIds);
     }
 
     public function findGroupedForRoleAssignment(): array
@@ -376,7 +375,7 @@ final readonly class PermissionRepository
 
         usort(
             $groups,
-            static fn (array $left, array $right): int => (string) ($left['label'] ?? '')
+            static fn(array $left, array $right): int => (string) ($left['label'] ?? '')
                 <=> (string) ($right['label'] ?? ''),
         );
 

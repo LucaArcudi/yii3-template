@@ -144,7 +144,5 @@ final class MultiSelectInput
         return $normalized !== '' ? $normalized : 'multi-select';
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

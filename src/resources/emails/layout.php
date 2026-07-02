@@ -9,7 +9,7 @@ declare(strict_types=1);
  * @var string|null $subject
  */
 
-$encode = static fn (mixed $value): string => htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+$encode = static fn(mixed $value): string => htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 $preheaderText = trim((string) ($preheader ?? ''));
 $title = trim((string) ($subject ?? $applicationName));
 ?>

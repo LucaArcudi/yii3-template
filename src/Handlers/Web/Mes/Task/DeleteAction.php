@@ -20,8 +20,7 @@ final readonly class DeleteAction
         private CurrentActorProvider $currentActorProvider,
         private FlashInterface $flash,
         private WebActionService $webAction,
-    ) {
-    }
+    ) {}
 
     public function __invoke(#[RouteArgument('id')] int $id): ResponseInterface
     {

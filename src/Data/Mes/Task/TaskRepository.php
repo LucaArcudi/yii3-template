@@ -13,8 +13,7 @@ final readonly class TaskRepository
     public function __construct(
         private ConnectionInterface $db,
         private EntityLogRepository $entityLogRepository,
-    ) {
-    }
+    ) {}
 
     public function exists(int $id): bool
     {
@@ -48,7 +47,7 @@ final readonly class TaskRepository
             ->orderBy(['id' => SORT_DESC])
             ->all();
 
-        return array_map(fn (array $row) => $this->mapRow($row), $rows);
+        return array_map(fn(array $row) => $this->mapRow($row), $rows);
     }
 
     public function create(TaskEntity $task): int

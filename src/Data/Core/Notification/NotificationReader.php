@@ -17,8 +17,7 @@ final readonly class NotificationReader
     public function __construct(
         private ConnectionInterface $db,
         private CurrentUser $currentUser,
-    ) {
-    }
+    ) {}
 
     public function getIndex(string $sort = '-created_at'): QueryDataReader
     {

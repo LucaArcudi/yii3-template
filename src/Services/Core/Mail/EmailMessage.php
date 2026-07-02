@@ -14,8 +14,7 @@ final readonly class EmailMessage
         public ?string $textBody = null,
         public ?string $fromEmail = null,
         public ?string $fromName = null,
-    ) {
-    }
+    ) {}
 
     public function withDefaults(string $fromEmail, string $fromName): self
     {

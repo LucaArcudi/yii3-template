@@ -39,8 +39,7 @@ final readonly class EntityLogRepository
         private ConnectionInterface $db,
         private ?RequestProviderInterface $requestProvider = null,
         private EntityLogParams $params = new EntityLogParams(),
-    ) {
-    }
+    ) {}
 
     public function record(
         string $entityType,
@@ -140,7 +139,7 @@ final readonly class EntityLogRepository
             return null;
         }
 
-        return mb_substr(implode(' ', array_map(static fn (mixed $part): string => (string) $part, $argv)), 0, 512);
+        return mb_substr(implode(' ', array_map(static fn(mixed $part): string => (string) $part, $argv)), 0, 512);
     }
 
     private function ipAddress(ServerRequestInterface $request): ?string

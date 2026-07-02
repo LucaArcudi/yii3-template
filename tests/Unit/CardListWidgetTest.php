@@ -15,8 +15,8 @@ final class CardListWidgetTest extends Unit
         $html = CardList::render(
             title: 'Task a card',
             reader: new IterableDataReader([]),
-            itemRenderer: static fn (array|object $row): string => '<article>unused</article>',
-            urlCreator: static fn (int $page): string => '/task?display=cards&page=' . $page,
+            itemRenderer: static fn(array|object $row): string => '<article>unused</article>',
+            urlCreator: static fn(int $page): string => '/task?display=cards&page=' . $page,
         );
 
         self::assertStringContainsString('Nessun elemento trovato con i filtri correnti.', $html);
@@ -33,8 +33,8 @@ final class CardListWidgetTest extends Unit
                 ['id' => 1, 'title' => 'Deploy'],
                 ['id' => 2, 'title' => 'Review'],
             ]),
-            itemRenderer: static fn (array|object $row): string => '<article>' . $row['title'] . '</article>',
-            urlCreator: static fn (int $page): string => '/task?display=cards&page=' . $page,
+            itemRenderer: static fn(array|object $row): string => '<article>' . $row['title'] . '</article>',
+            urlCreator: static fn(int $page): string => '/task?display=cards&page=' . $page,
         );
 
         self::assertStringContainsString('Visualizzando <strong>1-2</strong> di <strong>2</strong>', $html);

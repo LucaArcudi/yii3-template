@@ -10,8 +10,7 @@ final readonly class UserPresenter
 {
     public function __construct(
         private UserEntity|array $data,
-    ) {
-    }
+    ) {}
 
     private function get(string $key, mixed $default = null): mixed
     {

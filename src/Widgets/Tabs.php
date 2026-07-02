@@ -86,7 +86,5 @@ final class Tabs
         return $id === '' ? 'app-tab' : $id;
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

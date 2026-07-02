@@ -12,8 +12,12 @@ use Yiisoft\Yii\Runner\Http\HttpApplicationRunner;
 
 $root = dirname(__DIR__);
 
-putenv('APP_ENV=dev');
-putenv('APP_DEBUG=1');
+// Default a "dev" solo quando l'ambiente non è già definito (es. `php yii serve` locale):
+// un putenv() incondizionato sovrascriverebbe APP_ENV/APP_DEBUG anche in produzione.
+if (getenv('APP_ENV', true) === false && getenv('APP_ENV') === false && !isset($_ENV['APP_ENV'])) {
+    putenv('APP_ENV=dev');
+    putenv('APP_DEBUG=1');
+}
 
 require_once $root . '/src/autoload.php';
 

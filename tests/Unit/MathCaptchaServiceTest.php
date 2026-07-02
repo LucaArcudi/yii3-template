@@ -45,13 +45,9 @@ final class InMemorySession implements SessionInterface
         $this->data[$key] = $value;
     }
 
-    public function close(): void
-    {
-    }
+    public function close(): void {}
 
-    public function open(): void
-    {
-    }
+    public function open(): void {}
 
     public function isActive(): bool
     {
@@ -63,17 +59,11 @@ final class InMemorySession implements SessionInterface
         return 'test-session';
     }
 
-    public function setId(string $sessionId): void
-    {
-    }
+    public function setId(string $sessionId): void {}
 
-    public function regenerateId(): void
-    {
-    }
+    public function regenerateId(): void {}
 
-    public function discard(): void
-    {
-    }
+    public function discard(): void {}
 
     public function getName(): string
     {

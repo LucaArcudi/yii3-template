@@ -16,8 +16,7 @@ final readonly class InvalidRequestHandler implements RequestHandlerInterface
     public function __construct(
         private WebViewRenderer $viewRenderer,
         private CurrentUser $currentUser,
-    ) {
-    }
+    ) {}
 
     public function __invoke(ServerRequestInterface $request): ResponseInterface
     {

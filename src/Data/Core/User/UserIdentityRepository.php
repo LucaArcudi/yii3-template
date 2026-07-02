@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Data\Core\User;
 
-use App\Data\Core\User\UserRepository;
 use Yiisoft\Auth\IdentityInterface;
 use Yiisoft\Auth\IdentityRepositoryInterface;
 
@@ -12,8 +11,7 @@ final readonly class UserIdentityRepository implements IdentityRepositoryInterfa
 {
     public function __construct(
         private UserRepository $userRepository,
-    ) {
-    }
+    ) {}
 
     public function findIdentity(string $id): ?IdentityInterface
     {

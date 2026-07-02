@@ -32,7 +32,7 @@ $this->setParameter('pageActions', BackButton::render('/'));
 
 $validationRules = $input->getRules($requiresCurrentPassword);
 $subtitle = $reason === 'expired'
-    ? 'La password e scaduta. Scegline una nuova per proseguire.'
+    ? 'La password è scaduta. Scegline una nuova per proseguire.'
     : ($tokenMode ? 'Imposta una nuova password usando il link ricevuto via email.' : 'Aggiorna la password del tuo account.');
 
 $form = '';

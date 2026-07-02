@@ -8,8 +8,7 @@ final readonly class PermissionPresenter
 {
     public function __construct(
         private PermissionEntity|array $data,
-    ) {
-    }
+    ) {}
 
     private function get(string $key, mixed $default = null): mixed
     {

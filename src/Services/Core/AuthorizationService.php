@@ -15,8 +15,7 @@ final readonly class AuthorizationService
 {
     public function __construct(
         private ConnectionInterface $db,
-    ) {
-    }
+    ) {}
 
     public function userHasPermission(int|string $userId, string $group, string $permission): bool
     {
@@ -67,7 +66,7 @@ final readonly class AuthorizationService
             ])
             ->column();
 
-        return array_map(static fn (mixed $code): string => strtoupper((string) $code), $codes);
+        return array_map(static fn(mixed $code): string => strtoupper((string) $code), $codes);
     }
 
     public function userHasRole(int|string $userId, string $roleCode): bool

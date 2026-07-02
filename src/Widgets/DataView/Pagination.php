@@ -69,7 +69,5 @@ final class Pagination
         )->encode(false);
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

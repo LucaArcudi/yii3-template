@@ -99,13 +99,11 @@ final class FlashMessages
         return match ($type) {
             'success' => 'Operazione completata',
             'warning' => 'Attenzione',
-            'danger', 'error' => 'Si e verificato un problema',
+            'danger', 'error' => 'Si è verificato un problema',
             'info' => 'Informazione',
             default => sprintf('Messaggio %s', ucfirst($type)),
         };
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

@@ -28,8 +28,7 @@ final readonly class ProfileAction
         private PasswordHasher $passwordHasher,
         private CurrentUser $currentUser,
         private FlashInterface $flash,
-    ) {
-    }
+    ) {}
 
     public function __invoke(ServerRequestInterface $request, UserInput $input): ResponseInterface
     {

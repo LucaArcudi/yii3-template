@@ -10,8 +10,7 @@ final readonly class NotificationPresenter
 {
     public function __construct(
         private array|object $row,
-    ) {
-    }
+    ) {}
 
     public function id(): int
     {

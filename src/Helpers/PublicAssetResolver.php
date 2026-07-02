@@ -33,7 +33,5 @@ final class PublicAssetResolver
         return is_file($publicPath) ? '/' . $relative : null;
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

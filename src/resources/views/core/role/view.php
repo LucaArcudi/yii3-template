@@ -34,7 +34,7 @@ $data = $role->toDetailArray();
 $roleId = (int) $role->id();
 $deleteModalId = 'role-delete-modal-' . $roleId;
 $permissionsCount = array_sum(array_map(
-    static fn (array $group): int => count($group['items'] ?? []),
+    static fn(array $group): int => count($group['items'] ?? []),
     $permissionGroups,
 ));
 $pageActions = BackButton::render($backUrl);
