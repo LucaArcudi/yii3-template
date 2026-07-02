@@ -32,7 +32,7 @@ $this->addJsVars($assetManager->getJsVars());
 $title = $this->getTitle() ?: $applicationParams->name;
 $flashHtml = FlashMessages::render($flash);
 $logoUrl = PublicAssetResolver::url($layoutParams->logo);
-$headerSubtitle = (string) $this->getParameter('guestHeaderSubtitle', 'Area di accesso alla piattaforma');
+$headerSubtitle = (string) $this->getParameter('guestHeaderSubtitle', 'Area di accesso ArchitectUI');
 $cardSubtitle = (string) $this->getParameter(
     'guestCardSubtitle',
     'Accedi o crea un nuovo account per entrare nell\'area gestionale.',
@@ -57,7 +57,7 @@ $pageModals = is_string($pageModalsParameter) && $pageModalsParameter !== ''
 <body>
 <?php $this->beginBody() ?>
 
-<div class="app-container app-theme-white body-tabs-shadow app-guest">
+<div class="app-container app-theme-white body-tabs-shadow">
     <div class="app-main">
         <div class="app-main__outer w-100">
             <div class="app-main__inner">
@@ -74,22 +74,18 @@ $pageModals = is_string($pageModalsParameter) && $pageModalsParameter !== ''
 
                         <div class="main-card mb-3 card">
                             <div class="card-body p-4">
-                                <div class="mb-4 text-center">
-                                    <h2 class="card-title mb-1"><?= Html::encode($title) ?></h2>
-                                    <p class="text-muted mb-0"><?= Html::encode($cardSubtitle) ?></p>
-                                </div>
-
-                                <?php if ($flashHtml !== ''): ?>
-                                    <?= $flashHtml ?>
-                                <?php endif; ?>
-
-                                <?= $content ?>
-                            </div>
+                        <div class="mb-4 text-center">
+                            <h2 class="card-title mb-1"><?= Html::encode($title) ?></h2>
+                            <p class="text-muted mb-0"><?= Html::encode($cardSubtitle) ?></p>
                         </div>
 
-                        <div class="app-guest-footer">
-                            <?= Html::encode($applicationParams->name) ?> &middot; Accesso riservato
-                        </div>
+                        <?php if ($flashHtml !== ''): ?>
+                            <?= $flashHtml ?>
+                        <?php endif; ?>
+
+                        <?= $content ?>
+                    </div>
+                </div>
                     </div>
                 </div>
             </div>
