@@ -1,13 +1,14 @@
 ---
+# Nessun task richiede root: l'utente deploy è nel gruppo docker e il sudo
+# sul VPS richiede password (usare --ask-become-pass nei playbook di sistema).
 - name: Check Yii3 VPS status
   hosts: vps
-  become: true
+  become: false
   gather_facts: true
 
   tasks:
-    - name: Check current user without become
+    - name: Check current user
       ansible.builtin.command: whoami
-      become: false
       changed_when: false
 
     - name: Check Docker installed
@@ -82,5 +83,13 @@
       changed_when: false
 
     - name: Check local app health
-      ansible.builtin.command: curl -fsS http://127.0.0.1:8080
+      ansible.builtin.command: >-
+        curl -fsS -o /dev/null -w '%{http_code}'
+        -H 'X-Forwarded-Proto: https' http://127.0.0.1:8080/login
+      register: app_health
       changed_when: false
+
+    - name: Assert app responds 200
+      ansible.builtin.assert:
+        that:
+          - app_health.stdout == '200'

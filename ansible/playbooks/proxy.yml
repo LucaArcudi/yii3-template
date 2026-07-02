@@ -1,0 +1,51 @@
+---
+# Deploya il reverse proxy caddy-docker-proxy (TLS automatico via label).
+# Non richiede root: l'utente deploy è nel gruppo docker.
+- name: Deploy Caddy reverse proxy
+  hosts: vps
+  become: false
+  gather_facts: false
+
+  vars:
+    proxy_dir: /home/deploy/caddy-proxy
+
+  tasks:
+    - name: Check caddy_public network
+      ansible.builtin.command: docker network inspect caddy_public
+      register: caddy_net
+      failed_when: false
+      changed_when: false
+
+    - name: Create caddy_public network
+      ansible.builtin.command: docker network create caddy_public
+      when: caddy_net.rc != 0
+
+    - name: Ensure proxy directory
+      ansible.builtin.file:
+        path: "{{ proxy_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Install proxy compose file
+      ansible.builtin.copy:
+        src: ../../docker/proxy/compose.yml
+        dest: "{{ proxy_dir }}/compose.yml"
+        mode: "0644"
+
+    - name: Start proxy
+      ansible.builtin.command: docker compose up -d
+      args:
+        chdir: "{{ proxy_dir }}"
+      register: proxy_up
+      changed_when: >-
+        'Started' in proxy_up.stderr
+        or 'Created' in proxy_up.stderr
+        or 'Recreate' in proxy_up.stderr
+
+    - name: Proxy is listening on 80/443
+      ansible.builtin.shell: ss -ltn | grep -cE ':80 |:443 '
+      register: listeners
+      retries: 6
+      delay: 5
+      until: listeners.stdout | int >= 2
+      changed_when: false

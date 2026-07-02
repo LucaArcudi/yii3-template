@@ -44,10 +44,13 @@ services:
       - app_internal
     volumes:
       - db_data:/var/lib/mysql
-      - ../../database/migrations/release_1_0_2.sql:/docker-entrypoint-initdb.d/00-release_1_0_2.sql:ro
-      - ../../database/migrations/release_1_0_0.sql:/docker-entrypoint-initdb.d/01-release_1_0_0.sql:ro
-      - ../../database/migrations/release_1_0_1.sql:/docker-entrypoint-initdb.d/02-release_1_0_1.sql:ro
-      - ../../database/seeders/release_1_0_0.sql:/docker-entrypoint-initdb.d/03-release_1_0_0.sql:ro
+      # NB: MySQL esegue gli script di initdb.d in ordine alfabetico e solo alla
+      # prima inizializzazione del volume: le migration devono precedere il seeder
+      # e rispettare l'ordine di release.
+      - ../../database/migrations/release_1_0_0.sql:/docker-entrypoint-initdb.d/00-release_1_0_0.sql:ro
+      - ../../database/migrations/release_1_0_1.sql:/docker-entrypoint-initdb.d/01-release_1_0_1.sql:ro
+      - ../../database/migrations/release_1_0_2.sql:/docker-entrypoint-initdb.d/02-release_1_0_2.sql:ro
+      - ../../database/seeders/release_1_0_0.sql:/docker-entrypoint-initdb.d/03-seed-release_1_0_0.sql:ro
     restart: unless-stopped
 
 volumes:

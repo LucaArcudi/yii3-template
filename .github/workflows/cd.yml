@@ -30,6 +30,21 @@ jobs:
           chmod 600 ~/.ssh/vps_key
           ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
 
+      - name: Update repo files on VPS
+        run: |
+          ssh -i ~/.ssh/vps_key -o IdentitiesOnly=yes -o BatchMode=yes "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" << 'EOF'
+            set -euo pipefail
+
+            # Senza questo allineamento il deploy aggiorna solo l'immagine:
+            # compose, migration e config sul VPS resterebbero alla versione vecchia.
+            git config --global --get-all safe.directory 2>/dev/null | grep -qx /opt/yii3 \
+              || git config --global --add safe.directory /opt/yii3
+
+            git -C /opt/yii3 fetch origin main
+            git -C /opt/yii3 merge --ff-only origin/main
+            git -C /opt/yii3 log -1 --oneline
+          EOF
+
       - name: Backup DB on VPS
         run: |
           ssh -i ~/.ssh/vps_key -o IdentitiesOnly=yes -o BatchMode=yes "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" << 'EOF'
@@ -66,7 +81,7 @@ jobs:
               --env-file .env.prod \
               -f docker/prod/compose.yml \
               -f docker/prod/compose.local.yml \
-              up -d
+              up -d --wait --wait-timeout 120
 
             docker compose \
               --env-file .env.prod \
@@ -74,5 +89,14 @@ jobs:
               -f docker/prod/compose.local.yml \
               ps
 
-            curl -I http://127.0.0.1:8080
+            # -f fa fallire il deploy su HTTP >= 400; i retry coprono i secondi
+            # di avvio del container appena ricreato. X-Forwarded-Proto simula
+            # il proxy TLS: senza, il cookie Secure di sessione risponde 500.
+            curl -fsS -m 10 \
+              --retry 12 --retry-delay 5 --retry-all-errors \
+              -H 'X-Forwarded-Proto: https' \
+              -o /dev/null \
+              http://127.0.0.1:8080/login
+
+            echo "Health check OK"
           EOF

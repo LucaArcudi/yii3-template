@@ -1,0 +1,71 @@
+---
+# Configura l'app di produzione dietro il proxy Caddy (TLS):
+# PROD_HOST, override locale minimo, ricreazione container e health check.
+# Non richiede root. (Prossimo step: .env.prod templato con ansible-vault.)
+- name: Configure app behind Caddy TLS proxy
+  hosts: vps
+  become: false
+  gather_facts: false
+
+  vars:
+    prod_host: yii3-template.duckdns.org
+    project_dir: /opt/yii3
+    compose_cmd: >-
+      docker compose --env-file .env.prod
+      -f docker/prod/compose.yml -f docker/prod/compose.local.yml
+
+  tasks:
+    - name: Set PROD_HOST in .env.prod
+      ansible.builtin.lineinfile:
+        path: "{{ project_dir }}/.env.prod"
+        regexp: '^PROD_HOST='
+        line: "PROD_HOST={{ prod_host }}"
+
+    - name: Write compose.local.yml (loopback + trusted proxy headers)
+      ansible.builtin.copy:
+        dest: "{{ project_dir }}/docker/prod/compose.local.yml"
+        mode: "0644"
+        content: |
+          services:
+            app:
+              # Dietro il proxy Caddy (TLS su {{ prod_host }}), bind loopback
+              # dal compose base. FrankenPHP non traduce X-Forwarded-Proto in
+              # HTTPS per PHP: finché l'app non risolve gli header forwarded
+              # (yiisoft/proxy-middleware) la sessione non può esigere il
+              # flag Secure. Mitigazione: HSTS iniettato dal proxy.
+              environment:
+                SESSION_COOKIE_SECURE: "false"
+              labels:
+                # Valore a token singolo: con spazi caddy-docker-proxy lo
+                # interpreterebbe come find/replace del header.
+                caddy.header.Strict-Transport-Security: "max-age=31536000"
+
+            db:
+              ports:
+                - "127.0.0.1:3307:3306"
+
+    - name: Recreate app container
+      ansible.builtin.command: "{{ compose_cmd }} up -d app"
+      args:
+        chdir: "{{ project_dir }}"
+      register: up_result
+      changed_when: "'Started' in up_result.stderr or 'Recreate' in up_result.stderr"
+
+    - name: Wait for app health on loopback
+      ansible.builtin.command: >-
+        curl -fsS -o /dev/null -w '%{http_code}'
+        -H 'X-Forwarded-Proto: https' http://127.0.0.1:8080/login
+      register: health
+      retries: 12
+      delay: 5
+      until: health.stdout == '200'
+      changed_when: false
+
+    - name: Check HTTPS through the proxy
+      ansible.builtin.command: >-
+        curl -fsS -o /dev/null -w '%{http_code}' https://{{ prod_host }}/login
+      register: https_health
+      retries: 12
+      delay: 5
+      until: https_health.stdout == '200'
+      changed_when: false
