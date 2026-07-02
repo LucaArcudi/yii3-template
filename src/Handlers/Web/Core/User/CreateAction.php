@@ -8,6 +8,7 @@ use App\Data\Core\Role\RoleRepository;
 use App\Data\Core\User\UserInput;
 use App\Data\Core\User\UserPolicy;
 use App\Data\Core\User\UserRepository;
+use App\Helpers\Translate;
 use App\Params\Core\AuthParams;
 use App\Services\Core\CurrentActorProvider;
 use App\Services\Core\PasswordHasher;
@@ -53,7 +54,7 @@ final readonly class CreateAction
                 && $input->email !== ''
                 && $this->userRepository->emailExists($input->email)
             ) {
-                $errors['email'][] = 'Esiste gia un utente con questa email.';
+                $errors['email'][] = Translate::t('Esiste gia un utente con questa email.');
             }
 
             if ($errors === []) {
@@ -66,7 +67,7 @@ final readonly class CreateAction
                 $user->passwordExpiresAt = $this->authParams->passwordExpiresAt($passwordChangedAt);
 
                 $id = $this->userRepository->createWithRoles($user, $input->roleIds);
-                $this->flash->set('success', 'Utente creato con successo.');
+                $this->flash->set('success', Translate::t('Utente creato con successo.'));
 
                 return $this->webAction->redirectToView('user', $id);
             }
@@ -96,13 +97,13 @@ final readonly class CreateAction
     private function validateRoleSelection(UserInput $input, array $errors): array
     {
         if ($input->hasInvalidRoleSelection()) {
-            $errors['roleIds'][] = 'La selezione dei ruoli non e valida.';
+            $errors['roleIds'][] = Translate::t('La selezione dei ruoli non e valida.');
         }
 
         $existingRoleIds = $this->roleRepository->findExistingIds($input->roleIds);
 
         if (count($existingRoleIds) !== count($input->roleIds)) {
-            $errors['roleIds'][] = 'Uno o piu ruoli selezionati non esistono piu.';
+            $errors['roleIds'][] = Translate::t('Uno o piu ruoli selezionati non esistono piu.');
         }
 
         return $errors;

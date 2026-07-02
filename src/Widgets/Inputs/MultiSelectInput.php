@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Widgets\Inputs;
 
+use App\Helpers\Translate;
 use Yiisoft\Html\Html;
 
 use function array_key_exists;
@@ -33,7 +34,7 @@ final class MultiSelectInput
         $fieldId = self::buildFieldId($name);
         $labelId = $fieldId . '-label';
         $listId = $fieldId . '-listbox';
-        $placeholder ??= 'Seleziona uno o piu elementi';
+        $placeholder ??= Translate::t('Seleziona uno o piu elementi');
 
         $resolvedInputAttributes = InputValidation::inputAttributes('select', $inputAttributes, $validationRules);
         unset($resolvedInputAttributes['multiple'], $resolvedInputAttributes['name'], $resolvedInputAttributes['id']);
@@ -87,14 +88,14 @@ final class MultiSelectInput
                 listId: $listId,
                 placeholder: $placeholder,
                 empty: $options === [],
-                emptyLabel: 'Nessun ruolo disponibile.',
+                emptyLabel: Translate::t('Nessun ruolo disponibile.'),
             )
             . (string) $nativeSelect,
             [
                 'class' => 'app-multi-select',
                 'data-multi-select' => 'true',
                 'data-placeholder' => $placeholder,
-                'data-empty-options-label' => 'Nessun ruolo disponibile.',
+                'data-empty-options-label' => Translate::t('Nessun ruolo disponibile.'),
             ],
         )->encode(false);
         $html .= self::renderFeedback($validationErrors);

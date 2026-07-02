@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Data\Mes\Task\TaskEntity;
 use App\Data\Mes\Task\TaskInput;
+use App\Helpers\Translate;
 use App\Widgets\BackButton;
 use App\Widgets\Forms\FormCard;
 use App\Widgets\Forms\FormTheme;
@@ -29,13 +30,13 @@ $action = $mode === 'update'
     ? $urlGenerator->generate('task/update', ['id' => (int) $input->id])
     : $urlGenerator->generate('task/create');
 
-$title = $mode === 'update' ? 'Modifica task' : 'Nuova task';
+$title = $mode === 'update' ? Translate::t('Modifica task') : Translate::t('Nuova task');
 
 $this->setTitle($title);
 $this->setParameter('pageIcon', 'pe-7s-note2');
 $this->setParameter('breadcrumbs', [
-    ['label' => 'Dashboard', 'url' => '/'],
-    ['label' => 'Tasks', 'url' => '/task'],
+    ['label' => Translate::t('Dashboard'), 'url' => '/'],
+    ['label' => Translate::t('Tasks'), 'url' => '/task'],
     ['label' => $title],
 ]);
 $this->setParameter('pageActions', BackButton::render($backUrl));
@@ -53,9 +54,9 @@ if (($errors[''] ?? []) !== []) {
 
 $form .= TextInput::render(
     name: 'title',
-    label: 'Titolo',
+    label: Translate::t('Titolo'),
     value: (string) $input->title,
-    placeholder: 'Inserisci un titolo chiaro',
+    placeholder: Translate::t('Inserisci un titolo chiaro'),
     icon: 'fa-solid fa-pen',
     validationRules: $validationRules['title'] ?? [],
     validationErrors: $errors['title'] ?? [],
@@ -64,9 +65,9 @@ $form .= TextInput::render(
 
 $form .= TextareaInput::render(
     name: 'description',
-    label: 'Descrizione',
+    label: Translate::t('Descrizione'),
     value: (string) $input->description,
-    placeholder: 'Descrivi obiettivo, note operative o contesto utile',
+    placeholder: Translate::t('Descrivi obiettivo, note operative o contesto utile'),
     icon: 'fa-solid fa-align-left',
     inputAttributes: ['rows' => 6],
     validationRules: $validationRules['description'] ?? [],
@@ -78,7 +79,7 @@ $form .= '<div class="row g-3">';
 $form .= '<div class="col-12 col-lg-6">';
 $form .= DateInput::render(
     name: 'start_date',
-    label: 'Data inizio',
+    label: Translate::t('Data inizio'),
     value: $input->startDate,
     icon: 'fa-regular fa-calendar',
     validationRules: $validationRules['startDate'] ?? [],
@@ -89,7 +90,7 @@ $form .= '</div>';
 $form .= '<div class="col-12 col-lg-6">';
 $form .= DateInput::render(
     name: 'end_date',
-    label: 'Data fine',
+    label: Translate::t('Data fine'),
     value: $input->endDate,
     icon: 'fa-regular fa-calendar-check',
     validationRules: $validationRules['endDate'] ?? [],
@@ -101,10 +102,10 @@ $form .= '</div>';
 
 $form .= SelectInput::render(
     name: 'status',
-    label: 'Stato',
+    label: Translate::t('Stato'),
     value: (string) ($input->status ?? TaskEntity::STATUS_TODO),
     options: TaskEntity::statusOptions(),
-    prompt: 'Seleziona lo stato',
+    prompt: Translate::t('Seleziona lo stato'),
     icon: 'fa-solid fa-signal',
     validationRules: $validationRules['status'] ?? [],
     validationErrors: $errors['status'] ?? [],
@@ -112,7 +113,7 @@ $form .= SelectInput::render(
 );
 
 $form .= '<div class="app-form-actions mt-4">';
-$form .= Field::submitButton('Salva')->addButtonClass('px-4');
+$form .= Field::submitButton(Translate::t('Salva'))->addButtonClass('px-4');
 $form .= '</div>';
 
 $form .= '</form>';

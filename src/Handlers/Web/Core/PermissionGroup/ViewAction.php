@@ -9,6 +9,7 @@ use App\Data\Core\Log\LogReader;
 use App\Data\Core\Permission\PermissionGroupPresenter;
 use App\Data\Core\Permission\PermissionGroupPolicy;
 use App\Data\Core\Permission\PermissionGroupReader;
+use App\Helpers\Translate;
 use App\Services\Core\WebActionService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -38,7 +39,7 @@ final readonly class ViewAction
         $row = $this->permissionGroupReader->getView($id);
 
         if ($row === null) {
-            return $this->webAction->notFound('Gruppo permessi non trovato.');
+            return $this->webAction->notFound(Translate::t('Gruppo permessi non trovato.'));
         }
 
         $navigation = $this->webAction->viewNavigation('permission-group', $id, $request, '/permission-group');

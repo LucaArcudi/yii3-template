@@ -6,6 +6,7 @@ namespace App\Widgets;
 
 use App\Data\Core\Notification\NotificationPresenter;
 use App\Data\Core\Notification\NotificationReader;
+use App\Helpers\Translate;
 use Yiisoft\Html\Html;
 use Yiisoft\Yii\View\Renderer\Csrf;
 
@@ -20,7 +21,7 @@ final class NotificationDropdown
             : '';
 
         $list = $items === []
-            ? (string) Html::div('Nessuna notifica recente.', ['class' => 'app-notification-menu__empty'])
+            ? (string) Html::div(Translate::t('Nessuna notifica recente.'), ['class' => 'app-notification-menu__empty'])
             : implode('', array_map(static function (array $row): string {
                 $notification = new NotificationPresenter($row);
                 $description = $notification->description();
@@ -28,7 +29,7 @@ final class NotificationDropdown
                 $title = (string) Html::span($notification->title(), ['class' => 'app-notification-menu__item-title']);
 
                 if ($isUnread) {
-                    $title .= (string) Html::span('Da leggere', ['class' => 'app-notification-menu__unread-label']);
+                    $title .= (string) Html::span(Translate::t('Da leggere'), ['class' => 'app-notification-menu__unread-label']);
                 }
 
                 return (string) Html::a(
@@ -52,11 +53,11 @@ final class NotificationDropdown
         $readAll = $unreadCount > 0
             ? '<form method="post" action="/notification/read-all" class="m-0">'
                 . $csrf->hiddenInput()
-                . (string) Html::button('Segna tutte come lette', ['type' => 'submit', 'class' => 'dropdown-item app-notification-menu__footer-action'])
+                . (string) Html::button(Translate::t('Segna tutte come lette'), ['type' => 'submit', 'class' => 'dropdown-item app-notification-menu__footer-action'])
                 . '</form>'
             : '';
         $indexLink = $canAccessIndex
-            ? (string) Html::a('Vedi tutte', '/notification', ['class' => 'dropdown-item app-notification-menu__footer-action'])
+            ? (string) Html::a(Translate::t('Vedi tutte'), '/notification', ['class' => 'dropdown-item app-notification-menu__footer-action'])
             : '';
         $footerContent = $readAll . $indexLink;
         $footer = $footerContent !== ''
@@ -67,7 +68,7 @@ final class NotificationDropdown
             (string) Html::button(
                 (string) Html::i('', ['class' => 'pe-7s-bell'])
                 . $badge
-                . (string) Html::span('Notifiche', ['class' => 'visually-hidden']),
+                . (string) Html::span(Translate::t('Notifiche'), ['class' => 'visually-hidden']),
                 [
                     'type' => 'button',
                     'class' => ['btn', 'app-notification-menu__toggle'],
@@ -79,8 +80,8 @@ final class NotificationDropdown
             . (string) Html::div(
                 (string) Html::div(
                     (string) Html::div(
-                        (string) Html::div('Notifiche', ['class' => 'menu-header-title'])
-                        . (string) Html::div($unreadCount . ' non lette', ['class' => 'menu-header-subtitle']),
+                        (string) Html::div(Translate::t('Notifiche'), ['class' => 'menu-header-title'])
+                        . (string) Html::div(Translate::t('{count} non lette', ['count' => $unreadCount]), ['class' => 'menu-header-subtitle']),
                         ['class' => 'dropdown-menu-header-inner bg-mean-fruit'],
                     )->encode(false),
                     ['class' => 'dropdown-menu-header'],

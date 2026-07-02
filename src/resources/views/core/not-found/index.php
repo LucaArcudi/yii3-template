@@ -1,20 +1,21 @@
 <?php
 declare(strict_types=1);
 
+use App\Helpers\Translate;
 use Yiisoft\Yii\View\WebView;
 
 /** @var WebView $this */
-$this->setTitle('404 Not Found');
+$this->setTitle(Translate::t('Pagina non trovata'));
 $this->setParameter('pageIcon', 'pe-7s-way');
 $this->setParameter('breadcrumbs', [
     ['label' => 'Dashboard', 'url' => '/'],
-    ['label' => '404 Not Found'],
+    ['label' => Translate::t('Pagina non trovata')],
 ]);
 ?>
 <div class="not-found-wrapper">
-    <h1>404 Not Found</h1>
-    <p>The page you are looking for could not be found.</p> 
-    <a href="/">Go to Home</a>
+    <h1>404 - <?= Translate::t('Pagina non trovata') ?></h1>
+    <p><?= Translate::t('La pagina che cerchi non esiste o non è più disponibile.') ?></p>
+    <a href="/"><?= Translate::t('Torna alla home') ?></a>
 </div>
 
 <style>

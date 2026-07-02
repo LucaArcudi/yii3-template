@@ -14,4 +14,5 @@ return [
     '@vendor' => '@root/vendor',
     '@resources' => '@src/resources',
     '@views' => '@resources/views',
+    '@messages' => '@resources/messages',
 ];

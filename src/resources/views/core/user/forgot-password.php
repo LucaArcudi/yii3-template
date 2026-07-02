@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Helpers\Translate;
 use App\Widgets\Forms\FormTheme;
 use App\Widgets\Inputs\EmailInput;
 use Yiisoft\Form\PureField\Field;
@@ -14,14 +15,14 @@ use Yiisoft\View\WebView;
  * @var bool $validated
  */
 
-$this->setTitle('Password dimenticata');
+$this->setTitle(Translate::t('Password dimenticata'));
 FormTheme::boot();
 
 $validationRules = $input->getRules();
 ?>
 <div class="text-center mb-4">
-    <h3 class="mb-1">Recupera password</h3>
-    <p class="text-muted mb-0">Ti invieremo un link per impostarne una nuova.</p>
+    <h3 class="mb-1"><?= Translate::t('Recupera password') ?></h3>
+    <p class="text-muted mb-0"><?= Translate::t('Ti invieremo un link per impostarne una nuova.') ?></p>
 </div>
 
 <form method="post" action="/forgot-password" class="app-validation-form" data-validated="<?= $validated ? '1' : '0' ?>">
@@ -34,7 +35,7 @@ $validationRules = $input->getRules();
         name: 'email',
         label: 'Email',
         value: (string) $input->email,
-        placeholder: 'nome@azienda.it',
+        placeholder: Translate::t('nome@azienda.it'),
         icon: 'fa-regular fa-envelope',
         inputAttributes: [
             'autocomplete' => 'email',
@@ -46,12 +47,12 @@ $validationRules = $input->getRules();
     ) ?>
 
     <div class="d-grid">
-        <?= Field::submitButton('Invia link')->addButtonClass('w-100') ?>
+        <?= Field::submitButton(Translate::t('Invia link'))->addButtonClass('w-100') ?>
     </div>
 </form>
 
 <div class="text-center text-muted mt-3">
-    <a href="/login">Torna al login</a>
+    <a href="/login"><?= Translate::t('Torna al login') ?></a>
     <span class="mx-1">·</span>
-    <a href="/forgot-email">Email dimenticata?</a>
+    <a href="/forgot-email"><?= Translate::t('Email dimenticata?') ?></a>
 </div>

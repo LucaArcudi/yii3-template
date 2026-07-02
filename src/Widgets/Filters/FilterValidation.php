@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Widgets\Filters;
 
+use App\Helpers\Translate;
 use App\Widgets\Inputs\InputValidation;
 use Yiisoft\Validator\Rule\In;
 use Yiisoft\Validator\Rule\Integer;
@@ -42,7 +43,7 @@ final class FilterValidation
 
         if ($allowedValues !== []) {
             $attributes['data-filter-allowed-values'] = json_encode($allowedValues) ?: '[]';
-            $attributes['data-filter-validation-message'] = self::INVALID_VALUE_MESSAGE;
+            $attributes['data-filter-validation-message'] = Translate::t(self::INVALID_VALUE_MESSAGE);
         }
 
         return $attributes;

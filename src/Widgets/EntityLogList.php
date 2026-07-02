@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Widgets;
 
 use App\Data\Core\Log\LogPresenter;
+use App\Helpers\Translate;
 use Yiisoft\Html\Html;
 
 final class EntityLogList
@@ -14,7 +15,7 @@ final class EntityLogList
         if ($logs === []) {
             return Card::render(
                 title: 'Log',
-                body: (string) Html::div('Nessun log disponibile per questo record.', ['class' => 'alert alert-light mb-0']),
+                body: (string) Html::div(Translate::t('Nessun log disponibile per questo record.'), ['class' => 'alert alert-light mb-0']),
                 variant: 'secondary',
                 icon: 'fa-solid fa-clock-rotate-left',
             );
@@ -38,15 +39,15 @@ final class EntityLogList
             $body .= '<div id="' . Html::encode($id) . '" class="accordion-collapse collapse" aria-labelledby="'
                 . Html::encode($id . '-heading') . '" data-bs-parent="#entity-log-accordion">';
             $body .= '<div class="accordion-body">';
-            $body .= self::meta('Sorgente', $log->source());
-            $body .= self::meta('Metodo', $log->method());
+            $body .= self::meta(Translate::t('Sorgente'), $log->source());
+            $body .= self::meta(Translate::t('Metodo'), $log->method());
             $body .= self::meta('URL', $log->url());
-            $body .= self::meta('Comando console', $log->consoleCommand());
+            $body .= self::meta(Translate::t('Comando console'), $log->consoleCommand());
             $body .= self::meta('IP', $log->ipAddress());
             $body .= self::codeBlock('Query', $log->query(), 'sql');
-            $body .= self::codeBlock('Parametri SQL', $log->params(), 'json');
-            $body .= self::codeBlockIfNotEmpty('Parametri richiesta', $log->requestQuery(), 'json');
-            $body .= self::codeBlockIfNotEmpty('Body richiesta', $log->requestBody(), 'json');
+            $body .= self::codeBlock(Translate::t('Parametri SQL'), $log->params(), 'json');
+            $body .= self::codeBlockIfNotEmpty(Translate::t('Parametri richiesta'), $log->requestQuery(), 'json');
+            $body .= self::codeBlockIfNotEmpty(Translate::t('Body richiesta'), $log->requestBody(), 'json');
             $body .= self::meta('Entity createdAt', $log->entityCreatedAt());
             $body .= self::meta('Entity updatedAt', $log->entityUpdatedAt());
             $body .= '</div></div></div>';

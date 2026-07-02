@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Widgets\Inputs;
 
+use App\Helpers\Translate;
 use Yiisoft\Html\Html;
 
 final class CheckboxGroupInput
@@ -35,7 +36,7 @@ final class CheckboxGroupInput
 
         if ($groups === []) {
             $html .= (string) Html::div(
-                'Nessun permesso disponibile. Crea prima almeno un permesso associabile.',
+                Translate::t('Nessun permesso disponibile. Crea prima almeno un permesso associabile.'),
                 ['class' => 'alert alert-light mb-0'],
             );
         } else {

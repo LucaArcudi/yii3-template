@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Widgets\Filters;
 
+use App\Helpers\Translate;
 use Yiisoft\Html\Html;
 use Yiisoft\Yii\DataView\Filter\Widget\Context;
 use Yiisoft\Yii\DataView\Filter\Widget\FilterWidget;
@@ -53,7 +54,7 @@ class DateFilter extends FilterWidget
             inputAttributes: [
                 'autocomplete' => 'off',
                 'data-date-picker' => 'true',
-                'data-date-validation-message' => 'Inserisci una data valida nel formato YYYY-MM-DD.',
+                'data-date-validation-message' => Translate::t('Inserisci una data valida nel formato YYYY-MM-DD.'),
                 'id' => $id,
                 'inputmode' => 'numeric',
                 'class' => trim($inputClass . ' app-form-input__control app-date-input'),

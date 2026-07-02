@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Widgets\Filters;
 
+use App\Helpers\Translate;
 use InvalidArgumentException;
 use Yiisoft\Html\Html;
 use Yiisoft\Yii\DataView\Filter\Widget\Context;
@@ -98,7 +99,7 @@ class FilterField
                 options: is_array($widgetOptions['options'] ?? null)
                     ? $widgetOptions['options']
                     : (is_array($field['options'] ?? null) ? $field['options'] : []),
-                placeholder: $placeholder !== '' ? $placeholder : 'Seleziona uno o piu elementi',
+                placeholder: $placeholder !== '' ? $placeholder : Translate::t('Seleziona uno o piu elementi'),
                 icon: $icon,
                 id: $id,
                 selectClass: $inputClass !== '' ? $inputClass : 'form-select',

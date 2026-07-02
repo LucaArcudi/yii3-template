@@ -7,6 +7,7 @@ namespace App\Handlers\Web\Mes\Task;
 use App\Data\Mes\Task\TaskInput;
 use App\Data\Mes\Task\TaskPolicy;
 use App\Data\Mes\Task\TaskRepository;
+use App\Helpers\Translate;
 use App\Services\Core\CurrentActorProvider;
 use App\Services\Core\WebActionService;
 use Psr\Http\Message\ResponseInterface;
@@ -38,7 +39,7 @@ final readonly class CreateAction
 
             if ($result->isValid()) {
                 $id = $this->taskRepository->create($input->toTask(actorId: $this->currentActorProvider->id()));
-                $this->flash->set('success', 'Task creata con successo.');
+                $this->flash->set('success', Translate::t('Task creata con successo.'));
 
                 return $this->webAction->redirectToView('task', $id);
             }

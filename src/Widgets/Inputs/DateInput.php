@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Widgets\Inputs;
 
+use App\Helpers\Translate;
 use Yiisoft\Form\PureField\Field;
 use Yiisoft\Html\Html;
 
@@ -32,7 +33,7 @@ final class DateInput extends BaseInput
             [
                 'autocomplete' => 'off',
                 'data-date-picker' => 'true',
-                'data-date-validation-message' => 'Inserisci una data valida nel formato YYYY-MM-DD.',
+                'data-date-validation-message' => Translate::t('Inserisci una data valida nel formato YYYY-MM-DD.'),
                 'inputmode' => 'numeric',
                 ...($placeholder !== null ? ['title' => $placeholder] : []),
                 ...$inputAttributes,

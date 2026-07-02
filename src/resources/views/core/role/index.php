@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Data\Core\Role\RolePresenter;
+use App\Helpers\Translate;
 use App\Widgets\Crud\CrudActions;
 use App\Widgets\DataView\Grid;
 use App\Widgets\Filters\FilterBar;
@@ -22,35 +23,35 @@ use Yiisoft\Yii\View\Renderer\Csrf;
 /** @var bool $canUpdate */
 /** @var bool $canDelete */
 
-$this->setTitle('Ruoli');
+$this->setTitle(Translate::t('Ruoli'));
 $this->setParameter('pageIcon', 'pe-7s-id');
 $this->setParameter('breadcrumbs', [
-    ['label' => 'Dashboard', 'url' => '/'],
-    ['label' => 'Ruoli'],
+    ['label' => Translate::t('Dashboard'), 'url' => '/'],
+    ['label' => Translate::t('Ruoli')],
 ]);
 
 $filterFields = [
     [
         'name' => 'name',
-        'label' => 'Nome',
+        'label' => Translate::t('Nome'),
         'widget' => 'textFilter',
-        'placeholder' => 'Cerca per nome',
+        'placeholder' => Translate::t('Cerca per nome'),
         'icon' => 'fa-solid fa-magnifying-glass',
         'columnClass' => 'col-12 col-lg-4',
         'validationRules' => $filterRules['name'] ?? [],
     ],
     [
         'name' => 'code',
-        'label' => 'Codice',
+        'label' => Translate::t('Codice'),
         'widget' => 'textFilter',
-        'placeholder' => 'Es. ADMIN',
+        'placeholder' => Translate::t('Es. ADMIN'),
         'icon' => 'fa-solid fa-id-badge',
         'columnClass' => 'col-12 col-lg-4',
         'validationRules' => $filterRules['code'] ?? [],
     ],
     [
         'name' => 'created_at',
-        'label' => 'Creato il',
+        'label' => Translate::t('Creato il'),
         'widget' => 'dateFilter',
         'placeholder' => 'YYYY-MM-DD',
         'icon' => 'fa-regular fa-calendar',
@@ -61,7 +62,7 @@ $filterFields = [
 
 $createButton = $canCreate
     ? '<a href="/role/create?_return=' . rawurlencode($currentUrl) . '" class="btn btn-primary btn-shadow btn-sm">'
-        . '<i class="fa-solid fa-plus me-1"></i>Nuovo ruolo'
+        . '<i class="fa-solid fa-plus me-1"></i>' . Html::encode(Translate::t('Nuovo ruolo'))
         . '</a>'
     : '';
 
@@ -80,13 +81,13 @@ $filterBar = FilterBar::render(
     action: '/role',
     filters: $filters,
     fields: $filterFields,
-    title: 'Filtri ruoli',
+    title: Translate::t('Filtri ruoli'),
     icon: 'fa-solid fa-filter',
 );
 $roleModals = ['' => '']; // Inizializzato con un elemento vuoto per evitare problemi di implode in caso di array vuoto
 
 $grid = Grid::render(
-    title: 'Elenco ruoli',
+    title: Translate::t('Elenco ruoli'),
     reader: $reader,
     toolbar: $toolbar,
     variant: 'warning',
@@ -94,22 +95,22 @@ $grid = Grid::render(
     columns: [
         new DataColumn(
             property: 'name',
-            header: 'Nome',
+            header: Translate::t('Nome'),
             bodyAttributes: ['class' => 'text-wrap'],
             content: static function (array|object $row): string {
                 $role = new RolePresenter($row);
 
                 return sprintf(
-                    '<div class="app-task-cell"><div class="app-task-cell__title">%s</div><div class="app-task-cell__meta">Ruolo #%d</div></div>',
+                    '<div class="app-task-cell"><div class="app-task-cell__title">%s</div><div class="app-task-cell__meta">%s</div></div>',
                     htmlspecialchars($role->name(), ENT_QUOTES, 'UTF-8'),
-                    (int) $role->id(),
+                    Html::encode(Translate::t('Ruolo #{id}', ['id' => (int) $role->id()])),
                 );
             },
             encodeContent: false,
         ),
         new DataColumn(
             property: 'code',
-            header: 'Codice',
+            header: Translate::t('Codice'),
             bodyAttributes: ['class' => 'align-middle'],
             content: static function (array|object $row): string {
                 $role = new RolePresenter($row);
@@ -120,14 +121,14 @@ $grid = Grid::render(
         ),
         new DataColumn(
             property: 'created_at',
-            header: 'Creato il',
+            header: Translate::t('Creato il'),
             bodyAttributes: ['class' => 'align-middle'],
             content: static function (array|object $row): string {
                 return (new RolePresenter($row))->createdAt();
             },
         ),
         new DataColumn(
-            header: 'Azioni',
+            header: Translate::t('Azioni'),
             withSorting: false,
             headerAttributes: ['style' => 'width: 10rem;'],
             bodyAttributes: ['class' => 'align-middle'],
@@ -152,23 +153,23 @@ $grid = Grid::render(
                 if ($canDelete) {
                     $buttons[] = CrudActions::deleteTrigger($deleteModalId);
                     $deleteModalBody = CrudActions::deleteBody(
-                        'Stai eliminando il ruolo <strong>' . Html::encode($role->name()) . '</strong>. Dopo la conferma il record non sara piu recuperabile.',
+                        Translate::t('Stai eliminando il ruolo {name}. Dopo la conferma il record non sara piu recuperabile.', ['name' => '<strong>' . Html::encode($role->name()) . '</strong>']),
                         [
-                            'ID record' => '#' . $id,
-                            'Codice' => '<code>' . Html::encode($role->code()) . '</code>',
+                            Translate::t('ID record') => '#' . $id,
+                            Translate::t('Codice') => '<code>' . Html::encode($role->code()) . '</code>',
                         ],
                     );
 
                     $roleModals[$deleteModalId] = CrudActions::deleteModal(
                         id: $deleteModalId,
-                        title: 'Elimina ruolo',
+                        title: Translate::t('Elimina ruolo'),
                         action: '/role/delete/' . $id,
                         body: $deleteModalBody,
                         csrf: $csrf,
                     );
                 }
 
-                return CrudActions::group($buttons, 'Azioni ruolo #' . $id);
+                return CrudActions::group($buttons, Translate::t('Azioni ruolo #{id}', ['id' => $id]));
             },
             encodeContent: false,
         ),

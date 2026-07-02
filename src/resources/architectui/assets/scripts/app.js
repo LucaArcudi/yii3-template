@@ -1,4 +1,41 @@
 (() => {
+    const DOC_LANG = (document.documentElement.lang || 'it').toLowerCase().split('-')[0];
+    const I18N_MESSAGES = {
+        it: {
+            locale: 'it-IT',
+            clear: 'Svuota',
+            today: 'Oggi',
+            weekdaysShort: ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'],
+            noItemsAvailable: 'Nessun elemento disponibile.',
+            noOptionsAvailable: 'Nessuna opzione disponibile.',
+            selectedCount: (selected, total) => `${selected} di ${total} selezionati`,
+            invalidDate: 'Inserisci una data valida nel formato YYYY-MM-DD.',
+            invalidFilterValue: 'Valore filtro non valido.',
+            fieldsDoNotMatch: 'I campi non coincidono.',
+            characterLabel: (count) => (count === 1 ? 'carattere' : 'caratteri'),
+            exactLength: (length, unit) => `Deve contenere esattamente ${length} ${unit}.`,
+            minLength: (length, unit) => `Deve contenere almeno ${length} ${unit}.`,
+            maxLength: (length, unit) => `Deve contenere al massimo ${length} ${unit}.`,
+        },
+        en: {
+            locale: 'en-US',
+            clear: 'Clear',
+            today: 'Today',
+            weekdaysShort: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            noItemsAvailable: 'No items available.',
+            noOptionsAvailable: 'No options available.',
+            selectedCount: (selected, total) => `${selected} of ${total} selected`,
+            invalidDate: 'Enter a valid date in YYYY-MM-DD format.',
+            invalidFilterValue: 'Invalid filter value.',
+            fieldsDoNotMatch: 'Fields do not match.',
+            characterLabel: (count) => (count === 1 ? 'character' : 'characters'),
+            exactLength: (length, unit) => `Must contain exactly ${length} ${unit}.`,
+            minLength: (length, unit) => `Must contain at least ${length} ${unit}.`,
+            maxLength: (length, unit) => `Must contain at most ${length} ${unit}.`,
+        },
+    };
+    const I18N = I18N_MESSAGES[DOC_LANG] || I18N_MESSAGES.it;
+
     const FORM_SELECTOR = '.app-validation-form';
     const FIELD_SELECTOR = 'input, select, textarea';
     const MODAL_SELECTOR = '.app-modal';
@@ -248,7 +285,7 @@
         && left.getDate() === right.getDate()
     );
 
-    const monthLabel = (month) => new Intl.DateTimeFormat('it-IT', {
+    const monthLabel = (month) => new Intl.DateTimeFormat(I18N.locale, {
         month: 'long',
     }).format(new Date(2000, month, 1));
 
@@ -340,7 +377,7 @@
         const counter = document.createElement('span');
         counter.className = 'app-multi-select__counter';
         counter.dataset.singleSelectCounter = 'true';
-        counter.textContent = '0 di 0 selezionati';
+        counter.textContent = I18N.selectedCount(0, 0);
 
         const actions = document.createElement('div');
         actions.className = 'app-multi-select__actions';
@@ -349,7 +386,7 @@
         clearButton.type = 'button';
         clearButton.className = 'btn btn-link btn-sm app-multi-select__action';
         clearButton.dataset.singleSelectClear = 'true';
-        clearButton.textContent = 'Svuota';
+        clearButton.textContent = I18N.clear;
 
         actions.append(clearButton);
         toolbar.append(counter, actions);
@@ -463,7 +500,7 @@
         const weekdays = document.createElement('div');
         weekdays.className = 'app-date-picker__weekdays';
 
-        ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'].forEach((day) => {
+        I18N.weekdaysShort.forEach((day) => {
             const item = document.createElement('span');
             item.textContent = day;
             weekdays.append(item);
@@ -507,13 +544,13 @@
         todayButton.type = 'button';
         todayButton.className = 'app-date-picker__action';
         todayButton.dataset.datePickerToday = 'true';
-        todayButton.textContent = 'Oggi';
+        todayButton.textContent = I18N.today;
 
         const clearButton = document.createElement('button');
         clearButton.type = 'button';
         clearButton.className = 'app-date-picker__action';
         clearButton.dataset.datePickerClear = 'true';
-        clearButton.textContent = 'Svuota';
+        clearButton.textContent = I18N.clear;
 
         footer.append(todayButton, clearButton);
         popup.append(header, weekdays, days, footer);
@@ -768,7 +805,7 @@
         return Number.isFinite(parsed) ? parsed : null;
     };
 
-    const characterLabel = (count) => (count === 1 ? 'carattere' : 'caratteri');
+    const characterLabel = (count) => I18N.characterLabel(count);
 
     const setLengthValidity = (field, message) => {
         field.setCustomValidity(message);
@@ -802,21 +839,21 @@
         if (exactLength !== null && length !== exactLength) {
             return setLengthValidity(
                 field,
-                `Deve contenere esattamente ${exactLength} ${characterLabel(exactLength)}.`,
+                I18N.exactLength(exactLength, characterLabel(exactLength)),
             );
         }
 
         if (minLength !== null && length < minLength) {
             return setLengthValidity(
                 field,
-                `Deve contenere almeno ${minLength} ${characterLabel(minLength)}.`,
+                I18N.minLength(minLength, characterLabel(minLength)),
             );
         }
 
         if (maxLength !== null && length > maxLength) {
             return setLengthValidity(
                 field,
-                `Deve contenere al massimo ${maxLength} ${characterLabel(maxLength)}.`,
+                I18N.maxLength(maxLength, characterLabel(maxLength)),
             );
         }
 
@@ -837,7 +874,7 @@
         }
 
         field.setCustomValidity(
-            field.dataset.dateValidationMessage || 'Inserisci una data valida nel formato YYYY-MM-DD.',
+            field.dataset.dateValidationMessage || I18N.invalidDate,
         );
 
         return false;
@@ -859,7 +896,7 @@
             return true;
         }
 
-        field.setCustomValidity(field.dataset.filterValidationMessage || 'Valore filtro non valido.');
+        field.setCustomValidity(field.dataset.filterValidationMessage || I18N.invalidFilterValue);
 
         return false;
     };
@@ -885,7 +922,7 @@
         }
 
         if (field.value !== '' && matchField.value !== '' && field.value !== matchField.value) {
-            field.setCustomValidity(field.dataset.matchMessage || 'I campi non coincidono.');
+            field.setCustomValidity(field.dataset.matchMessage || I18N.fieldsDoNotMatch);
         }
     };
 
@@ -1084,7 +1121,7 @@
             summary.textContent = summaryText(selected.length, all.length);
             counter.textContent = all.length === 0
                 ? (root.dataset.emptyOptionsLabel || 'Nessun elemento disponibile.')
-                : `${selected.length} di ${all.length} selezionati`;
+                : I18N.selectedCount(selected.length, all.length);
 
             root.classList.toggle('is-disabled', nativeSelect.disabled);
             surface.setAttribute('aria-disabled', String(nativeSelect.disabled));
@@ -1115,7 +1152,7 @@
             if (all.length === 0) {
                 const emptyState = document.createElement('div');
                 emptyState.className = 'app-multi-select__empty';
-                emptyState.textContent = root.dataset.emptyOptionsLabel || 'Nessun elemento disponibile.';
+                emptyState.textContent = root.dataset.emptyOptionsLabel || I18N.noItemsAvailable;
                 list.append(emptyState);
             } else {
                 all.forEach((option) => {
@@ -1449,7 +1486,7 @@
             if (selectableOptions().length === 0) {
                 const emptyState = document.createElement('div');
                 emptyState.className = 'app-multi-select__empty';
-                emptyState.textContent = root.dataset.emptyOptionsLabel || 'Nessuna opzione disponibile.';
+                emptyState.textContent = root.dataset.emptyOptionsLabel || I18N.noOptionsAvailable;
                 list.append(emptyState);
                 return;
             }
@@ -1507,7 +1544,7 @@
             summary.textContent = summaryText(selected, availableOptions.length);
             counter.textContent = availableOptions.length === 0
                 ? (root.dataset.emptyOptionsLabel || 'Nessuna opzione disponibile.')
-                : `${selected !== null ? 1 : 0} di ${availableOptions.length} selezionati`;
+                : I18N.selectedCount(selected !== null ? 1 : 0, availableOptions.length);
 
             root.classList.toggle('is-disabled', nativeSelect.disabled);
             surface.setAttribute('aria-disabled', String(nativeSelect.disabled));

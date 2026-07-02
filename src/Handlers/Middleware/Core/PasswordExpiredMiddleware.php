@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Handlers\Middleware\Core;
 
 use App\Data\Core\User\UserRepository;
+use App\Helpers\Translate;
 use App\Services\Core\RememberedUrlService;
 use HttpSoft\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -57,7 +58,7 @@ final readonly class PasswordExpiredMiddleware implements MiddlewareInterface
             $this->rememberedUrl->rememberCurrent('auth.password_return', $request);
         }
 
-        $this->flash->set('warning', 'La password è scaduta: impostane una nuova per continuare.');
+        $this->flash->set('warning', Translate::t('La password è scaduta: impostane una nuova per continuare.'));
 
         return new RedirectResponse('/change-password?reason=expired');
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Data\Core\User;
 
 use App\Data\Core\BaseEntity;
+use App\Helpers\Translate;
 
 use function date;
 use function strtotime;
@@ -61,14 +62,14 @@ final class UserEntity extends BaseEntity
     public static function statusOptions(): array
     {
         return [
-            self::STATUS_ACTIVE => 'Attivo',
-            self::STATUS_INACTIVE => 'Inattivo',
+            self::STATUS_ACTIVE => Translate::t('Attivo'),
+            self::STATUS_INACTIVE => Translate::t('Inattivo'),
         ];
     }
 
     public function statusLabel(): string
     {
-        return self::statusOptions()[$this->status] ?? 'Sconosciuto';
+        return self::statusOptions()[$this->status] ?? Translate::t('Sconosciuto');
     }
 
     public function toArray(): array

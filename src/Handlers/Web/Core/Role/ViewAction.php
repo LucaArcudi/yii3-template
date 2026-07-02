@@ -10,6 +10,7 @@ use App\Data\Core\Log\LogReader;
 use App\Data\Core\Role\RolePolicy;
 use App\Data\Core\Role\RolePresenter;
 use App\Data\Core\Role\RoleReader;
+use App\Helpers\Translate;
 use App\Services\Core\WebActionService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -40,7 +41,7 @@ final readonly class ViewAction
         $row = $this->roleReader->getView($id);
 
         if ($row === null) {
-            return $this->webAction->notFound('Ruolo non trovato.');
+            return $this->webAction->notFound(Translate::t('Ruolo non trovato.'));
         }
 
         $navigation = $this->webAction->viewNavigation('role', $id, $request, '/role');

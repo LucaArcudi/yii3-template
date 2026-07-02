@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Data\Core\Log;
 
+use App\Helpers\Translate;
+
 use function date;
 use function json_decode;
 use function json_encode;
@@ -36,9 +38,9 @@ final readonly class LogPresenter
     public function actionLabel(): string
     {
         return match ($this->action()) {
-            EntityLogRepository::ACTION_CREATE => 'Creazione',
-            EntityLogRepository::ACTION_UPDATE => 'Modifica',
-            EntityLogRepository::ACTION_DELETE => 'Eliminazione',
+            EntityLogRepository::ACTION_CREATE => Translate::t('Creazione'),
+            EntityLogRepository::ACTION_UPDATE => Translate::t('Modifica'),
+            EntityLogRepository::ACTION_DELETE => Translate::t('Eliminazione'),
             default => $this->action(),
         };
     }
@@ -74,7 +76,7 @@ final readonly class LogPresenter
     {
         return match ((string) $this->get('source', 'web')) {
             'console' => 'Console',
-            'system' => 'Sistema',
+            'system' => Translate::t('Sistema'),
             default => 'Web',
         };
     }

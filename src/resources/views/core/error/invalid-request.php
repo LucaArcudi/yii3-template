@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Helpers\Translate;
 use Yiisoft\Html\Html;
 use Yiisoft\User\CurrentUser;
 use Yiisoft\View\WebView;
@@ -13,15 +14,15 @@ use Yiisoft\View\WebView;
 
 $isGuest = $currentUser->isGuest();
 $returnUrl = $isGuest ? '/login' : '/';
-$returnLabel = $isGuest ? 'Torna al login' : 'Torna alla dashboard';
+$returnLabel = $isGuest ? Translate::t('Torna al login') : Translate::t('Torna alla dashboard');
 
-$this->setTitle('Richiesta non valida');
-$this->setParameter('guestHeaderSubtitle', 'Sessione del modulo');
-$this->setParameter('guestCardSubtitle', 'Ricarica la pagina e riprova con un nuovo token di sicurezza.');
+$this->setTitle(Translate::t('Richiesta non valida'));
+$this->setParameter('guestHeaderSubtitle', Translate::t('Sessione del modulo'));
+$this->setParameter('guestCardSubtitle', Translate::t('Ricarica la pagina e riprova con un nuovo token di sicurezza.'));
 $this->setParameter('pageIcon', 'pe-7s-attention');
 $this->setParameter('breadcrumbs', [
-    ['label' => 'Dashboard', 'url' => '/'],
-    ['label' => 'Richiesta non valida'],
+    ['label' => Translate::t('Dashboard'), 'url' => '/'],
+    ['label' => Translate::t('Richiesta non valida')],
 ]);
 $this->setParameter(
     'pageActions',
@@ -38,10 +39,10 @@ $this->setParameter(
         <i class="fa-solid fa-triangle-exclamation"></i>
     </div>
     <div class="app-error-state__code">422</div>
-    <h1 class="app-error-state__title">Richiesta non valida</h1>
+    <h1 class="app-error-state__title"><?= Translate::t('Richiesta non valida') ?></h1>
     <p class="app-error-state__message">
-        Il modulo non è più valido, la pagina è stata inviata più volte, oppure la sessione è scaduta.
-        Ricarica la pagina e riprova.
+        <?= Translate::t('Il modulo non è più valido, la pagina è stata inviata più volte, oppure la sessione è scaduta.') ?>
+        <?= Translate::t('Ricarica la pagina e riprova.') ?>
     </p>
     <?= Html::a($returnLabel, $returnUrl, ['class' => 'btn btn-primary btn-shadow'])->render() ?>
 </div>

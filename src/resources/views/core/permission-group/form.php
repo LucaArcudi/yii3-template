@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Data\Core\Permission\PermissionGroupInput;
+use App\Helpers\Translate;
 use App\Widgets\BackButton;
 use App\Widgets\Forms\FormCard;
 use App\Widgets\Forms\FormTheme;
@@ -25,13 +26,13 @@ $action = $mode === 'update'
     ? $urlGenerator->generate('permission-group/update', ['id' => (int) $input->id])
     : $urlGenerator->generate('permission-group/create');
 
-$title = $mode === 'update' ? 'Modifica gruppo permessi' : 'Nuovo gruppo permessi';
+$title = $mode === 'update' ? Translate::t('Modifica gruppo permessi') : Translate::t('Nuovo gruppo permessi');
 
 $this->setTitle($title);
 $this->setParameter('pageIcon', 'fa-solid fa-layer-group');
 $this->setParameter('breadcrumbs', [
-    ['label' => 'Dashboard', 'url' => '/'],
-    ['label' => 'Gruppi permessi', 'url' => '/permission-group'],
+    ['label' => Translate::t('Dashboard'), 'url' => '/'],
+    ['label' => Translate::t('Gruppi permessi'), 'url' => '/permission-group'],
     ['label' => $title],
 ]);
 $this->setParameter('pageActions', BackButton::render($backUrl));
@@ -49,9 +50,9 @@ if (($errors[''] ?? []) !== []) {
 
 $form .= TextInput::render(
     name: 'name',
-    label: 'Nome',
+    label: Translate::t('Nome'),
     value: (string) $input->name,
-    placeholder: 'Es. User',
+    placeholder: Translate::t('Es. User'),
     icon: 'fa-solid fa-layer-group',
     validationRules: $validationRules['name'] ?? [],
     validationErrors: $errors['name'] ?? [],
@@ -60,18 +61,18 @@ $form .= TextInput::render(
 
 $form .= TextInput::render(
     name: 'code',
-    label: 'Codice',
+    label: Translate::t('Codice'),
     value: (string) $input->code,
-    placeholder: 'Es. USER',
+    placeholder: Translate::t('Es. USER'),
     icon: 'fa-solid fa-key',
-    hint: 'Il codice identifica il gruppo nelle autorizzazioni, ad esempio USER + ACCESS.',
+    hint: Translate::t('Il codice identifica il gruppo nelle autorizzazioni, ad esempio USER + ACCESS.'),
     validationRules: $validationRules['code'] ?? [],
     validationErrors: $errors['code'] ?? [],
     validated: $validated,
 );
 
 $form .= '<div class="app-form-actions mt-4">';
-$form .= Field::submitButton('Salva')->addButtonClass('px-4');
+$form .= Field::submitButton(Translate::t('Salva'))->addButtonClass('px-4');
 $form .= '</div>';
 
 $form .= '</form>';

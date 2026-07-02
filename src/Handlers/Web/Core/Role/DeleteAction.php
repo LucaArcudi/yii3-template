@@ -6,6 +6,7 @@ namespace App\Handlers\Web\Core\Role;
 
 use App\Data\Core\Role\RolePolicy;
 use App\Data\Core\Role\RoleRepository;
+use App\Helpers\Translate;
 use App\Services\Core\CurrentActorProvider;
 use App\Services\Core\WebActionService;
 use Psr\Http\Message\ResponseInterface;
@@ -35,13 +36,13 @@ final readonly class DeleteAction
         }
 
         if ($this->roleRepository->isAssignedToUsers($id)) {
-            $this->flash->set('error', 'Il ruolo e assegnato a uno o piu utenti e non puo essere eliminato.');
+            $this->flash->set('error', Translate::t('Il ruolo e assegnato a uno o piu utenti e non puo essere eliminato.'));
 
             return $this->webAction->redirect($redirectUrl);
         }
 
         $this->roleRepository->delete($id, $this->currentActorProvider->id());
-        $this->flash->set('success', 'Ruolo eliminato con successo.');
+        $this->flash->set('success', Translate::t('Ruolo eliminato con successo.'));
 
         return $this->webAction->redirect($redirectUrl);
     }

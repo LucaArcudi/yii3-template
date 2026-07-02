@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Data\Core\Role\RoleInput;
+use App\Helpers\Translate;
 use App\Widgets\BackButton;
 use App\Widgets\Forms\FormCard;
 use App\Widgets\Forms\FormTheme;
@@ -27,13 +28,13 @@ $action = $mode === 'update'
     ? $urlGenerator->generate('role/update', ['id' => (int) $input->id])
     : $urlGenerator->generate('role/create');
 
-$title = $mode === 'update' ? 'Modifica ruolo' : 'Nuovo ruolo';
+$title = $mode === 'update' ? Translate::t('Modifica ruolo') : Translate::t('Nuovo ruolo');
 
 $this->setTitle($title);
 $this->setParameter('pageIcon', 'pe-7s-id');
 $this->setParameter('breadcrumbs', [
-    ['label' => 'Dashboard', 'url' => '/'],
-    ['label' => 'Ruoli', 'url' => '/role'],
+    ['label' => Translate::t('Dashboard'), 'url' => '/'],
+    ['label' => Translate::t('Ruoli'), 'url' => '/role'],
     ['label' => $title],
 ]);
 $this->setParameter('pageActions', BackButton::render($backUrl));
@@ -51,9 +52,9 @@ if (($errors[''] ?? []) !== []) {
 
 $form .= TextInput::render(
     name: 'name',
-    label: 'Nome',
+    label: Translate::t('Nome'),
     value: (string) $input->name,
-    placeholder: 'Inserisci il nome descrittivo del ruolo',
+    placeholder: Translate::t('Inserisci il nome descrittivo del ruolo'),
     icon: 'fa-solid fa-user-shield',
     validationRules: $validationRules['name'] ?? [],
     validationErrors: $errors['name'] ?? [],
@@ -62,9 +63,9 @@ $form .= TextInput::render(
 
 $form .= TextInput::render(
     name: 'code',
-    label: 'Codice',
+    label: Translate::t('Codice'),
     value: (string) $input->code,
-    placeholder: 'Es. ADMIN',
+    placeholder: Translate::t('Es. ADMIN'),
     icon: 'fa-solid fa-id-badge',
     validationRules: $validationRules['code'] ?? [],
     validationErrors: $errors['code'] ?? [],
@@ -73,16 +74,16 @@ $form .= TextInput::render(
 
 $form .= CheckboxGroupInput::render(
     name: 'permission_ids',
-    label: 'Permessi associati',
+    label: Translate::t('Permessi associati'),
     groups: $permissionGroups,
     selectedValues: $input->permissionIds,
-    hint: 'Seleziona i permessi da associare a questo ruolo. I permessi determinano le azioni che un utente con questo ruolo può eseguire all\'interno dell\'applicazione.',
+    hint: Translate::t('Seleziona i permessi da associare a questo ruolo. I permessi determinano le azioni che un utente con questo ruolo può eseguire all\'interno dell\'applicazione.'),
     validationErrors: $errors['permissionIds'] ?? [],
     validated: $validated,
 );
 
 $form .= '<div class="app-form-actions mt-4">';
-$form .= Field::submitButton('Salva')->addButtonClass('px-4');
+$form .= Field::submitButton(Translate::t('Salva'))->addButtonClass('px-4');
 $form .= '</div>';
 
 $form .= '</form>';

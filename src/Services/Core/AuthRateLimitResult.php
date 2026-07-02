@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Core;
 
+use App\Helpers\Translate;
+
 use function ceil;
 use function max;
 
@@ -29,7 +31,7 @@ final readonly class AuthRateLimitResult
         $minutes = max(1, (int) ceil($this->retryAfterSeconds / 60));
 
         return $minutes === 1
-            ? 'Troppi tentativi. Riprova tra 1 minuto.'
-            : 'Troppi tentativi. Riprova tra ' . $minutes . ' minuti.';
+            ? Translate::t('Troppi tentativi. Riprova tra 1 minuto.')
+            : Translate::t('Troppi tentativi. Riprova tra {minutes} minuti.', ['minutes' => $minutes]);
     }
 }

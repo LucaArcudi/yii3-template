@@ -8,6 +8,7 @@ use App\Data\Core\Permission\PermissionGroupRepository;
 use App\Data\Core\Permission\PermissionInput;
 use App\Data\Core\Permission\PermissionPolicy;
 use App\Data\Core\Permission\PermissionRepository;
+use App\Helpers\Translate;
 use App\Services\Core\CurrentActorProvider;
 use App\Services\Core\WebActionService;
 use Psr\Http\Message\ResponseInterface;
@@ -45,7 +46,7 @@ final readonly class CreateAction
                 $group = $this->permissionGroupRepository->findById($input->groupId);
 
                 if ($group === null) {
-                    $errors['groupId'][] = 'Il gruppo selezionato non esiste.';
+                    $errors['groupId'][] = Translate::t('Il gruppo selezionato non esiste.');
                 } else {
                     $input->normalizeForGroup($group);
                     $errors = $input->validateCreate()->getErrorMessagesIndexedByProperty();
@@ -58,7 +59,7 @@ final readonly class CreateAction
                 && $input->code !== ''
                 && $this->permissionRepository->codeExists($input->code)
             ) {
-                $errors['code'][] = 'Questo codice e gia assegnato a un altro permesso.';
+                $errors['code'][] = Translate::t('Questo codice e gia assegnato a un altro permesso.');
             }
 
             if (($errors['name'] ?? []) === []
@@ -66,14 +67,14 @@ final readonly class CreateAction
                 && $input->name !== ''
                 && $this->permissionRepository->nameExists($input->name)
             ) {
-                $errors['name'][] = 'Questo nome e gia assegnato a un altro permesso.';
+                $errors['name'][] = Translate::t('Questo nome e gia assegnato a un altro permesso.');
             }
 
             if ($errors === []) {
                 $id = $this->permissionRepository->create(
                     $input->toPermission(actorId: $this->currentActorProvider->id()),
                 );
-                $this->flash->set('success', 'Permesso creato con successo.');
+                $this->flash->set('success', Translate::t('Permesso creato con successo.'));
 
                 return $this->webAction->redirectToView('permission', $id);
             }

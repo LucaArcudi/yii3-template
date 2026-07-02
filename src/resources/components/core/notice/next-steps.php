@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Dashboard\DashboardComponentDefinition;
 use App\Dashboard\DashboardComponentPresenter;
+use App\Helpers\Translate;
 use Yiisoft\Html\Html;
 use Yiisoft\User\CurrentUser;
 
@@ -15,12 +16,12 @@ use Yiisoft\User\CurrentUser;
 
 $items2 = [
     [
-        'title' => 'Integrazione tenant per multiutenza',
-        'meta' => 'Implementazione semplice tramite tenant_id.',
+        'title' => Translate::t('Integrazione tenant per multiutenza'),
+        'meta' => Translate::t('Implementazione semplice tramite tenant_id.'),
     ],
     [
-        'title' => 'Integrazione stripe per pagamenti',
-        'meta' => 'Implementare l\'integrazione con Stripe per la gestione dei pagamenti online.',
+        'title' => Translate::t('Integrazione stripe per pagamenti'),
+        'meta' => Translate::t('Implementare l\'integrazione con Stripe per la gestione dei pagamenti online.'),
     ],
 ];
 ?>
@@ -29,15 +30,15 @@ $items2 = [
     <div class="app-dashboard-priority__header">
         <div class="app-dashboard-priority__icon"><i class="pe-7s-tools"></i></div>
         <div class="app-dashboard-priority__copy">
-            <div class="app-dashboard-priority__title">Prossimi step</div>
-            <div class="app-dashboard-priority__meta">Sviluppo</div>
+            <div class="app-dashboard-priority__title"><?= Translate::t('Prossimi step') ?></div>
+            <div class="app-dashboard-priority__meta"><?= Translate::t('Sviluppo') ?></div>
         </div>
     </div>
 
     <hr>
 
     <p class="mb-3 text-muted">
-        Attivita post 1.0.0.
+        <?= Translate::t('Attivita post 1.0.0.') ?>
     </p>
 
         <ul class="list-group list-group-flush app-dashboard-checklist">

@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Helpers\Translate;
+
 /**
  * @var string $applicationName
  * @var string $content
@@ -14,7 +16,7 @@ $preheaderText = trim((string) ($preheader ?? ''));
 $title = trim((string) ($subject ?? $applicationName));
 ?>
 <!doctype html>
-<html lang="it">
+<html lang="<?= $encode(Translate::locale()) ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -44,7 +46,7 @@ $title = trim((string) ($subject ?? $applicationName));
                 </tr>
                 <tr>
                     <td style="border-top:1px solid #edf1f5;color:#7b8794;font-size:12px;line-height:1.6;padding:18px 28px;">
-                        Email automatica inviata da <?= $encode($applicationName) ?>.
+                        <?= $encode(Translate::t('Email automatica inviata da {app}.', ['app' => $applicationName])) ?>
                     </td>
                 </tr>
             </table>

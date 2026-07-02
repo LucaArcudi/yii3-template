@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Data\Mes\Task;
 
 use App\Data\Core\BaseEntity;
+use App\Helpers\Translate;
 
 final class TaskEntity extends BaseEntity
 {
@@ -30,15 +31,15 @@ final class TaskEntity extends BaseEntity
     public static function statusOptions(): array
     {
         return [
-            self::STATUS_TODO => 'To do',
-            self::STATUS_IN_PROGRESS => 'In progress',
-            self::STATUS_DONE => 'Done',
+            self::STATUS_TODO => Translate::t('To do'),
+            self::STATUS_IN_PROGRESS => Translate::t('In progress'),
+            self::STATUS_DONE => Translate::t('Done'),
         ];
     }
 
     public function statusLabel(): string
     {
-        return self::statusOptions()[$this->status] ?? 'Unknown';
+        return self::statusOptions()[$this->status] ?? Translate::t('Unknown');
     }
 
     public function rename(string $title): void

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Widgets\Filters;
 
+use App\Helpers\Translate;
 use App\Widgets\Modal;
 use Yiisoft\Html\Html;
 
@@ -17,16 +18,20 @@ final class FilterModal
     public static function button(
         string $modalId,
         int $activeCount = 0,
-        string $label = 'Filtri',
+        ?string $label = null,
         string $buttonClass = 'btn btn-outline-primary btn-shadow btn-sm',
     ): string {
+        $label ??= Translate::t('Filtri');
+        $activeCountLabel = $activeCount === 1
+            ? Translate::t('1 filtro attivo')
+            : Translate::t('{count} filtri attivi', ['count' => $activeCount]);
         $count = $activeCount > 0
             ? (string) Html::span(
                 (string) $activeCount,
                 [
                     'class' => 'app-filter-modal-trigger__count',
-                    'aria-label' => $activeCount === 1 ? '1 filtro attivo' : $activeCount . ' filtri attivi',
-                    'title' => $activeCount === 1 ? '1 filtro attivo' : $activeCount . ' filtri attivi',
+                    'aria-label' => $activeCountLabel,
+                    'title' => $activeCountLabel,
                 ],
             )
             : '';
@@ -140,13 +145,13 @@ final class FilterModal
     private static function footer(string $action, string $formId): string
     {
         $footer = (string) Html::a(
-            (string) Html::i('', ['class' => 'fa-solid fa-rotate-left me-1']) . 'Svuota',
+            (string) Html::i('', ['class' => 'fa-solid fa-rotate-left me-1']) . Translate::t('Svuota'),
             $action,
             ['class' => ['btn', 'btn-outline-secondary']],
         )->encode(false);
 
         $footer .= (string) Html::button(
-            (string) Html::i('', ['class' => 'fa-solid fa-check me-1']) . 'Applica filtri',
+            (string) Html::i('', ['class' => 'fa-solid fa-check me-1']) . Translate::t('Applica filtri'),
             [
                 'type' => 'submit',
                 'form' => $formId,

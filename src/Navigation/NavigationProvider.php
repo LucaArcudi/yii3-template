@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Navigation;
 
+use App\Helpers\Translate;
 use App\Services\Core\AuthorizationService;
 use Yiisoft\User\CurrentUser;
 
@@ -43,11 +44,11 @@ final readonly class NavigationProvider
     {
         return [
             [
-                'name' => 'Home',
+                'name' => Translate::t('Home'),
                 'header' => true,
                 '_children' => [
                     [
-                        'name' => 'Homepage',
+                        'name' => Translate::t('Homepage'),
                         'icon' => 'pe-7s-rocket',
                         'url' => '/',
                         '_children' => [],
@@ -55,11 +56,11 @@ final readonly class NavigationProvider
                 ],
             ],
             [
-                'name' => 'Gestione dati',
+                'name' => Translate::t('Gestione dati'),
                 'header' => true,
                 '_children' => [
                     [
-                        'name' => 'Task',
+                        'name' => Translate::t('Task'),
                         'icon' => 'pe-7s-check',
                         'url' => '/task',
                         'permission_group_code' => 'TASK',
@@ -69,11 +70,11 @@ final readonly class NavigationProvider
                 ],
             ],
             [
-                'name' => 'Sistema',
+                'name' => Translate::t('Sistema'),
                 'header' => true,
                 '_children' => [
                     [
-                        'name' => 'Utenti',
+                        'name' => Translate::t('Utenti'),
                         'icon' => 'pe-7s-users',
                         'url' => '/user',
                         'permission_group_code' => 'USER',
@@ -81,7 +82,7 @@ final readonly class NavigationProvider
                         '_children' => [],
                     ],
                     [
-                        'name' => 'Ruoli',
+                        'name' => Translate::t('Ruoli'),
                         'icon' => 'pe-7s-shield',
                         'url' => '/role',
                         'permission_group_code' => 'ROLE',
@@ -89,14 +90,14 @@ final readonly class NavigationProvider
                         '_children' => [],
                     ],
                     [
-                        'name' => 'Permessi',
+                        'name' => Translate::t('Permessi'),
                         'icon' => 'pe-7s-key',
                         'toggle' => true,
                         'permission_group_code' => 'PERMISSION',
                         'permission_code' => 'PERMISSION_ACCESS',
                         '_children' => [
                             [
-                                'name' => 'Permessi',
+                                'name' => Translate::t('Permessi'),
                                 'icon' => 'pe-7s-note2',
                                 'url' => '/permission',
                                 'permission_group_code' => 'PERMISSION',
@@ -104,7 +105,7 @@ final readonly class NavigationProvider
                                 '_children' => [],
                             ],
                             [
-                                'name' => 'Gruppi',
+                                'name' => Translate::t('Gruppi'),
                                 'icon' => 'pe-7s-network',
                                 'url' => '/permission-group',
                                 'permission_group_code' => 'PERMISSION_GROUP',

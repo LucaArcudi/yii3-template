@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Data\Core\User\UserEntity;
 use App\Data\Core\User\UserInput;
+use App\Helpers\Translate;
 use App\Widgets\BackButton;
 use App\Widgets\Forms\FormCard;
 use App\Widgets\Forms\FormTheme;
@@ -31,13 +32,13 @@ $action = $mode === 'update'
     ? $urlGenerator->generate('user/update', ['id' => (int) $input->id])
     : $urlGenerator->generate('user/create');
 
-$title = $mode === 'update' ? 'Modifica utente' : 'Nuovo utente';
+$title = $mode === 'update' ? Translate::t('Modifica utente') : Translate::t('Nuovo utente');
 
 $this->setTitle($title);
 $this->setParameter('pageIcon', 'pe-7s-users');
 $this->setParameter('breadcrumbs', [
-    ['label' => 'Dashboard', 'url' => '/'],
-    ['label' => 'Utenti', 'url' => '/user'],
+    ['label' => Translate::t('Dashboard'), 'url' => '/'],
+    ['label' => Translate::t('Utenti'), 'url' => '/user'],
     ['label' => $title],
 ]);
 $this->setParameter('pageActions', BackButton::render($backUrl));
@@ -57,9 +58,9 @@ if (($errors[''] ?? []) !== []) {
 
 $form .= TextInput::render(
     name: 'name',
-    label: 'Nome',
+    label: Translate::t('Nome'),
     value: (string) $input->name,
-    placeholder: 'Nome visualizzato nel gestionale',
+    placeholder: Translate::t('Nome visualizzato nel gestionale'),
     icon: 'fa-regular fa-user',
     validationRules: $validationRules['name'] ?? [],
     validationErrors: $errors['name'] ?? [],
@@ -70,7 +71,7 @@ $form .= EmailInput::render(
     name: 'email',
     label: 'Email',
     value: (string) $input->email,
-    placeholder: 'nome@azienda.it',
+    placeholder: Translate::t('nome@azienda.it'),
     icon: 'fa-regular fa-envelope',
     inputAttributes: [
         'autocomplete' => 'email',
@@ -83,9 +84,9 @@ $form .= EmailInput::render(
 $form .= PasswordInput::render(
     name: 'password',
     label: 'Password',
-    placeholder: $mode === 'update' ? 'Lascia vuota per non cambiarla' : 'Minimo 8 caratteri',
+    placeholder: $mode === 'update' ? Translate::t('Lascia vuota per non cambiarla') : Translate::t('Minimo 8 caratteri'),
     icon: 'fa-solid fa-lock',
-    hint: $mode === 'update' ? 'Compilala solo se vuoi impostare una nuova password.' : null,
+    hint: $mode === 'update' ? Translate::t('Compilala solo se vuoi impostare una nuova password.') : null,
     inputAttributes: [
         'autocomplete' => $mode === 'update' ? 'new-password' : 'new-password',
     ],
@@ -96,14 +97,14 @@ $form .= PasswordInput::render(
 
 $form .= PasswordInput::render(
     name: 'password_repeat',
-    label: 'Ripeti password',
-    placeholder: $mode === 'update' ? 'Ripeti la nuova password' : 'Ripeti la password',
+    label: Translate::t('Ripeti password'),
+    placeholder: $mode === 'update' ? Translate::t('Ripeti la nuova password') : Translate::t('Ripeti la password'),
     icon: 'fa-solid fa-lock',
-    hint: $mode === 'update' ? 'Da compilare solo quando imposti una nuova password.' : null,
+    hint: $mode === 'update' ? Translate::t('Da compilare solo quando imposti una nuova password.') : null,
     inputAttributes: [
         'autocomplete' => 'new-password',
         'data-match-field' => 'password',
-        'data-match-message' => 'Le password non coincidono.',
+        'data-match-message' => Translate::t('Le password non coincidono.'),
     ],
     validationRules: $validationRules['passwordRepeat'] ?? [],
     validationErrors: $errors['passwordRepeat'] ?? [],
@@ -112,10 +113,10 @@ $form .= PasswordInput::render(
 
 $form .= SelectInput::render(
     name: 'status',
-    label: 'Stato',
+    label: Translate::t('Stato'),
     value: (string) ($input->status ?? UserEntity::STATUS_ACTIVE),
     options: UserEntity::statusOptions(),
-    prompt: 'Seleziona lo stato',
+    prompt: Translate::t('Seleziona lo stato'),
     icon: 'fa-solid fa-signal',
     validationRules: $validationRules['status'] ?? [],
     validationErrors: $errors['status'] ?? [],
@@ -124,20 +125,20 @@ $form .= SelectInput::render(
 
 $form .= MultiSelectInput::render(
     name: 'role_ids',
-    label: 'Ruoli associati',
+    label: Translate::t('Ruoli associati'),
     values: array_map(static fn(int $id): string => (string) $id, $input->roleIds),
     options: $roleOptions,
     icon: 'fa-solid fa-user-tag',
     hint: $roleOptions === []
-        ? 'Nessun ruolo disponibile. Crea prima almeno un ruolo.'
-        : 'Seleziona uno o piu ruoli, rimuovili dai tag oppure usa Seleziona tutti e Svuota dal menu.',
-    placeholder: 'Seleziona i ruoli da associare',
+        ? Translate::t('Nessun ruolo disponibile. Crea prima almeno un ruolo.')
+        : Translate::t('Seleziona uno o piu ruoli, rimuovili dai tag oppure usa Seleziona tutti e Svuota dal menu.'),
+    placeholder: Translate::t('Seleziona i ruoli da associare'),
     validationErrors: $errors['roleIds'] ?? [],
     validated: $validated,
 );
 
 $form .= '<div class="app-form-actions mt-4">';
-$form .= Field::submitButton('Salva')->addButtonClass('px-4');
+$form .= Field::submitButton(Translate::t('Salva'))->addButtonClass('px-4');
 $form .= '</div>';
 
 $form .= '</form>';

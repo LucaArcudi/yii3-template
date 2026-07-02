@@ -7,6 +7,7 @@ namespace App\Handlers\Web\Core\PermissionGroup;
 use App\Data\Core\Permission\PermissionGroupInput;
 use App\Data\Core\Permission\PermissionGroupPolicy;
 use App\Data\Core\Permission\PermissionGroupRepository;
+use App\Helpers\Translate;
 use App\Services\Core\CurrentActorProvider;
 use App\Services\Core\WebActionService;
 use Psr\Http\Message\ResponseInterface;
@@ -56,7 +57,7 @@ final readonly class UpdateAction
                 $this->permissionGroupRepository->update(
                     $input->toGroup($group, $this->currentActorProvider->id()),
                 );
-                $this->flash->set('success', 'Gruppo permessi aggiornato con successo.');
+                $this->flash->set('success', Translate::t('Gruppo permessi aggiornato con successo.'));
 
                 return $this->webAction->redirectToView('permission-group', $id);
             }
@@ -88,7 +89,7 @@ final readonly class UpdateAction
             && $input->name !== ''
             && $this->permissionGroupRepository->nameExists($input->name, $id)
         ) {
-            $errors['name'][] = 'Questo nome e gia assegnato a un altro gruppo.';
+            $errors['name'][] = Translate::t('Questo nome e gia assegnato a un altro gruppo.');
         }
 
         if (($errors['code'] ?? []) === []
@@ -96,7 +97,7 @@ final readonly class UpdateAction
             && $input->code !== ''
             && $this->permissionGroupRepository->codeExists($input->code, $id)
         ) {
-            $errors['code'][] = 'Questo codice e gia assegnato a un altro gruppo.';
+            $errors['code'][] = Translate::t('Questo codice e gia assegnato a un altro gruppo.');
         }
     }
 }

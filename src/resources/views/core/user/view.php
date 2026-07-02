@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Data\Core\User\UserPresenter;
+use App\Helpers\Translate;
 use App\Widgets\BackButton;
 use App\Widgets\Card;
 use App\Widgets\Crud\CrudActions;
@@ -25,8 +26,8 @@ use Yiisoft\Yii\View\Renderer\Csrf;
 $this->setTitle($user->name());
 $this->setParameter('pageIcon', 'pe-7s-users');
 $this->setParameter('breadcrumbs', [
-    ['label' => 'Dashboard', 'url' => '/'],
-    ['label' => 'Utenti', 'url' => '/user'],
+    ['label' => Translate::t('Dashboard'), 'url' => '/'],
+    ['label' => Translate::t('Utenti'), 'url' => '/user'],
     ['label' => $user->name()],
 ]);
 
@@ -43,20 +44,20 @@ if ($canUpdate) {
 
 if ($canDelete) {
     $deleteModalBody = CrudActions::deleteBody(
-        'Stai eliminando l\'utente <strong>' . Html::encode($user->name()) . '</strong>. Dopo la conferma il record non sara piu recuperabile.',
+        Translate::t('Stai eliminando l\'utente {name}. Dopo la conferma il record non sara piu recuperabile.', ['name' => '<strong>' . Html::encode($user->name()) . '</strong>']),
         [
-            'ID record' => '#' . $userId,
+            Translate::t('ID record') => '#' . $userId,
             'Email' => Html::encode($user->email()),
         ],
     );
 
-    $pageActions .= CrudActions::deletePageTrigger($deleteModalId, label: 'Elimina utente');
+    $pageActions .= CrudActions::deletePageTrigger($deleteModalId, label: Translate::t('Elimina utente'));
 
     $this->setParameter(
         'pageModals',
         CrudActions::deleteModal(
             id: $deleteModalId,
-            title: 'Elimina utente',
+            title: Translate::t('Elimina utente'),
             action: '/user/delete/' . $userId,
             body: $deleteModalBody,
             csrf: $csrf,
@@ -76,7 +77,7 @@ $rolesBody = '';
 
 if ($roles === []) {
     $rolesBody .= (string) Html::div(
-        'Questo utente non ha ancora ruoli associati.',
+        Translate::t('Questo utente non ha ancora ruoli associati.'),
         ['class' => 'alert alert-light mb-0'],
     );
 } else {
@@ -98,16 +99,16 @@ echo Detail::render(
     variant: 'secondary',
     fields: [
         new DataField('id', label: 'ID'),
-        new DataField('name', label: 'Nome'),
+        new DataField('name', label: Translate::t('Nome')),
         new DataField('email', label: 'Email'),
-        Detail::htmlField('statusLabel', label: 'Stato'),
-        new DataField('createdBy', label: 'Creato da'),
-        new DataField('updatedBy', label: 'Aggiornato da'),
-        new DataField('createdAt', label: 'Creato il'),
-        new DataField('updatedAt', label: 'Aggiornato il'),
-        new DataField('lastLoginAt', label: 'Ultimo accesso'),
-        new DataField('passwordChangedAt', label: 'Password cambiata il'),
-        new DataField('passwordExpiresAt', label: 'Scadenza password'),
+        Detail::htmlField('statusLabel', label: Translate::t('Stato')),
+        new DataField('createdBy', label: Translate::t('Creato da')),
+        new DataField('updatedBy', label: Translate::t('Aggiornato da')),
+        new DataField('createdAt', label: Translate::t('Creato il')),
+        new DataField('updatedAt', label: Translate::t('Aggiornato il')),
+        new DataField('lastLoginAt', label: Translate::t('Ultimo accesso')),
+        new DataField('passwordChangedAt', label: Translate::t('Password cambiata il')),
+        new DataField('passwordExpiresAt', label: Translate::t('Scadenza password')),
     ],
 );
 
@@ -116,13 +117,13 @@ if ($canViewLogs) {
 }
 
 echo Card::render(
-    title: 'Ruoli associati',
+    title: Translate::t('Ruoli associati'),
     body: $rolesBody,
     variant: 'info',
     tools: (string) Html::span(
-        (string) count($roles) . ' totali',
+        Translate::t('{count} totali', ['count' => count($roles)]),
         ['class' => ['badge', 'rounded-pill', 'text-bg-light']],
     ),
-    subtitle: 'Associazione user_role gestita lato utente.',
+    subtitle: Translate::t('Associazione user_role gestita lato utente.'),
     icon: 'fa-solid fa-user-tag',
 );

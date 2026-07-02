@@ -1,0 +1,86 @@
+---
+- name: Check Yii3 VPS status
+  hosts: vps
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Check current user without become
+      ansible.builtin.command: whoami
+      become: false
+      changed_when: false
+
+    - name: Check Docker installed
+      ansible.builtin.command: docker --version
+      changed_when: false
+
+    - name: Check Docker Compose installed
+      ansible.builtin.command: docker compose version
+      changed_when: false
+
+    - name: Check /opt/yii3 exists
+      ansible.builtin.stat:
+        path: /opt/yii3
+      register: project_dir
+
+    - name: Assert /opt/yii3 exists
+      ansible.builtin.assert:
+        that:
+          - project_dir.stat.exists
+          - project_dir.stat.isdir
+
+    - name: Check .env.prod exists
+      ansible.builtin.stat:
+        path: /opt/yii3/.env.prod
+      register: env_prod
+
+    - name: Assert .env.prod exists
+      ansible.builtin.assert:
+        that:
+          - env_prod.stat.exists
+
+    - name: Check prod compose exists
+      ansible.builtin.stat:
+        path: /opt/yii3/docker/prod/compose.yml
+      register: prod_compose
+
+    - name: Assert prod compose exists
+      ansible.builtin.assert:
+        that:
+          - prod_compose.stat.exists
+
+    - name: Check local compose override exists
+      ansible.builtin.stat:
+        path: /opt/yii3/docker/prod/compose.local.yml
+      register: local_compose
+
+    - name: Assert local compose override exists
+      ansible.builtin.assert:
+        that:
+          - local_compose.stat.exists
+
+    - name: Check backups directory exists
+      ansible.builtin.stat:
+        path: /opt/yii3/backups
+      register: backups_dir
+
+    - name: Assert backups directory exists
+      ansible.builtin.assert:
+        that:
+          - backups_dir.stat.exists
+          - backups_dir.stat.isdir
+
+    - name: Check compose services status
+      ansible.builtin.command: >
+        docker compose
+        --env-file .env.prod
+        -f docker/prod/compose.yml
+        -f docker/prod/compose.local.yml
+        ps
+      args:
+        chdir: /opt/yii3
+      changed_when: false
+
+    - name: Check local app health
+      ansible.builtin.command: curl -fsS http://127.0.0.1:8080
+      changed_when: false

@@ -6,6 +6,7 @@ use App\Data\Core\User\UserIdentity;
 use App\Dashboard\DashboardComponentPresenter;
 use App\Dashboard\DashboardComponentRenderer;
 use App\Dashboard\DashboardComponentVisibility;
+use App\Helpers\Translate;
 use App\Params\Core\ApplicationParams;
 use Yiisoft\Html\Html;
 use Yiisoft\User\CurrentUser;
@@ -31,7 +32,7 @@ unset($identity);
 $this->setTitle($applicationParams->name);
 $this->setParameter('pageIcon', 'pe-7s-home');
 $this->setParameter('breadcrumbs', [
-    ['label' => 'Dashboard'],
+    ['label' => Translate::t('Dashboard')],
 ]);
 ?>
 
@@ -39,14 +40,14 @@ $this->setParameter('breadcrumbs', [
     <div class="main-card mb-3 card app-dashboard-section">
         <div class="card-header">
             <div>
-                <div class="app-dashboard-section__eyebrow">Componenti</div>
-                <h5 class="card-title mb-0">Nessun componente disponibile</h5>
+                <div class="app-dashboard-section__eyebrow"><?= Translate::t('Componenti') ?></div>
+                <h5 class="card-title mb-0"><?= Translate::t('Nessun componente disponibile') ?></h5>
             </div>
         </div>
 
         <div class="card-body">
             <p class="mb-0 text-muted">
-                Il tuo utente non ha componenti visibili per i permessi e le regole attuali.
+                <?= Translate::t('Il tuo utente non ha componenti visibili per i permessi e le regole attuali.') ?>
             </p>
         </div>
     </div>

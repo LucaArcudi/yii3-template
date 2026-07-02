@@ -6,6 +6,7 @@ namespace App\Handlers\Web\Core\PermissionGroup;
 
 use App\Data\Core\Permission\PermissionGroupPolicy;
 use App\Data\Core\Permission\PermissionGroupRepository;
+use App\Helpers\Translate;
 use App\Services\Core\CurrentActorProvider;
 use App\Services\Core\WebActionService;
 use Psr\Http\Message\ResponseInterface;
@@ -35,13 +36,13 @@ final readonly class DeleteAction
         }
 
         if ($this->permissionGroupRepository->isAssigned($id)) {
-            $this->flash->set('error', 'Il gruppo e assegnato ad almeno un permesso e non puo essere eliminato.');
+            $this->flash->set('error', Translate::t('Il gruppo e assegnato ad almeno un permesso e non puo essere eliminato.'));
 
             return $this->webAction->redirect($redirectUrl);
         }
 
         $this->permissionGroupRepository->delete($id, $this->currentActorProvider->id());
-        $this->flash->set('success', 'Gruppo permessi eliminato con successo.');
+        $this->flash->set('success', Translate::t('Gruppo permessi eliminato con successo.'));
 
         return $this->webAction->redirect($redirectUrl);
     }

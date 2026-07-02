@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Widgets\Filters;
 
+use App\Helpers\Translate;
 use App\Widgets\Inputs\MultiSelectControl;
 use Yiisoft\Html\Html;
 use Yiisoft\Yii\DataView\Filter\Widget\Context;
@@ -26,7 +27,7 @@ final class MultiSelectFilter extends FilterWidget
      */
     public function __construct(
         private readonly array $options = [],
-        private readonly string $placeholder = 'Seleziona uno o piu elementi',
+        private readonly ?string $placeholder = null,
         private readonly string $icon = '',
         private readonly ?string $id = null,
         private readonly string $selectClass = 'form-select',
@@ -41,7 +42,7 @@ final class MultiSelectFilter extends FilterWidget
             name: $context->property,
             values: self::valuesFromContext($context->value, $this->options),
             options: $this->options,
-            placeholder: $this->placeholder,
+            placeholder: $this->placeholder ?? Translate::t('Seleziona uno o piu elementi'),
             icon: $this->icon,
             id: $this->id ?? FilterControl::buildFieldId($context->formId, $context->property),
             formId: $context->formId,
@@ -60,7 +61,7 @@ final class MultiSelectFilter extends FilterWidget
         string $name,
         array $values = [],
         array $options = [],
-        string $placeholder = 'Seleziona uno o piu elementi',
+        ?string $placeholder = null,
         string $icon = '',
         ?string $id = null,
         ?string $formId = null,
@@ -69,6 +70,7 @@ final class MultiSelectFilter extends FilterWidget
         array $validationRules = [],
         bool $autoSubmit = true,
     ): string {
+        $placeholder ??= Translate::t('Seleziona uno o piu elementi');
         $fieldId = $id ?? FilterControl::buildFieldId($formId ?? 'filter', $name);
         $labelId = $fieldId . '-label';
         $listId = $fieldId . '-listbox';
@@ -108,7 +110,7 @@ final class MultiSelectFilter extends FilterWidget
                 listId: $listId,
                 placeholder: $placeholder,
                 empty: $options === [],
-                emptyLabel: 'Nessuna opzione disponibile.',
+                emptyLabel: Translate::t('Nessuna opzione disponibile.'),
                 surfaceAttributes: ['aria-label' => $placeholder],
             )
             . (string) $nativeSelect,
@@ -116,7 +118,7 @@ final class MultiSelectFilter extends FilterWidget
                 'class' => 'app-multi-select',
                 'data-multi-select' => 'true',
                 'data-placeholder' => $placeholder,
-                'data-empty-options-label' => 'Nessuna opzione disponibile.',
+                'data-empty-options-label' => Translate::t('Nessuna opzione disponibile.'),
             ],
         )->encode(false);
 

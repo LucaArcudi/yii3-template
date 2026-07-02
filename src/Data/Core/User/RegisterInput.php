@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Data\Core\User;
 
+use App\Helpers\Translate;
 use Yiisoft\Validator\Result;
 use Yiisoft\Validator\RulesProviderInterface;
 use Yiisoft\Validator\Rule\Email;
@@ -41,7 +42,7 @@ final class RegisterInput implements RulesProviderInterface
         $result = $this->validator->validate($this, $this->getRules());
 
         if ($this->password !== $this->passwordRepeat) {
-            $result = $result->addError('Le password non coincidono.', valuePath: ['passwordRepeat']);
+            $result = $result->addError(Translate::t('Le password non coincidono.'), valuePath: ['passwordRepeat']);
         }
 
         return $result;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Widgets\Filters;
 
+use App\Helpers\Translate;
 use Yiisoft\Html\Html;
 use Yiisoft\View\WebView;
 
@@ -19,9 +20,10 @@ class FilterBar
         string $formClass = 'w-100',
         bool $toggleable = true,
         ?bool $collapsed = null,
-        string $title = 'Filtri',
+        ?string $title = null,
         string $icon = 'fa-solid fa-filter',
     ): string {
+        $title ??= Translate::t('Filtri');
         $widgetId = self::buildWidgetId();
         $formId = $widgetId . '-form';
         $collapseId = $widgetId . '-collapse';
@@ -143,7 +145,7 @@ class FilterBar
         string $buttonClass,
     ): string {
         return (string) Html::button(
-            (string) Html::span('Filtri', ['class' => 'small text-uppercase fw-semibold'])
+            (string) Html::span(Translate::t('Filtri'), ['class' => 'small text-uppercase fw-semibold'])
             . (string) Html::i('', ['id' => $iconId, 'class' => ['fa-solid', $collapsed ? 'fa-chevron-down' : 'fa-chevron-up']]),
             [
                 'type' => 'button',

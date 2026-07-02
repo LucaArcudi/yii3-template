@@ -6,6 +6,7 @@ namespace App\Handlers\Web\Core\Permission;
 
 use App\Data\Core\Permission\PermissionPolicy;
 use App\Data\Core\Permission\PermissionRepository;
+use App\Helpers\Translate;
 use App\Services\Core\CurrentActorProvider;
 use App\Services\Core\WebActionService;
 use Psr\Http\Message\ResponseInterface;
@@ -35,7 +36,7 @@ final readonly class DeleteAction
         }
 
         $this->permissionRepository->delete($id, $this->currentActorProvider->id());
-        $this->flash->set('success', 'Permesso eliminato con successo.');
+        $this->flash->set('success', Translate::t('Permesso eliminato con successo.'));
 
         return $this->webAction->redirect($redirectUrl);
     }

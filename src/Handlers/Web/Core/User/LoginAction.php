@@ -8,6 +8,7 @@ use App\Data\Core\Notification\NotificationRepository;
 use App\Data\Core\User\LoginInput;
 use App\Data\Core\User\UserIdentity;
 use App\Data\Core\User\UserRepository;
+use App\Helpers\Translate;
 use App\Services\Core\AuthRateLimitResult;
 use App\Services\Core\AuthRateLimiter;
 use App\Services\Core\AuthTokenService;
@@ -85,7 +86,7 @@ final readonly class LoginAction
                     !$user->isActive() ||
                     !$passwordValid
                 ) {
-                    $errors['password'][] = 'Credenziali non valide.';
+                    $errors['password'][] = Translate::t('Credenziali non valide.');
                 } else {
                     $rememberToken = null;
                     $rememberTokenHash = $user->rememberTokenHash;
@@ -117,9 +118,9 @@ final readonly class LoginAction
                         if ($user->isPasswordExpired()) {
                             $this->rememberedUrl->remember('auth.password_return', $returnUrl);
                             $location = '/change-password?reason=expired';
-                            $this->flash->set('warning', 'La password è scaduta: impostane una nuova per continuare.');
+                            $this->flash->set('warning', Translate::t('La password è scaduta: impostane una nuova per continuare.'));
                         } else {
-                            $this->flash->set('success', 'Bentornato, ' . $user->name . '.');
+                            $this->flash->set('success', Translate::t('Bentornato, {name}.', ['name' => $user->name]));
                         }
 
                         $response = (new Response(302))->withHeader('Location', $location);
@@ -129,7 +130,7 @@ final readonly class LoginAction
                             : $this->rememberMeCookie->expireCookie($request, $response);
                     }
 
-                    $errors['email'][] = 'Impossibile avviare la sessione.';
+                    $errors['email'][] = Translate::t('Impossibile avviare la sessione.');
                 }
             }
 
@@ -152,8 +153,8 @@ final readonly class LoginAction
         try {
             $this->notificationRepository->notifyUser(
                 userId: $userId,
-                title: 'Accesso effettuato',
-                description: 'Hai effettuato un nuovo accesso alla piattaforma.',
+                title: Translate::t('Accesso effettuato'),
+                description: Translate::t('Hai effettuato un nuovo accesso alla piattaforma.'),
                 url: '/profile',
                 actorId: $userId,
             );

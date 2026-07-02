@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Widgets\Crud;
 
+use App\Helpers\Translate;
 use App\Widgets\Modal;
 use Yiisoft\Html\Html;
 use Yiisoft\Yii\View\Renderer\Csrf;
@@ -17,36 +18,37 @@ final class CrudActions
     public static function viewLink(
         string $url,
         string $icon = 'fa-solid fa-eye',
-        string $label = 'Apri',
+        ?string $label = null,
         array $attributes = [],
     ): string {
-        return self::link($url, $label, $icon, 'primary', $attributes);
+        return self::link($url, $label ?? Translate::t('Apri'), $icon, 'primary', $attributes);
     }
 
     public static function updateLink(
         string $url,
         string $icon = 'fa-solid fa-pen-to-square',
-        string $label = 'Modifica',
+        ?string $label = null,
         array $attributes = [],
     ): string {
-        return self::link($url, $label, $icon, 'warning', $attributes);
+        return self::link($url, $label ?? Translate::t('Modifica'), $icon, 'warning', $attributes);
     }
 
     public static function updatePageLink(
         string $url,
         string $icon = 'fa-solid fa-pen-to-square',
-        string $label = 'Modifica',
+        ?string $label = null,
         array $attributes = [],
     ): string {
-        return self::pageLink($url, $label, $icon, 'warning', $attributes);
+        return self::pageLink($url, $label ?? Translate::t('Modifica'), $icon, 'warning', $attributes);
     }
 
     public static function deleteTrigger(
         string $modalId,
         string $icon = 'fa-solid fa-trash',
-        string $label = 'Elimina',
+        ?string $label = null,
         array $attributes = [],
     ): string {
+        $label ??= Translate::t('Elimina');
         $attributes = self::buttonAttributes($label, 'danger', $attributes);
         $attributes['type'] ??= 'button';
         $attributes['data-bs-toggle'] ??= 'modal';
@@ -58,9 +60,10 @@ final class CrudActions
     public static function deletePageTrigger(
         string $modalId,
         string $icon = 'fa-solid fa-trash',
-        string $label = 'Elimina',
+        ?string $label = null,
         array $attributes = [],
     ): string {
+        $label ??= Translate::t('Elimina');
         Html::addCssClass($attributes, ['btn', 'btn-danger', 'btn-shadow']);
         $attributes['type'] ??= 'button';
         $attributes['title'] ??= $label;
@@ -126,13 +129,13 @@ final class CrudActions
         Csrf $csrf,
         string $icon = 'fa-solid fa-triangle-exclamation',
         string $submitIcon = 'fa-solid fa-trash',
-        string $submitLabel = 'Elimina definitivamente',
+        ?string $submitLabel = null,
     ): string {
         return Modal::render(
             id: $id,
             title: $title,
             body: $body,
-            footer: self::deleteFooter($action, $csrf, $submitIcon, $submitLabel),
+            footer: self::deleteFooter($action, $csrf, $submitIcon, $submitLabel ?? Translate::t('Elimina definitivamente')),
             variant: 'danger',
             icon: $icon,
         );
@@ -202,7 +205,7 @@ final class CrudActions
     ): string {
         $footer = '<form method="post" action="' . Html::encode($action) . '" class="d-flex flex-wrap justify-content-end gap-2 w-100">';
         $footer .= $csrf->hiddenInput();
-        $footer .= (string) Html::button('Annulla', [
+        $footer .= (string) Html::button(Translate::t('Annulla'), [
             'type' => 'button',
             'class' => ['btn', 'btn-outline-secondary'],
             'data-bs-dismiss' => 'modal',

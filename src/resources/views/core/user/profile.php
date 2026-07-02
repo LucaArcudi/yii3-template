@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Data\Core\User\UserInput;
+use App\Helpers\Translate;
 use App\Widgets\BackButton;
 use App\Widgets\Card;
 use App\Widgets\Crud\CrudActions;
@@ -32,18 +33,18 @@ $profileValidated ??= $validated ?? false;
 $emailValidated ??= false;
 $currentEmail ??= (string) $input->email;
 
-$this->setTitle('Gestione profilo');
+$this->setTitle(Translate::t('Gestione profilo'));
 $this->setParameter('pageIcon', 'pe-7s-user');
 $this->setParameter('breadcrumbs', [
-    ['label' => 'Dashboard', 'url' => '/'],
-    ['label' => 'Gestione profilo'],
+    ['label' => Translate::t('Dashboard'), 'url' => '/'],
+    ['label' => Translate::t('Gestione profilo')],
 ]);
 $this->setParameter(
     'pageActions',
     (string) Html::div(
         BackButton::render('/')
         . (string) Html::a(
-            (string) Html::i('', ['class' => 'fa-solid fa-key me-1']) . 'Cambio password',
+            (string) Html::i('', ['class' => 'fa-solid fa-key me-1']) . Html::encode(Translate::t('Cambio password')),
             '/change-password',
             ['class' => 'btn-shadow btn btn-primary'],
         )->encode(false),
@@ -54,9 +55,9 @@ $this->setParameter(
 $deleteModalId = 'profile-delete-modal';
 
 $deleteModalBody = CrudActions::deleteBody(
-    'Stai eliminando il tuo profilo <strong>' . Html::encode((string) $input->name) . '</strong>. Dopo la conferma verrai disconnesso e il record non sara piu recuperabile.',
+    Translate::t('Stai eliminando il tuo profilo {name}. Dopo la conferma verrai disconnesso e il record non sara piu recuperabile.', ['name' => '<strong>' . Html::encode((string) $input->name) . '</strong>']),
     [
-        'ID record' => '#' . $userId,
+        Translate::t('ID record') => '#' . $userId,
         'Email' => Html::encode($currentEmail),
     ],
 );
@@ -65,7 +66,7 @@ $this->setParameter(
     'pageModals',
     CrudActions::deleteModal(
         id: $deleteModalId,
-        title: 'Elimina profilo',
+        title: Translate::t('Elimina profilo'),
         action: '/profile/delete',
         body: $deleteModalBody,
         csrf: $csrf,
@@ -87,9 +88,9 @@ if (($profileErrors[''] ?? []) !== []) {
 
 $form .= TextInput::render(
     name: 'name',
-    label: 'Nome',
+    label: Translate::t('Nome'),
     value: (string) $input->name,
-    placeholder: 'Nome visualizzato nel gestionale',
+    placeholder: Translate::t('Nome visualizzato nel gestionale'),
     icon: 'fa-regular fa-user',
     validationRules: $profileValidationRules['name'] ?? [],
     validationErrors: $profileErrors['name'] ?? [],
@@ -97,12 +98,12 @@ $form .= TextInput::render(
 );
 
 $form .= '<div class="app-form-actions mt-4">';
-$form .= Field::submitButton('Salva profilo')->addButtonClass('px-4');
+$form .= Field::submitButton(Translate::t('Salva profilo'))->addButtonClass('px-4');
 $form .= '</div>';
 $form .= '</form>';
 
 echo FormCard::render(
-    title: 'Dati profilo',
+    title: Translate::t('Dati profilo'),
     formHtml: $form,
     variant: 'secondary',
 );
@@ -118,16 +119,16 @@ if (($emailErrors[''] ?? []) !== []) {
 }
 
 $emailForm .= (string) Html::div(
-    (string) Html::div('Email attuale', ['class' => 'app-task-view__meta-label'])
+    (string) Html::div(Translate::t('Email attuale'), ['class' => 'app-task-view__meta-label'])
     . (string) Html::div(Html::encode($currentEmail), ['class' => 'app-task-view__meta-value']),
     ['class' => 'app-task-view__meta-grid mb-3'],
 )->encode(false);
 
 $emailForm .= EmailInput::render(
     name: 'email',
-    label: 'Nuova email',
+    label: Translate::t('Nuova email'),
     value: (string) $input->email,
-    placeholder: 'nome@azienda.it',
+    placeholder: Translate::t('nome@azienda.it'),
     icon: 'fa-regular fa-envelope',
     inputAttributes: [
         'autocomplete' => 'email',
@@ -139,8 +140,8 @@ $emailForm .= EmailInput::render(
 
 $emailForm .= PasswordInput::render(
     name: 'current_password',
-    label: 'Password attuale',
-    placeholder: 'Password attuale',
+    label: Translate::t('Password attuale'),
+    placeholder: Translate::t('Password attuale'),
     icon: 'fa-solid fa-lock',
     inputAttributes: [
         'autocomplete' => 'current-password',
@@ -151,24 +152,24 @@ $emailForm .= PasswordInput::render(
 );
 
 $emailForm .= '<div class="app-form-actions mt-4">';
-$emailForm .= Field::submitButton('Aggiorna email')->addButtonClass('px-4');
+$emailForm .= Field::submitButton(Translate::t('Aggiorna email'))->addButtonClass('px-4');
 $emailForm .= '</div>';
 $emailForm .= '</form>';
 
 echo FormCard::render(
-    title: 'Cambio email',
+    title: Translate::t('Cambio email'),
     formHtml: $emailForm,
     variant: 'info',
 );
 
 echo Card::render(
-    title: 'Zona pericolosa',
+    title: Translate::t('Zona pericolosa'),
     body: (string) Html::div(
         (string) Html::p(
-            'Puoi eliminare il tuo profilo. L\'operazione chiude la sessione e rimuove l\'utente.',
+            Translate::t('Puoi eliminare il tuo profilo. L\'operazione chiude la sessione e rimuove l\'utente.'),
             ['class' => 'text-muted mb-3'],
         )
-        . CrudActions::deletePageTrigger($deleteModalId, label: 'Elimina il mio profilo'),
+        . CrudActions::deletePageTrigger($deleteModalId, label: Translate::t('Elimina il mio profilo')),
         ['class' => 'app-task-view__danger-zone'],
     )->encode(false),
     variant: 'danger',

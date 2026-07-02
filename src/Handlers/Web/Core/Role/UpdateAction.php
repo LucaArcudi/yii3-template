@@ -8,6 +8,7 @@ use App\Data\Core\Permission\PermissionRepository;
 use App\Data\Core\Role\RoleInput;
 use App\Data\Core\Role\RolePolicy;
 use App\Data\Core\Role\RoleRepository;
+use App\Helpers\Translate;
 use App\Services\Core\CurrentActorProvider;
 use App\Services\Core\WebActionService;
 use Psr\Http\Message\ResponseInterface;
@@ -61,7 +62,7 @@ final readonly class UpdateAction
                 && $input->code !== ''
                 && $this->roleRepository->codeExists($input->code, $id)
             ) {
-                $errors['code'][] = 'Questo codice e gia assegnato a un altro ruolo.';
+                $errors['code'][] = Translate::t('Questo codice e gia assegnato a un altro ruolo.');
             }
 
             if (($errors['name'] ?? []) === []
@@ -69,7 +70,7 @@ final readonly class UpdateAction
                 && $input->name !== ''
                 && $this->roleRepository->nameExists($input->name, $id)
             ) {
-                $errors['name'][] = 'Questo nome e gia assegnato a un altro ruolo.';
+                $errors['name'][] = Translate::t('Questo nome e gia assegnato a un altro ruolo.');
             }
 
             if ($errors === []) {
@@ -77,7 +78,7 @@ final readonly class UpdateAction
                     $input->toRole($role, $this->currentActorProvider->id()),
                     $input->permissionIds,
                 );
-                $this->flash->set('success', 'Ruolo aggiornato con successo.');
+                $this->flash->set('success', Translate::t('Ruolo aggiornato con successo.'));
 
                 return $this->webAction->redirectToView('role', $id);
             }
@@ -107,13 +108,13 @@ final readonly class UpdateAction
     private function validatePermissionSelection(RoleInput $input, array $errors): array
     {
         if ($input->hasInvalidPermissionSelection()) {
-            $errors['permissionIds'][] = 'La selezione dei permessi non e valida.';
+            $errors['permissionIds'][] = Translate::t('La selezione dei permessi non e valida.');
         }
 
         $existingPermissionIds = $this->permissionRepository->findExistingIds($input->permissionIds);
 
         if (count($existingPermissionIds) !== count($input->permissionIds)) {
-            $errors['permissionIds'][] = 'Uno o piu permessi selezionati non esistono piu.';
+            $errors['permissionIds'][] = Translate::t('Uno o piu permessi selezionati non esistono piu.');
         }
 
         return $errors;

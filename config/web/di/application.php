@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Handlers\Web\Core\NotFound\NotFoundHandler;
+use App\Handlers\Middleware\Core\LocaleMiddleware;
 use App\Handlers\Middleware\Core\PasswordExpiredMiddleware;
 use App\Handlers\Middleware\Core\SameOriginRequestMiddleware;
 use App\Handlers\Middleware\Core\SecurityHeadersMiddleware;
@@ -35,6 +36,7 @@ return [
                     [
                         ErrorCatcher::class,
                         SecurityHeadersMiddleware::class,
+                        LocaleMiddleware::class,
                         SessionMiddleware::class,
                         CookieMiddleware::class,
                         CookieLoginMiddleware::class,

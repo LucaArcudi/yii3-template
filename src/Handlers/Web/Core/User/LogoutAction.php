@@ -6,6 +6,7 @@ namespace App\Handlers\Web\Core\User;
 
 use HttpSoft\Message\Response;
 use App\Data\Core\User\UserRepository;
+use App\Helpers\Translate;
 use App\Services\Core\RememberMeCookieService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -30,7 +31,7 @@ final readonly class LogoutAction
         }
 
         $this->currentUser->logout();
-        $this->flash->set('info', 'Sessione terminata correttamente.');
+        $this->flash->set('info', Translate::t('Sessione terminata correttamente.'));
 
         return $this->rememberMeCookie->expireCookie(
             $request,

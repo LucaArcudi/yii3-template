@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Data\Core\User\UserEntity;
 use App\Data\Core\User\UserPresenter;
+use App\Helpers\Translate;
 use App\Widgets\Crud\CrudActions;
 use App\Widgets\DataView\Grid;
 use App\Widgets\Filters\FilterModal;
@@ -24,20 +25,20 @@ use Yiisoft\Yii\View\Renderer\Csrf;
 /** @var bool $canUpdate */
 /** @var bool $canDelete */
 
-$this->setTitle('Utenti');
+$this->setTitle(Translate::t('Utenti'));
 $this->setParameter('pageIcon', 'pe-7s-users');
 $this->setParameter('breadcrumbs', [
-    ['label' => 'Dashboard', 'url' => '/'],
-    ['label' => 'Utenti'],
+    ['label' => Translate::t('Dashboard'), 'url' => '/'],
+    ['label' => Translate::t('Utenti')],
 ]);
 
 $filterModalId = 'user-filter-modal';
 $filterFields = [
     [
         'name' => 'name',
-        'label' => 'Nome',
+        'label' => Translate::t('Nome'),
         'widget' => 'textFilter',
-        'placeholder' => 'Cerca per nome',
+        'placeholder' => Translate::t('Cerca per nome'),
         'icon' => 'fa-solid fa-magnifying-glass',
         'columnClass' => 'col-12 col-lg-6',
         'validationRules' => $filterRules['name'] ?? [],
@@ -46,27 +47,27 @@ $filterFields = [
         'name' => 'email',
         'label' => 'Email',
         'widget' => 'textFilter',
-        'placeholder' => 'Cerca per email',
+        'placeholder' => Translate::t('Cerca per email'),
         'icon' => 'fa-regular fa-envelope',
         'columnClass' => 'col-12 col-lg-6',
         'validationRules' => $filterRules['email'] ?? [],
     ],
     [
         'name' => 'status',
-        'label' => 'Stato',
+        'label' => Translate::t('Stato'),
         'widget' => 'selectFilter',
         'options' => UserEntity::statusOptions(),
-        'prompt' => 'Tutti',
+        'prompt' => Translate::t('Tutti'),
         'icon' => 'fa-solid fa-signal',
         'columnClass' => 'col-12 col-lg-4',
         'validationRules' => $filterRules['status'] ?? [],
     ],
     [
         'name' => 'role_ids',
-        'label' => 'Ruoli',
+        'label' => Translate::t('Ruoli'),
         'widget' => 'multiSelectFilter',
         'options' => $roleOptions,
-        'placeholder' => 'Tutti i ruoli',
+        'placeholder' => Translate::t('Tutti i ruoli'),
         'icon' => 'fa-solid fa-user-tag',
         'columnClass' => 'col-12 col-lg-8',
         'validationRules' => $filterRules['role_ids'] ?? [],
@@ -75,7 +76,7 @@ $filterFields = [
 
 $createButton = $canCreate
     ? '<a href="/user/create?_return=' . rawurlencode($currentUrl) . '" class="btn btn-primary btn-shadow btn-sm">'
-        . '<i class="fa-solid fa-plus me-1"></i>Nuovo utente'
+        . '<i class="fa-solid fa-plus me-1"></i>' . Html::encode(Translate::t('Nuovo utente'))
         . '</a>'
     : '';
 
@@ -94,7 +95,7 @@ $toolbar = sprintf(
 $userModals = [
     $filterModalId => FilterModal::render(
         id: $filterModalId,
-        title: 'Filtri utenti',
+        title: Translate::t('Filtri utenti'),
         action: '/user',
         filters: $filters,
         fields: $filterFields,
@@ -103,7 +104,7 @@ $userModals = [
 ];
 
 $grid = Grid::render(
-    title: 'Elenco utenti',
+    title: Translate::t('Elenco utenti'),
     reader: $reader,
     toolbar: $toolbar,
     variant: 'secondary',
@@ -111,7 +112,7 @@ $grid = Grid::render(
     columns: [
         new DataColumn(
             property: 'name',
-            header: 'Utente',
+            header: Translate::t('Utente'),
             bodyAttributes: ['class' => 'text-wrap'],
             content: static function (array|object $row): string {
                 $user = new UserPresenter($row);
@@ -126,7 +127,7 @@ $grid = Grid::render(
         ),
         new DataColumn(
             property: 'status',
-            header: 'Stato',
+            header: Translate::t('Stato'),
             bodyAttributes: ['class' => 'align-middle'],
             content: static function (array|object $row): string {
                 return (new UserPresenter($row))->statusBadge();
@@ -135,14 +136,14 @@ $grid = Grid::render(
         ),
         new DataColumn(
             property: 'last_login_at',
-            header: 'Ultimo accesso',
+            header: Translate::t('Ultimo accesso'),
             bodyAttributes: ['class' => 'align-middle'],
             content: static function (array|object $row): string {
                 return (new UserPresenter($row))->lastLoginAt();
             },
         ),
         new DataColumn(
-            header: 'Azioni',
+            header: Translate::t('Azioni'),
             withSorting: false,
             headerAttributes: ['style' => 'width: 10rem;'],
             bodyAttributes: ['class' => 'align-middle'],
@@ -167,23 +168,23 @@ $grid = Grid::render(
                 if ($canDelete) {
                     $buttons[] = CrudActions::deleteTrigger($deleteModalId);
                     $deleteModalBody = CrudActions::deleteBody(
-                        'Stai eliminando l\'utente <strong>' . Html::encode($user->name()) . '</strong>. Dopo la conferma il record non sara piu recuperabile.',
+                        Translate::t('Stai eliminando l\'utente {name}. Dopo la conferma il record non sara piu recuperabile.', ['name' => '<strong>' . Html::encode($user->name()) . '</strong>']),
                         [
-                            'ID record' => '#' . $id,
+                            Translate::t('ID record') => '#' . $id,
                             'Email' => Html::encode($user->email()),
                         ],
                     );
 
                     $userModals[$deleteModalId] = CrudActions::deleteModal(
                         id: $deleteModalId,
-                        title: 'Elimina utente',
+                        title: Translate::t('Elimina utente'),
                         action: '/user/delete/' . $id,
                         body: $deleteModalBody,
                         csrf: $csrf,
                     );
                 }
 
-                return CrudActions::group($buttons, 'Azioni utente #' . $id);
+                return CrudActions::group($buttons, Translate::t('Azioni utente #{id}', ['id' => $id]));
             },
             encodeContent: false,
         ),

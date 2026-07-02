@@ -42,6 +42,7 @@ use App\Handlers\Web\Core\User\RegisterAction;
 use App\Handlers\Web\Core\User\UpdateAction as UserUpdateAction;
 use App\Handlers\Web\Core\User\ViewAction as UserViewAction;
 use App\Handlers\Web\Core\Home\IndexAction as HomeIndexAction;
+use App\Handlers\Web\Core\Language\SwitchAction as LanguageSwitchAction;
 use App\Handlers\Middleware\Core\RedirectGuestToLoginMiddleware;
 use Yiisoft\Http\Method;
 use Yiisoft\Router\Group;
@@ -54,6 +55,9 @@ return [
                 ->middleware(RedirectGuestToLoginMiddleware::class)
                 ->action(HomeIndexAction::class)
                 ->name('home'),
+            Route::get('/language/{locale:[a-z]{2}}')
+                ->action(LanguageSwitchAction::class)
+                ->name('language/switch'),
             Route::get('/access-denied')
                 ->action(AccessDeniedHandler::class)
                 ->name('error/access-denied'),

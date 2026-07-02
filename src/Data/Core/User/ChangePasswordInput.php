@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Data\Core\User;
 
+use App\Helpers\Translate;
 use Yiisoft\Validator\Result;
 use Yiisoft\Validator\Rule\Length;
 use Yiisoft\Validator\Rule\Required;
@@ -40,7 +41,7 @@ final class ChangePasswordInput implements RulesProviderInterface
         $result = $this->validator->validate($this, $this->getRules($requiresCurrentPassword));
 
         if ($this->password !== $this->passwordRepeat) {
-            $result = $result->addError('Le password non coincidono.', valuePath: ['passwordRepeat']);
+            $result = $result->addError(Translate::t('Le password non coincidono.'), valuePath: ['passwordRepeat']);
         }
 
         return $result;

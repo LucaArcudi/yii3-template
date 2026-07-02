@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Data\Mes\Task\TaskPresenter;
 use App\Data\Mes\Task\TaskEntity;
+use App\Helpers\Translate;
 use App\Widgets\Crud\CrudActions;
 use App\Widgets\DataView\CardList;
 use App\Widgets\DataView\Grid;
@@ -32,11 +33,11 @@ use Yiisoft\Yii\View\Renderer\Csrf;
 /** @var bool $canUpdate */
 /** @var bool $canDelete */
 
-$this->setTitle('Tasks');
+$this->setTitle(Translate::t('Tasks'));
 $this->setParameter('pageIcon', 'pe-7s-note2');
 $this->setParameter('breadcrumbs', [
-    ['label' => 'Dashboard', 'url' => '/'],
-    ['label' => 'Tasks'],
+    ['label' => Translate::t('Dashboard'), 'url' => '/'],
+    ['label' => Translate::t('Tasks')],
 ]);
 
 $filterModalId = 'task-filter-modal';
@@ -45,35 +46,35 @@ $page = max(1, (int) ($cardFilters['page'] ?? 1));
 $filterFields = [
     [
         'name' => 'title',
-        'label' => 'Titolo',
+        'label' => Translate::t('Titolo'),
         'widget' => 'textFilter',
-        'placeholder' => 'Cerca per titolo',
+        'placeholder' => Translate::t('Cerca per titolo'),
         'icon' => 'fa-solid fa-magnifying-glass',
         'columnClass' => 'col-12 col-lg-6',
         'validationRules' => $filterRules['title'] ?? [],
     ],
     [
         'name' => 'description',
-        'label' => 'Descrizione',
+        'label' => Translate::t('Descrizione'),
         'widget' => 'textFilter',
-        'placeholder' => 'Parola chiave',
+        'placeholder' => Translate::t('Parola chiave'),
         'icon' => 'fa-solid fa-align-left',
         'columnClass' => 'col-12 col-lg-6',
         'validationRules' => $filterRules['description'] ?? [],
     ],
     [
         'name' => 'status',
-        'label' => 'Stato',
+        'label' => Translate::t('Stato'),
         'widget' => 'multiSelectFilter',
         'options' => TaskEntity::statusOptions(),
-        'placeholder' => 'Tutti gli stati',
+        'placeholder' => Translate::t('Tutti gli stati'),
         'icon' => 'fa-solid fa-signal',
         'columnClass' => 'col-12 col-lg-4',
         'validationRules' => $filterRules['status'] ?? [],
     ],
     [
         'name' => 'start_date',
-        'label' => 'Data inizio',
+        'label' => Translate::t('Data inizio'),
         'widget' => 'dateFilter',
         'icon' => 'fa-regular fa-calendar',
         'columnClass' => 'col-12 col-lg-4',
@@ -81,7 +82,7 @@ $filterFields = [
     ],
     [
         'name' => 'end_date',
-        'label' => 'Data fine',
+        'label' => Translate::t('Data fine'),
         'widget' => 'dateFilter',
         'icon' => 'fa-regular fa-calendar-check',
         'columnClass' => 'col-12 col-lg-4',
@@ -91,7 +92,7 @@ $filterFields = [
 
 $createButton = $canCreate
     ? '<a href="/task/create?_return=' . rawurlencode($currentUrl) . '" class="btn btn-primary btn-shadow btn-sm">'
-        . '<i class="fa-solid fa-plus me-1"></i>Nuova task'
+        . '<i class="fa-solid fa-plus me-1"></i>' . Html::encode(Translate::t('Nuova task'))
         . '</a>'
     : '';
 
@@ -110,7 +111,7 @@ $toolbar = sprintf(
 $taskModals = [
     $filterModalId => FilterModal::render(
         id: $filterModalId,
-        title: 'Filtri task',
+        title: Translate::t('Filtri task'),
         action: '/task',
         filters: $gridFilters,
         fields: $filterFields,
@@ -120,7 +121,7 @@ $taskModals = [
 ];
 
 $grid = Grid::render(
-    title: 'Elenco task',
+    title: Translate::t('Elenco task'),
     reader: $gridReader,
     toolbar: $toolbar,
     variant: 'primary',
@@ -129,15 +130,15 @@ $grid = Grid::render(
     columns: [
         new DataColumn(
             property: 'title',
-            header: 'Titolo',
+            header: Translate::t('Titolo'),
             bodyAttributes: ['class' => 'text-wrap'],
             content: static function (array|object $row): string {
                 $task = new TaskPresenter($row);
 
                 return sprintf(
-                    '<div class="app-task-cell"><div class="app-task-cell__title">%s</div><div class="app-task-cell__meta">Task #%d</div></div>',
+                    '<div class="app-task-cell"><div class="app-task-cell__title">%s</div><div class="app-task-cell__meta">%s</div></div>',
                     htmlspecialchars($task->title(), ENT_QUOTES, 'UTF-8'),
-                    (int) $task->id(),
+                    Html::encode(Translate::t('Task #{id}', ['id' => (int) $task->id()])),
                 );
             },
             encodeContent: false,
@@ -145,7 +146,7 @@ $grid = Grid::render(
 
         new DataColumn(
             property: 'description',
-            header: 'Descrizione',
+            header: Translate::t('Descrizione'),
             headerAttributes: ['style' => 'width: 32%;'],
             bodyAttributes: ['class' => 'text-wrap'],
             content: static function (array|object $row): string {
@@ -153,7 +154,7 @@ $grid = Grid::render(
                 $description = trim($task->description());
 
                 if ($description === '') {
-                    return '<span class="text-muted">Nessuna descrizione disponibile</span>';
+                    return '<span class="text-muted">' . Html::encode(Translate::t('Nessuna descrizione disponibile')) . '</span>';
                 }
 
                 return '<div class="app-task-cell__excerpt">'
@@ -165,7 +166,7 @@ $grid = Grid::render(
 
         new DataColumn(
             property: 'status',
-            header: 'Stato',
+            header: Translate::t('Stato'),
             bodyAttributes: ['class' => 'align-middle'],
             content: static function (array|object $row): string {
                 return (new TaskPresenter($row))->statusBadge();
@@ -174,18 +175,18 @@ $grid = Grid::render(
         ),
         new DataColumn(
             property: 'start_date',
-            header: 'Inizio',
+            header: Translate::t('Inizio'),
             bodyAttributes: ['class' => 'align-middle text-nowrap'],
             content: static fn(array|object $row): string => (new TaskPresenter($row))->startDate(),
         ),
         new DataColumn(
             property: 'end_date',
-            header: 'Fine',
+            header: Translate::t('Fine'),
             bodyAttributes: ['class' => 'align-middle text-nowrap'],
             content: static fn(array|object $row): string => (new TaskPresenter($row))->endDate(),
         ),
         new DataColumn(
-            header: 'Azioni',
+            header: Translate::t('Azioni'),
             withSorting: false,
             headerAttributes: ['style' => 'width: 10rem;'],
             bodyAttributes: ['class' => 'align-middle'],
@@ -210,23 +211,23 @@ $grid = Grid::render(
                 if ($canDelete) {
                     $buttons[] = CrudActions::deleteTrigger($deleteModalId);
                     $deleteModalBody = CrudActions::deleteBody(
-                        'Stai eliminando la task <strong>' . Html::encode($task->title()) . '</strong>. Dopo la conferma il record non sara piu recuperabile.',
+                        Translate::t('Stai eliminando la task {title}. Dopo la conferma il record non sara piu recuperabile.', ['title' => '<strong>' . Html::encode($task->title()) . '</strong>']),
                         [
-                            'ID record' => '#' . $id,
-                            'Stato corrente' => $task->statusBadge(),
+                            Translate::t('ID record') => '#' . $id,
+                            Translate::t('Stato corrente') => $task->statusBadge(),
                         ],
                     );
 
                     $taskModals[$deleteModalId] = CrudActions::deleteModal(
                         id: $deleteModalId,
-                        title: 'Elimina task',
+                        title: Translate::t('Elimina task'),
                         action: '/task/delete/' . $id,
                         body: $deleteModalBody,
                         csrf: $csrf,
                     );
                 }
 
-                return CrudActions::group($buttons, 'Azioni task #' . $id);
+                return CrudActions::group($buttons, Translate::t('Azioni task #{id}', ['id' => $id]));
             },
             encodeContent: false,
         ),
@@ -239,12 +240,12 @@ $cardFilterBar = FilterBar::render(
     filters: $cardFilters,
     fields: $filterFields,
     collapsed: true,
-    title: 'Filtri vista card',
+    title: Translate::t('Filtri vista card'),
     icon: 'fa-solid fa-filter',
 );
 
 $cardList = $cardFilterBar . CardList::render(
-    title: 'Task a card',
+    title: Translate::t('Task a card'),
     reader: $cardReader,
     urlCreator: $cardUrlCreator,
     page: $page,
@@ -257,7 +258,7 @@ $cardList = $cardFilterBar . CardList::render(
 
         if ($canView) {
             $actions[] = (string) Html::a(
-                (string) Html::i('', ['class' => 'fa-solid fa-eye me-1']) . 'Apri',
+                (string) Html::i('', ['class' => 'fa-solid fa-eye me-1']) . Html::encode(Translate::t('Apri')),
                 '/task/view/' . $id . '?_return=' . rawurlencode($currentUrl),
                 ['class' => ['btn', 'btn-sm', 'btn-outline-primary']],
             )->encode(false);
@@ -265,7 +266,7 @@ $cardList = $cardFilterBar . CardList::render(
 
         if ($canUpdate) {
             $actions[] = (string) Html::a(
-                (string) Html::i('', ['class' => 'fa-solid fa-pen-to-square me-1']) . 'Modifica',
+                (string) Html::i('', ['class' => 'fa-solid fa-pen-to-square me-1']) . Html::encode(Translate::t('Modifica')),
                 '/task/update/' . $id . '?_return=' . rawurlencode($currentUrl),
                 ['class' => ['btn', 'btn-sm', 'btn-outline-warning']],
             )->encode(false);
@@ -278,14 +279,14 @@ $cardList = $cardFilterBar . CardList::render(
             (string) Html::div(
                 (string) Html::div(
                     (string) Html::h3($task->title(), ['class' => 'app-task-card__title'])
-                    . (string) Html::div('Task #' . $id, ['class' => 'app-task-card__meta']),
+                    . (string) Html::div(Translate::t('Task #{id}', ['id' => $id]), ['class' => 'app-task-card__meta']),
                     ['class' => 'app-task-card__heading'],
                 )->encode(false)
                 . $task->statusBadge(),
                 ['class' => 'app-task-card__header'],
             )->encode(false)
             . (string) Html::p(
-                $description !== '' ? Html::encode($task->excerpt(180)) : 'Nessuna descrizione disponibile',
+                $description !== '' ? Html::encode($task->excerpt(180)) : Html::encode(Translate::t('Nessuna descrizione disponibile')),
                 ['class' => ['app-task-card__description', $description === '' ? 'text-muted' : null]],
             )->encode(false)
             . (string) Html::div(

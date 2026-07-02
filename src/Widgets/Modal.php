@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Widgets;
 
+use App\Helpers\Translate;
 use Yiisoft\Html\Html;
 
 final class Modal
@@ -65,7 +66,7 @@ final class Modal
                 'type' => 'button',
                 'class' => 'btn-close',
                 'data-bs-dismiss' => 'modal',
-                'aria-label' => 'Chiudi',
+                'aria-label' => Translate::t('Chiudi'),
             ]),
             ['class' => ['modal-header', 'app-modal__header']],
         )->encode(false);

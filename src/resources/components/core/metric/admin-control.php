@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Dashboard\DashboardComponentDefinition;
 use App\Dashboard\DashboardComponentPresenter;
+use App\Helpers\Translate;
 use Yiisoft\Html\Html;
 use Yiisoft\User\CurrentUser;
 
@@ -15,32 +16,32 @@ use Yiisoft\User\CurrentUser;
 
 $items = [
     [
-        'title' => 'Utente super.',
-        'meta' => 'Introduzione flag is_super nella tabella core_user e esclusione da liste.',
+        'title' => Translate::t('Utente super.'),
+        'meta' => Translate::t('Introduzione flag is_super nella tabella core_user e esclusione da liste.'),
     ],
     [
-        'title' => 'Notifiche',
-        'meta' => 'Migliorie al sistema di notifiche.',
+        'title' => Translate::t('Notifiche'),
+        'meta' => Translate::t('Migliorie al sistema di notifiche.'),
     ],
     [
-        'title' => 'Form di creazione e modifica e filtri.',
-        'meta' => 'Gestire select dipendenti per filtri statici senza autosubmit (e.g. filtri da modale, in FilterBar funzionano in autosubmit) e nei form di creazione e modifica. Implementare un esempio.',
+        'title' => Translate::t('Form di creazione e modifica e filtri.'),
+        'meta' => Translate::t('Gestire select dipendenti per filtri statici senza autosubmit (e.g. filtri da modale, in FilterBar funzionano in autosubmit) e nei form di creazione e modifica. Implementare un esempio.'),
     ],
     [
-        'title' => 'DB Tweak',
-        'meta' => 'Gestire chiavi esterne e indici. In particolare gestire comportamenti di cancellazione a cascata o restrizione per utenti, ruoli e permessi.',
+        'title' => Translate::t('DB Tweak'),
+        'meta' => Translate::t('Gestire chiavi esterne e indici. In particolare gestire comportamenti di cancellazione a cascata o restrizione per utenti, ruoli e permessi.'),
     ],
     [
-        'title' => 'Migration e seeder',
-        'meta' => 'Creare migration e seeder per i dati di base e un utente admin.',
+        'title' => Translate::t('Migration e seeder'),
+        'meta' => Translate::t('Creare migration e seeder per i dati di base e un utente admin.'),
     ],
     [
-        'title' => 'Traduzioni',
-        'meta' => 'Lingua italiana (default), traduzione inglese disponibile.',
+        'title' => Translate::t('Traduzioni'),
+        'meta' => Translate::t('Lingua italiana (default), traduzione inglese disponibile.'),
     ],
     [
-        'title' => 'Documentazione',
-        'meta' => 'Chiudere README e CHANGELOG. Creare documentazione per sviluppatori e utenti.',
+        'title' => Translate::t('Documentazione'),
+        'meta' => Translate::t('Chiudere README e CHANGELOG. Creare documentazione per sviluppatori e utenti.'),
     ],
 ];
 ?>
@@ -49,15 +50,15 @@ $items = [
     <div class="app-dashboard-priority__header">
         <div class="app-dashboard-priority__icon"><i class="pe-7s-shield"></i></div>
         <div class="app-dashboard-priority__copy">
-            <div class="app-dashboard-priority__title">Backlog admin</div>
-            <div class="app-dashboard-priority__meta">Admin</div>
+            <div class="app-dashboard-priority__title"><?= Translate::t('Backlog admin') ?></div>
+            <div class="app-dashboard-priority__meta"><?= Translate::t('Admin') ?></div>
         </div>
     </div>
 
     <hr>
 
     <p class="mb-3 text-muted">
-        Attivita pre rilascio 1.0.0 da completare.
+        <?= Translate::t('Attivita pre rilascio 1.0.0 da completare.') ?>
     </p>
 
     <ul class="list-group list-group-flush app-dashboard-checklist">

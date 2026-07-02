@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Widgets\Filters;
 
+use App\Helpers\Translate;
 use Yiisoft\Html\Html;
 use Yiisoft\Yii\DataView\Filter\Widget\Context;
 use Yiisoft\Yii\DataView\Filter\Widget\FilterWidget;
@@ -63,7 +64,7 @@ final class SelectFilter extends FilterWidget
         $fieldId = $id ?? FilterControl::buildFieldId($formId ?? 'filter', $name);
         $labelId = $fieldId . '-label';
         $listId = $fieldId . '-listbox';
-        $placeholder = $prompt ?? 'Seleziona un elemento';
+        $placeholder = $prompt ?? Translate::t('Seleziona un elemento');
 
         $nativeSelect = Html::select($name)
             ->addAttributes(FilterValidation::inputAttributes(
@@ -99,7 +100,7 @@ final class SelectFilter extends FilterWidget
             'class' => ['app-single-select', 'app-multi-select'],
             'data-single-select' => 'true',
             'data-placeholder' => $placeholder,
-            'data-empty-options-label' => 'Nessuna opzione disponibile.',
+            'data-empty-options-label' => Translate::t('Nessuna opzione disponibile.'),
             'data-has-prompt' => $prompt !== null ? 'true' : 'false',
         ];
 
@@ -193,7 +194,7 @@ final class SelectFilter extends FilterWidget
                 'div',
                 (string) Html::tag(
                     'span',
-                    $empty ? 'Nessuna opzione disponibile.' : '0 di 0 selezionati',
+                    $empty ? Translate::t('Nessuna opzione disponibile.') : Translate::t('{selected} di {total} selezionati', ['selected' => 0, 'total' => 0]),
                     [
                         'class' => 'app-multi-select__counter',
                         'data-single-select-counter' => 'true',

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Widgets\DataView;
 
+use App\Helpers\Translate;
 use App\Widgets\Card;
 use Yiisoft\Data\Reader\DataReaderInterface;
 use Yiisoft\Html\Html;
@@ -37,10 +38,17 @@ class Grid
             ->filterCellAttributes(['class' => 'app-admin-grid__filter-cell'])
             ->filterFormAttributes(['class' => 'app-admin-grid__filter-form'])
             ->bodyRowAttributes(static fn(array|object $row, object $context): array => ['class' => 'app-admin-grid__row'])
-            ->noResultsText('Nessun elemento trovato con i filtri correnti.')
+            ->noResultsText(Translate::t('Nessun elemento trovato con i filtri correnti.'))
             ->noResultsCellAttributes(['class' => 'app-admin-grid__empty'])
             ->summaryAttributes(['class' => 'app-admin-grid__summary'])
-            ->summaryTemplate('<span class="app-admin-grid__summary-range">Visualizzando <strong>{begin}-{end}</strong>  di <strong>{totalCount}</strong></span>')
+            ->summaryTemplate(
+                '<span class="app-admin-grid__summary-range">'
+                . Translate::t('Visualizzando {range} di {total}', [
+                    'range' => '<strong>{begin}-{end}</strong>',
+                    'total' => '<strong>{totalCount}</strong>',
+                ])
+                . '</span>',
+            )
             ->sortableLinkAttributes(['class' => 'app-admin-grid__sort-link'])
             ->sortableHeaderAppend(' <i class="fa-solid fa-sort text-black-50"></i>')
             ->sortableHeaderAscAppend(' <i class="fa-solid fa-sort-up"></i>')

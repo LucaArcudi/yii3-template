@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Handlers\Middleware\Core;
 
+use App\Helpers\Translate;
 use App\Services\Core\RememberedUrlService;
 use HttpSoft\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -31,7 +32,7 @@ final class RedirectGuestToLoginMiddleware implements MiddlewareInterface
             $this->rememberedUrl->rememberCurrent('auth.return', $request);
         }
 
-        $this->flash->set('warning', 'Effettua il login per continuare.');
+        $this->flash->set('warning', Translate::t('Effettua il login per continuare.'));
 
         return new RedirectResponse('login');
 

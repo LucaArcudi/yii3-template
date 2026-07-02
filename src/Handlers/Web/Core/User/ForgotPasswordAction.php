@@ -6,6 +6,7 @@ namespace App\Handlers\Web\Core\User;
 
 use App\Data\Core\User\ForgotPasswordInput;
 use App\Data\Core\User\UserRepository;
+use App\Helpers\Translate;
 use App\Params\Core\AuthParams;
 use App\Services\Core\AuthRateLimitResult;
 use App\Services\Core\AuthRateLimiter;
@@ -78,7 +79,7 @@ final readonly class ForgotPasswordAction
 
                 $this->flash->set(
                     'info',
-                    'Se l\'account esiste ed è attivo, riceverai un link per cambiare la password.',
+                    Translate::t('Se l\'account esiste ed è attivo, riceverai un link per cambiare la password.'),
                 );
 
                 return new RedirectResponse('/login');
@@ -128,13 +129,13 @@ final readonly class ForgotPasswordAction
             $this->mailer->sendView(
                 toEmail: $email,
                 toName: $name,
-                subject: 'Cambio password',
+                subject: Translate::t('Cambio password'),
                 view: 'core/user/password-reset',
                 parameters: [
                     'name' => $name,
                     'resetUrl' => $resetUrl,
                     'expiresMinutes' => $this->authParams->passwordResetTokenTtlMinutes,
-                    'preheader' => 'Usa il link per impostare una nuova password.',
+                    'preheader' => Translate::t('Usa il link per impostare una nuova password.'),
                 ],
                 textBody: sprintf(
                     "Ciao %s,\n\nUsa questo link per impostare una nuova password: %s\n\nIl link scade tra %d minuti.\n",

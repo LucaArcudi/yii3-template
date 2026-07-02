@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Data\Core\Permission\PermissionInput;
+use App\Helpers\Translate;
 use App\Widgets\BackButton;
 use App\Widgets\Forms\FormCard;
 use App\Widgets\Forms\FormTheme;
@@ -27,13 +28,13 @@ $action = $mode === 'update'
     ? $urlGenerator->generate('permission/update', ['id' => (int) $input->id])
     : $urlGenerator->generate('permission/create');
 
-$title = $mode === 'update' ? 'Modifica permesso' : 'Nuovo permesso';
+$title = $mode === 'update' ? Translate::t('Modifica permesso') : Translate::t('Nuovo permesso');
 
 $this->setTitle($title);
 $this->setParameter('pageIcon', 'pe-7s-key');
 $this->setParameter('breadcrumbs', [
-    ['label' => 'Dashboard', 'url' => '/'],
-    ['label' => 'Permessi', 'url' => '/permission'],
+    ['label' => Translate::t('Dashboard'), 'url' => '/'],
+    ['label' => Translate::t('Permessi'), 'url' => '/permission'],
     ['label' => $title],
 ]);
 $this->setParameter('pageActions', BackButton::render($backUrl));
@@ -51,9 +52,9 @@ if (($errors[''] ?? []) !== []) {
 
 $form .= TextInput::render(
     name: 'name',
-    label: 'Nome',
+    label: Translate::t('Nome'),
     value: (string) $input->name,
-    placeholder: 'Inserisci il nome descrittivo del permesso',
+    placeholder: Translate::t('Inserisci il nome descrittivo del permesso'),
     icon: 'fa-solid fa-pen',
     validationRules: $validationRules['name'] ?? [],
     validationErrors: $errors['name'] ?? [],
@@ -62,12 +63,12 @@ $form .= TextInput::render(
 
 $form .= SelectInput::render(
     name: 'group_id',
-    label: 'Gruppo',
+    label: Translate::t('Gruppo'),
     value: $input->groupId,
     options: $groupOptions,
-    prompt: 'Seleziona un gruppo',
+    prompt: Translate::t('Seleziona un gruppo'),
     icon: 'fa-solid fa-layer-group',
-    hint: 'Il permesso viene salvato nel gruppo selezionato mantenendo nome e codice inseriti.',
+    hint: Translate::t('Il permesso viene salvato nel gruppo selezionato mantenendo nome e codice inseriti.'),
     validationRules: $validationRules['groupId'] ?? [],
     validationErrors: $errors['groupId'] ?? [],
     validated: $validated,
@@ -75,9 +76,9 @@ $form .= SelectInput::render(
 
 $form .= TextInput::render(
     name: 'code',
-    label: 'Codice',
+    label: Translate::t('Codice'),
     value: (string) $input->code,
-    placeholder: 'Es. ACCESS',
+    placeholder: Translate::t('Es. ACCESS'),
     icon: 'fa-solid fa-key',
     validationRules: $validationRules['code'] ?? [],
     validationErrors: $errors['code'] ?? [],
@@ -86,18 +87,18 @@ $form .= TextInput::render(
 
 $form .= TextInput::render(
     name: 'weight',
-    label: 'Peso',
+    label: Translate::t('Peso'),
     value: (string) $input->weight,
     placeholder: '1',
     icon: 'fa-solid fa-weight-hanging',
-    hint: 'Peso ordinativo del permesso quando serve dare priorita nelle selezioni.',
+    hint: Translate::t('Peso ordinativo del permesso quando serve dare priorita nelle selezioni.'),
     validationRules: $validationRules['weight'] ?? [],
     validationErrors: $errors['weight'] ?? [],
     validated: $validated,
 );
 
 $form .= '<div class="app-form-actions mt-4">';
-$form .= Field::submitButton('Salva')->addButtonClass('px-4');
+$form .= Field::submitButton(Translate::t('Salva'))->addButtonClass('px-4');
 $form .= '</div>';
 
 $form .= '</form>';

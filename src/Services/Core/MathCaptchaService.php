@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Core;
 
+use App\Helpers\Translate;
 use Yiisoft\Session\SessionInterface;
 
 use function hash_equals;
@@ -38,7 +39,7 @@ final readonly class MathCaptchaService
         ]);
 
         return [
-            'question' => 'Quanto fa ' . $left . ' + ' . $right . '?',
+            'question' => Translate::t('Quanto fa {left} + {right}?', ['left' => $left, 'right' => $right]),
         ];
     }
 

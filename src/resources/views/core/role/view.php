@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Data\Core\Role\RolePresenter;
+use App\Helpers\Translate;
 use App\Widgets\BackButton;
 use App\Widgets\Card;
 use App\Widgets\Crud\CrudActions;
@@ -25,8 +26,8 @@ use Yiisoft\Yii\View\Renderer\Csrf;
 $this->setTitle($role->name());
 $this->setParameter('pageIcon', 'pe-7s-id');
 $this->setParameter('breadcrumbs', [
-    ['label' => 'Dashboard', 'url' => '/'],
-    ['label' => 'Ruoli', 'url' => '/role'],
+    ['label' => Translate::t('Dashboard'), 'url' => '/'],
+    ['label' => Translate::t('Ruoli'), 'url' => '/role'],
     ['label' => $role->name()],
 ]);
 
@@ -47,20 +48,20 @@ if ($canUpdate) {
 
 if ($canDelete) {
     $deleteModalBody = CrudActions::deleteBody(
-        'Stai eliminando il ruolo <strong>' . Html::encode($role->name()) . '</strong>. Dopo la conferma il record non sara piu recuperabile.',
+        Translate::t('Stai eliminando il ruolo {name}. Dopo la conferma il record non sara piu recuperabile.', ['name' => '<strong>' . Html::encode($role->name()) . '</strong>']),
         [
-            'ID record' => '#' . $roleId,
-            'Codice' => '<code>' . Html::encode($role->code()) . '</code>',
+            Translate::t('ID record') => '#' . $roleId,
+            Translate::t('Codice') => '<code>' . Html::encode($role->code()) . '</code>',
         ],
     );
 
-    $pageActions .= CrudActions::deletePageTrigger($deleteModalId, label: 'Elimina ruolo');
+    $pageActions .= CrudActions::deletePageTrigger($deleteModalId, label: Translate::t('Elimina ruolo'));
 
     $this->setParameter(
         'pageModals',
         CrudActions::deleteModal(
             id: $deleteModalId,
-            title: 'Elimina ruolo',
+            title: Translate::t('Elimina ruolo'),
             action: '/role/delete/' . $roleId,
             body: $deleteModalBody,
             csrf: $csrf,
@@ -80,7 +81,7 @@ $permissionsBody = '';
 
 if ($permissionGroups === []) {
     $permissionsBody .= (string) Html::div(
-        'Questo ruolo non ha ancora permessi associati.',
+        Translate::t('Questo ruolo non ha ancora permessi associati.'),
         ['class' => 'alert alert-light mb-0'],
     );
 } else {
@@ -91,7 +92,7 @@ if ($permissionGroups === []) {
 
         $permissionsBody .= '<section class="app-permission-summary__group">';
         $permissionsBody .= '<div class="app-permission-summary__header">';
-        $permissionsBody .= '<div class="app-permission-summary__title">' . Html::encode((string) ($group['label'] ?? 'Generale')) . '</div>';
+        $permissionsBody .= '<div class="app-permission-summary__title">' . Html::encode((string) ($group['label'] ?? Translate::t('Generale'))) . '</div>';
         $permissionsBody .= (string) Html::span(
             (string) count($items),
             ['class' => ['badge', 'rounded-pill', 'text-bg-light']],
@@ -119,12 +120,12 @@ echo Detail::render(
     variant: 'warning',
     fields: [
         new DataField('id', label: 'ID'),
-        new DataField('name', label: 'Nome'),
-        new DataField('code', label: 'Codice'),
-        new DataField('createdBy', label: 'Creato da'),
-        new DataField('updatedBy', label: 'Aggiornato da'),
-        new DataField('createdAt', label: 'Creato il'),
-        new DataField('updatedAt', label: 'Aggiornato il'),
+        new DataField('name', label: Translate::t('Nome')),
+        new DataField('code', label: Translate::t('Codice')),
+        new DataField('createdBy', label: Translate::t('Creato da')),
+        new DataField('updatedBy', label: Translate::t('Aggiornato da')),
+        new DataField('createdAt', label: Translate::t('Creato il')),
+        new DataField('updatedAt', label: Translate::t('Aggiornato il')),
     ],
 );
 
@@ -133,13 +134,13 @@ if ($canViewLogs) {
 }
 
 echo Card::render(
-    title: 'Permessi associati',
+    title: Translate::t('Permessi associati'),
     body: $permissionsBody,
     variant: 'info',
     tools: (string) Html::span(
-        (string) $permissionsCount . ' totali',
+        Translate::t('{count} totali', ['count' => $permissionsCount]),
         ['class' => ['badge', 'rounded-pill', 'text-bg-light']],
     ),
-    subtitle: 'Raggruppati tramite permission_group.',
+    subtitle: Translate::t('Raggruppati tramite permission_group.'),
     icon: 'fa-solid fa-shield-halved',
 );

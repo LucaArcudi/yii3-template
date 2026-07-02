@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Widgets;
 
+use App\Helpers\Translate;
 use Stringable;
 use Yiisoft\Html\Html;
 use Yiisoft\Session\Flash\FlashInterface;
 
 use function is_array;
-use function sprintf;
 use function ucfirst;
 
 final class FlashMessages
@@ -97,11 +97,11 @@ final class FlashMessages
     private static function resolveTitle(string $type): string
     {
         return match ($type) {
-            'success' => 'Operazione completata',
-            'warning' => 'Attenzione',
-            'danger', 'error' => 'Si è verificato un problema',
-            'info' => 'Informazione',
-            default => sprintf('Messaggio %s', ucfirst($type)),
+            'success' => Translate::t('Operazione completata'),
+            'warning' => Translate::t('Attenzione'),
+            'danger', 'error' => Translate::t('Si è verificato un problema'),
+            'info' => Translate::t('Informazione'),
+            default => Translate::t('Messaggio {type}', ['type' => ucfirst($type)]),
         };
     }
 

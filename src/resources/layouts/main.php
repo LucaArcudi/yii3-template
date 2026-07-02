@@ -6,7 +6,9 @@ use App\Assets\ArchitectUi\ArchitectUiAsset;
 use App\Data\Core\Notification\NotificationPolicy;
 use App\Data\Core\Notification\NotificationReader;
 use App\Data\Core\User\UserIdentity;
+use App\Helpers\AppLocales;
 use App\Helpers\PublicAssetResolver;
+use App\Helpers\Translate;
 use App\Navigation\NavigationProvider;
 use App\Params\Core\ApplicationParams;
 use App\Params\Core\LayoutParams;
@@ -31,6 +33,7 @@ use Yiisoft\View\WebView;
  * @var LayoutParams $layoutParams
  * @var FlashInterface $flash
  * @var CurrentUser $currentUser
+ * @var \Yiisoft\Translator\TranslatorInterface $translator
  * @var \Yiisoft\Yii\View\Renderer\Csrf $csrf
  */
 
@@ -50,10 +53,12 @@ $breadcrumbs = is_array($breadcrumbsParameter) ? $breadcrumbsParameter : [];
 
 if ($breadcrumbs === [] && $currentPath !== '/') {
     $breadcrumbs = [
-        ['label' => 'Dashboard', 'url' => '/'],
+        ['label' => Translate::t('Dashboard'), 'url' => '/'],
         ['label' => $title],
     ];
 }
+
+$currentLocale = $translator->getLocale();
 
 $breadcrumbsHtml = Breadcrumb::render($breadcrumbs);
 $flashHtml = FlashMessages::render($flash);
@@ -87,7 +92,7 @@ $menuVisibility = [
 
 $currentUserName = $identity instanceof UserIdentity && $identity->getName() !== ''
     ? $identity->getName()
-    : 'Utente';
+    : Translate::t('Utente');
 $currentUserEmail = $identity instanceof UserIdentity && $identity->getEmail() !== ''
     ? $identity->getEmail()
     : '';
@@ -113,11 +118,11 @@ $menu = $menuTreeProvider->getVisibleTree();
 ?>
 <?php $this->beginPage() ?>
 <!doctype html>
-<html lang="it">
+<html lang="<?= Html::encode($currentLocale) ?>">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta http-equiv="Content-Language" content="it">
+    <meta http-equiv="Content-Language" content="<?= Html::encode($currentLocale) ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="<?= Html::encode($applicationParams->name) ?>">
     <title><?= Html::encode($title) ?></title>
@@ -178,6 +183,36 @@ $menu = $menuTreeProvider->getVisibleTree();
             </div>
 
             <div class="app-header-right">
+                <div class="header-btn-lg pe-0 me-2">
+                    <div class="btn-group app-lang-menu">
+                        <button
+                            type="button"
+                            class="p-0 btn app-user-menu__toggle app-lang-menu__toggle"
+                            data-bs-toggle="dropdown"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                            aria-label="<?= Html::encode(Translate::t('Cambia lingua')) ?>"
+                        >
+                            <i class="fa-solid fa-globe opacity-8"></i>
+                            <span class="app-lang-menu__code"><?= Html::encode(strtoupper($currentLocale)) ?></span>
+                            <i class="fa fa-angle-down opacity-8"></i>
+                        </button>
+
+                        <div class="dropdown-menu dropdown-menu-end app-lang-menu__dropdown">
+                            <?php foreach (AppLocales::SUPPORTED as $localeCode => $localeLabel): ?>
+                                <a
+                                    href="/language/<?= Html::encode($localeCode) ?>"
+                                    class="dropdown-item app-lang-menu__item<?= $localeCode === $currentLocale ? ' active' : '' ?>"
+                                    <?= $localeCode === $currentLocale ? 'aria-current="true"' : '' ?>
+                                >
+                                    <span class="app-lang-menu__item-code"><?= Html::encode(strtoupper($localeCode)) ?></span>
+                                    <?= Html::encode($localeLabel) ?>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+
                 <?php if ($notificationPolicy->canUse()): ?>
                     <div class="header-btn-lg pe-0 me-2">
                         <?= NotificationDropdown::render($notificationReader, $csrf, $notificationPolicy->canAccess()) ?>
@@ -228,18 +263,18 @@ $menu = $menuTreeProvider->getVisibleTree();
                                         <div class="nav flex-column">
                                             <a href="/profile" class="dropdown-item app-user-menu__item">
                                                 <i class="fa-regular fa-user me-2"></i>
-                                                Gestione profilo
+                                                <?= Html::encode(Translate::t('Gestione profilo')) ?>
                                             </a>
                                             <a href="/change-password" class="dropdown-item app-user-menu__item">
                                                 <i class="fa-solid fa-key me-2"></i>
-                                                Cambio password
+                                                <?= Html::encode(Translate::t('Cambio password')) ?>
                                             </a>
                                             <div class="dropdown-divider"></div>
                                             <form method="post" action="/logout" class="m-0">
                                                 <?= $csrf->hiddenInput() ?>
                                                 <button type="submit" class="dropdown-item app-user-menu__item text-danger">
                                                     <i class="fa-solid fa-right-from-bracket me-2"></i>
-                                                    Logout
+                                                    <?= Html::encode(Translate::t('Logout')) ?>
                                                 </button>
                                             </form>
                                         </div>

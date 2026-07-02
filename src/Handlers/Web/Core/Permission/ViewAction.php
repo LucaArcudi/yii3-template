@@ -9,6 +9,7 @@ use App\Data\Core\Log\LogReader;
 use App\Data\Core\Permission\PermissionPolicy;
 use App\Data\Core\Permission\PermissionPresenter;
 use App\Data\Core\Permission\PermissionReader;
+use App\Helpers\Translate;
 use App\Services\Core\WebActionService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -38,7 +39,7 @@ final readonly class ViewAction
         $row = $this->permissionReader->getView($id);
 
         if ($row === null) {
-            return $this->webAction->notFound('Permesso non trovato.');
+            return $this->webAction->notFound(Translate::t('Permesso non trovato.'));
         }
 
         $navigation = $this->webAction->viewNavigation('permission', $id, $request, '/permission');

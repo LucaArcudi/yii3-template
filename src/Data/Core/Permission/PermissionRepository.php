@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Data\Core\Permission;
 
 use App\Data\Core\Log\EntityLogRepository;
+use App\Helpers\Translate;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Query\Query;
 
@@ -436,7 +437,7 @@ final readonly class PermissionRepository
         $normalized = preg_replace('/\s+/', ' ', $normalized);
         $normalized = trim((string) $normalized);
 
-        return $normalized !== '' ? ucwords($normalized) : 'Generale';
+        return $normalized !== '' ? ucwords($normalized) : Translate::t('Generale');
     }
 
     private function optionRows(array $rows): array

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Data\Core\Notification;
 
+use App\Helpers\Translate;
 use Yiisoft\Html\Html;
 
 final readonly class NotificationPresenter
@@ -49,8 +50,8 @@ final readonly class NotificationPresenter
     public function statusBadge(): string
     {
         return $this->isRead()
-            ? (string) Html::span('Letta', ['class' => 'badge bg-light text-muted app-status-badge'])
-            : (string) Html::span('Nuova', ['class' => 'badge bg-info app-status-badge']);
+            ? (string) Html::span(Translate::t('Letta'), ['class' => 'badge bg-light text-muted app-status-badge'])
+            : (string) Html::span(Translate::t('Nuova'), ['class' => 'badge bg-info app-status-badge']);
     }
 
     private function value(string $name, mixed $default = null): mixed

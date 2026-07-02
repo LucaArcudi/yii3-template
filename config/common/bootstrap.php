@@ -2,9 +2,15 @@
 
 declare(strict_types=1);
 
+use App\Helpers\Translate;
 use Psr\Container\ContainerInterface;
+use Yiisoft\Translator\TranslatorInterface;
 
 /**
  * @psalm-var list<callable(ContainerInterface): void>
  */
-return [];
+return [
+    static function (ContainerInterface $container): void {
+        Translate::setTranslator($container->get(TranslatorInterface::class));
+    },
+];

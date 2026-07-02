@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Widgets\DataView;
 
+use App\Helpers\Translate;
 use App\Widgets\Card;
 use Yiisoft\Data\Reader\DataReaderInterface;
 use Yiisoft\Html\Html;
@@ -22,8 +23,9 @@ final class CardList
         int $pageSize = 5,
         ?string $toolbar = null,
         string $variant = 'info',
-        string $emptyText = 'Nessun elemento trovato con i filtri correnti.',
+        ?string $emptyText = null,
     ): string {
+        $emptyText ??= Translate::t('Nessun elemento trovato con i filtri correnti.');
         $total = $reader->count();
         $totalPages = max(1, (int) ceil($total / $pageSize));
         $page = min(max(1, $page), $totalPages);
@@ -46,7 +48,10 @@ final class CardList
             $begin = $offset + 1;
             $end = min($offset + $pageSize, $total);
             $footerParts[] = (string) Html::div(
-                'Visualizzando <strong>' . $begin . '-' . $end . '</strong> di <strong>' . $total . '</strong>',
+                Translate::t('Visualizzando {range} di {total}', [
+                    'range' => '<strong>' . $begin . '-' . $end . '</strong>',
+                    'total' => '<strong>' . $total . '</strong>',
+                ]),
                 ['class' => ['app-admin-grid__summary', 'app-card-list__summary', 'me-auto']],
             )->encode(false);
         }

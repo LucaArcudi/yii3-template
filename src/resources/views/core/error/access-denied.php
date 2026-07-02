@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Helpers\Translate;
 use Yiisoft\Html\Html;
 use Yiisoft\User\CurrentUser;
 use Yiisoft\View\WebView;
@@ -13,15 +14,15 @@ use Yiisoft\View\WebView;
 
 $isGuest = $currentUser->isGuest();
 $returnUrl = $isGuest ? '/login' : '/';
-$returnLabel = $isGuest ? 'Vai al login' : 'Torna alla dashboard';
+$returnLabel = $isGuest ? Translate::t('Vai al login') : Translate::t('Torna alla dashboard');
 
-$this->setTitle('Accesso negato');
-$this->setParameter('guestHeaderSubtitle', 'Area riservata');
-$this->setParameter('guestCardSubtitle', 'La richiesta non puo essere completata con le autorizzazioni correnti.');
+$this->setTitle(Translate::t('Accesso negato'));
+$this->setParameter('guestHeaderSubtitle', Translate::t('Area riservata'));
+$this->setParameter('guestCardSubtitle', Translate::t('La richiesta non puo essere completata con le autorizzazioni correnti.'));
 $this->setParameter('pageIcon', 'pe-7s-lock');
 $this->setParameter('breadcrumbs', [
-    ['label' => 'Dashboard', 'url' => '/'],
-    ['label' => 'Accesso negato'],
+    ['label' => Translate::t('Dashboard'), 'url' => '/'],
+    ['label' => Translate::t('Accesso negato')],
 ]);
 $this->setParameter(
     'pageActions',
@@ -38,9 +39,9 @@ $this->setParameter(
         <i class="fa-solid fa-lock"></i>
     </div>
     <div class="app-error-state__code">403</div>
-    <h1 class="app-error-state__title">Accesso negato</h1>
+    <h1 class="app-error-state__title"><?= Translate::t('Accesso negato') ?></h1>
     <p class="app-error-state__message">
-        Non hai i permessi necessari per visualizzare questa pagina o completare questa operazione.
+        <?= Translate::t('Non hai i permessi necessari per visualizzare questa pagina o completare questa operazione.') ?>
     </p>
     <?= Html::a($returnLabel, $returnUrl, ['class' => 'btn btn-primary btn-shadow'])->render() ?>
 </div>

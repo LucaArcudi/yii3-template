@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Data\Core\Permission\PermissionGroupPresenter;
+use App\Helpers\Translate;
 use App\Widgets\Crud\CrudActions;
 use App\Widgets\DataView\Grid;
 use App\Widgets\Filters\FilterModal;
@@ -22,29 +23,29 @@ use Yiisoft\Yii\View\Renderer\Csrf;
 /** @var bool $canUpdate */
 /** @var bool $canDelete */
 
-$this->setTitle('Gruppi permessi');
+$this->setTitle(Translate::t('Gruppi permessi'));
 $this->setParameter('pageIcon', 'fa-solid fa-layer-group');
 $this->setParameter('breadcrumbs', [
-    ['label' => 'Dashboard', 'url' => '/'],
-    ['label' => 'Gruppi permessi'],
+    ['label' => Translate::t('Dashboard'), 'url' => '/'],
+    ['label' => Translate::t('Gruppi permessi')],
 ]);
 
 $filterModalId = 'permission-group-filter-modal';
 $filterFields = [
     [
         'name' => 'name',
-        'label' => 'Nome',
+        'label' => Translate::t('Nome'),
         'widget' => 'textFilter',
-        'placeholder' => 'Cerca per nome',
+        'placeholder' => Translate::t('Cerca per nome'),
         'icon' => 'fa-solid fa-magnifying-glass',
         'columnClass' => 'col-12 col-lg-6',
         'validationRules' => $filterRules['name'] ?? [],
     ],
     [
         'name' => 'code',
-        'label' => 'Codice',
+        'label' => Translate::t('Codice'),
         'widget' => 'textFilter',
-        'placeholder' => 'Es. USER',
+        'placeholder' => Translate::t('Es. USER'),
         'icon' => 'fa-solid fa-key',
         'columnClass' => 'col-12 col-lg-6',
         'validationRules' => $filterRules['code'] ?? [],
@@ -53,7 +54,7 @@ $filterFields = [
 
 $createButton = $canCreate
     ? '<a href="/permission-group/create?_return=' . rawurlencode($currentUrl) . '" class="btn btn-primary btn-shadow btn-sm">'
-        . '<i class="fa-solid fa-plus me-1"></i>Nuovo gruppo'
+        . '<i class="fa-solid fa-plus me-1"></i>' . Html::encode(Translate::t('Nuovo gruppo'))
         . '</a>'
     : '';
 
@@ -72,7 +73,7 @@ $toolbar = sprintf(
 $groupModals = [
     $filterModalId => FilterModal::render(
         id: $filterModalId,
-        title: 'Filtri gruppi permessi',
+        title: Translate::t('Filtri gruppi permessi'),
         action: '/permission-group',
         filters: $filters,
         fields: $filterFields,
@@ -81,7 +82,7 @@ $groupModals = [
 ];
 
 $grid = Grid::render(
-    title: 'Elenco gruppi permessi',
+    title: Translate::t('Elenco gruppi permessi'),
     reader: $reader,
     toolbar: $toolbar,
     variant: 'info',
@@ -89,22 +90,22 @@ $grid = Grid::render(
     columns: [
         new DataColumn(
             property: 'name',
-            header: 'Nome',
+            header: Translate::t('Nome'),
             bodyAttributes: ['class' => 'text-wrap'],
             content: static function (array|object $row): string {
                 $group = new PermissionGroupPresenter((array) $row);
 
                 return sprintf(
-                    '<div class="app-task-cell"><div class="app-task-cell__title">%s</div><div class="app-task-cell__meta">Gruppo #%d</div></div>',
+                    '<div class="app-task-cell"><div class="app-task-cell__title">%s</div><div class="app-task-cell__meta">%s</div></div>',
                     htmlspecialchars($group->name(), ENT_QUOTES, 'UTF-8'),
-                    (int) $group->id(),
+                    Html::encode(Translate::t('Gruppo #{id}', ['id' => (int) $group->id()])),
                 );
             },
             encodeContent: false,
         ),
         new DataColumn(
             property: 'code',
-            header: 'Codice',
+            header: Translate::t('Codice'),
             bodyAttributes: ['class' => 'align-middle'],
             content: static function (array|object $row): string {
                 return '<code class="small">' . htmlspecialchars((new PermissionGroupPresenter((array) $row))->code(), ENT_QUOTES, 'UTF-8') . '</code>';
@@ -113,14 +114,14 @@ $grid = Grid::render(
         ),
         new DataColumn(
             property: 'created_at',
-            header: 'Creato il',
+            header: Translate::t('Creato il'),
             bodyAttributes: ['class' => 'align-middle'],
             content: static function (array|object $row): string {
                 return (new PermissionGroupPresenter((array) $row))->createdAt();
             },
         ),
         new DataColumn(
-            header: 'Azioni',
+            header: Translate::t('Azioni'),
             withSorting: false,
             headerAttributes: ['style' => 'width: 10rem;'],
             bodyAttributes: ['class' => 'align-middle'],
@@ -145,23 +146,23 @@ $grid = Grid::render(
                 if ($canDelete) {
                     $buttons[] = CrudActions::deleteTrigger($deleteModalId);
                     $deleteModalBody = CrudActions::deleteBody(
-                        'Stai eliminando il gruppo <strong>' . Html::encode($group->name()) . '</strong>. Dopo la conferma il record non sara piu recuperabile.',
+                        Translate::t('Stai eliminando il gruppo {name}. Dopo la conferma il record non sara piu recuperabile.', ['name' => '<strong>' . Html::encode($group->name()) . '</strong>']),
                         [
-                            'ID record' => '#' . $id,
-                            'Codice' => '<code>' . Html::encode($group->code()) . '</code>',
+                            Translate::t('ID record') => '#' . $id,
+                            Translate::t('Codice') => '<code>' . Html::encode($group->code()) . '</code>',
                         ],
                     );
 
                     $groupModals[$deleteModalId] = CrudActions::deleteModal(
                         id: $deleteModalId,
-                        title: 'Elimina gruppo permessi',
+                        title: Translate::t('Elimina gruppo permessi'),
                         action: '/permission-group/delete/' . $id,
                         body: $deleteModalBody,
                         csrf: $csrf,
                     );
                 }
 
-                return CrudActions::group($buttons, 'Azioni gruppo permessi #' . $id);
+                return CrudActions::group($buttons, Translate::t('Azioni gruppo permessi #{id}', ['id' => $id]));
             },
             encodeContent: false,
         ),

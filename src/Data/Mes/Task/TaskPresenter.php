@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Data\Mes\Task;
 
+use App\Helpers\Translate;
 use App\Widgets\Badge;
 
 final readonly class TaskPresenter
@@ -59,7 +60,7 @@ final readonly class TaskPresenter
 
     public function statusLabel(): string
     {
-        return TaskEntity::statusOptions()[$this->status()] ?? 'Unknown';
+        return TaskEntity::statusOptions()[$this->status()] ?? Translate::t('Unknown');
     }
 
     public function startDate(): string

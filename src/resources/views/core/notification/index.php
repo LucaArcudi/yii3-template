@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Data\Core\Notification\NotificationPresenter;
+use App\Helpers\Translate;
 use App\Widgets\DataView\Grid;
 use Yiisoft\Data\Db\QueryDataReader;
 use Yiisoft\Html\Html;
@@ -11,22 +12,22 @@ use Yiisoft\Yii\DataView\GridView\Column\DataColumn;
 /** @var QueryDataReader $reader */
 /** @var callable $gridUrlCreator */
 
-$this->setTitle('Notifiche');
+$this->setTitle(Translate::t('Notifiche'));
 $this->setParameter('pageIcon', 'pe-7s-bell');
 $this->setParameter('breadcrumbs', [
-    ['label' => 'Dashboard', 'url' => '/'],
-    ['label' => 'Notifiche'],
+    ['label' => Translate::t('Dashboard'), 'url' => '/'],
+    ['label' => Translate::t('Notifiche')],
 ]);
 
 echo Grid::render(
-    title: 'Centro notifiche',
+    title: Translate::t('Centro notifiche'),
     reader: $reader,
     variant: 'info',
     urlCreator: $gridUrlCreator,
     columns: [
         new DataColumn(
             property: 'title',
-            header: 'Notifica',
+            header: Translate::t('Notifica'),
             bodyAttributes: ['class' => 'text-wrap'],
             content: static function (array|object $row): string {
                 $notification = new NotificationPresenter($row);
@@ -43,23 +44,23 @@ echo Grid::render(
         ),
         new DataColumn(
             property: 'is_read',
-            header: 'Stato',
+            header: Translate::t('Stato'),
             content: static fn(array|object $row): string => (new NotificationPresenter($row))->statusBadge(),
             encodeContent: false,
         ),
         new DataColumn(
             property: 'created_at',
-            header: 'Data',
+            header: Translate::t('Data'),
             content: static fn(array|object $row): string => (new NotificationPresenter($row))->createdAt(),
         ),
         new DataColumn(
-            header: 'Risorsa',
+            header: Translate::t('Risorsa'),
             withSorting: false,
             content: static function (array|object $row): string {
                 $notification = new NotificationPresenter($row);
 
                 return (string) Html::a(
-                    (string) Html::i('', ['class' => 'fa-solid fa-arrow-up-right-from-square me-1']) . 'Apri',
+                    (string) Html::i('', ['class' => 'fa-solid fa-arrow-up-right-from-square me-1']) . Html::encode(Translate::t('Apri')),
                     '/notification/open/' . $notification->id(),
                     ['class' => ['btn', 'btn-sm', 'btn-outline-primary']],
                 )->encode(false);

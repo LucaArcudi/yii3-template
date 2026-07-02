@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Data\Core\Permission\PermissionGroupPresenter;
+use App\Helpers\Translate;
 use App\Widgets\BackButton;
 use App\Widgets\Crud\CrudActions;
 use App\Widgets\DataView\Detail;
@@ -23,8 +24,8 @@ use Yiisoft\Yii\View\Renderer\Csrf;
 $this->setTitle($group->name());
 $this->setParameter('pageIcon', 'fa-solid fa-layer-group');
 $this->setParameter('breadcrumbs', [
-    ['label' => 'Dashboard', 'url' => '/'],
-    ['label' => 'Gruppi permessi', 'url' => '/permission-group'],
+    ['label' => Translate::t('Dashboard'), 'url' => '/'],
+    ['label' => Translate::t('Gruppi permessi'), 'url' => '/permission-group'],
     ['label' => $group->name()],
 ]);
 
@@ -41,20 +42,20 @@ if ($canUpdate) {
 
 if ($canDelete) {
     $deleteModalBody = CrudActions::deleteBody(
-        'Stai eliminando il gruppo <strong>' . Html::encode($group->name()) . '</strong>. Dopo la conferma il record non sara piu recuperabile.',
+        Translate::t('Stai eliminando il gruppo {name}. Dopo la conferma il record non sara piu recuperabile.', ['name' => '<strong>' . Html::encode($group->name()) . '</strong>']),
         [
-            'ID record' => '#' . $groupId,
-            'Codice' => '<code>' . Html::encode($group->code()) . '</code>',
+            Translate::t('ID record') => '#' . $groupId,
+            Translate::t('Codice') => '<code>' . Html::encode($group->code()) . '</code>',
         ],
     );
 
-    $pageActions .= CrudActions::deletePageTrigger($deleteModalId, label: 'Elimina gruppo');
+    $pageActions .= CrudActions::deletePageTrigger($deleteModalId, label: Translate::t('Elimina gruppo'));
 
     $this->setParameter(
         'pageModals',
         CrudActions::deleteModal(
             id: $deleteModalId,
-            title: 'Elimina gruppo permessi',
+            title: Translate::t('Elimina gruppo permessi'),
             action: '/permission-group/delete/' . $groupId,
             body: $deleteModalBody,
             csrf: $csrf,
@@ -76,12 +77,12 @@ echo Detail::render(
     variant: 'info',
     fields: [
         new DataField('id', label: 'ID'),
-        new DataField('name', label: 'Nome'),
-        new DataField('code', label: 'Codice'),
-        new DataField('createdBy', label: 'Creato da'),
-        new DataField('updatedBy', label: 'Aggiornato da'),
-        new DataField('createdAt', label: 'Creato il'),
-        new DataField('updatedAt', label: 'Aggiornato il'),
+        new DataField('name', label: Translate::t('Nome')),
+        new DataField('code', label: Translate::t('Codice')),
+        new DataField('createdBy', label: Translate::t('Creato da')),
+        new DataField('updatedBy', label: Translate::t('Aggiornato da')),
+        new DataField('createdAt', label: Translate::t('Creato il')),
+        new DataField('updatedAt', label: Translate::t('Aggiornato il')),
     ],
 );
 

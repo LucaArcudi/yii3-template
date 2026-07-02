@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Helpers\Translate;
 use App\Widgets\Forms\FormTheme;
 use App\Widgets\Inputs\EmailInput;
 use App\Widgets\Inputs\PasswordInput;
@@ -17,20 +18,20 @@ use Yiisoft\View\WebView;
  * @var array{question: string} $captcha
  */
 
-$this->setTitle('Registrazione');
+$this->setTitle(Translate::t('Registrazione'));
 FormTheme::boot();
 
 $validationRules = $input->getRules();
 ?>
 <div class="text-center mb-4">
-    <h3 class="mb-1">Crea il tuo account</h3>
-    <p class="text-muted mb-0">Compila i campi per accedere alla base gestionale.</p>
+    <h3 class="mb-1"><?= Translate::t('Crea il tuo account') ?></h3>
+    <p class="text-muted mb-0"><?= Translate::t('Compila i campi per accedere alla base gestionale.') ?></p>
 </div>
 
 <div class="alert alert-warning border mb-3" role="alert">
-    <div class="fw-semibold mb-1">Conserva l'email usata per registrarti.</div>
+    <div class="fw-semibold mb-1"><?= Translate::t('Conserva l\'email usata per registrarti.') ?></div>
     <div>
-        L'email è l'identificativo del tuo account: se la dimentichi non sarà possibile autenticarsi.
+        <?= Translate::t('L\'email è l\'identificativo del tuo account: se la dimentichi non sarà possibile autenticarsi.') ?>
     </div>
 </div>
 
@@ -42,9 +43,9 @@ $validationRules = $input->getRules();
 
     <?= TextInput::render(
         name: 'name',
-        label: 'Nome',
+        label: Translate::t('Nome'),
         value: (string) $input->name,
-        placeholder: 'Come vuoi comparire nel gestionale',
+        placeholder: Translate::t('Come vuoi comparire nel gestionale'),
         icon: 'fa-regular fa-user',
         inputAttributes: [
             'autocomplete' => 'name',
@@ -59,7 +60,7 @@ $validationRules = $input->getRules();
         name: 'email',
         label: 'Email',
         value: (string) $input->email,
-        placeholder: 'nome@azienda.it',
+        placeholder: Translate::t('nome@azienda.it'),
         icon: 'fa-regular fa-envelope',
         inputAttributes: [
             'autocomplete' => 'email',
@@ -72,7 +73,7 @@ $validationRules = $input->getRules();
     <?= PasswordInput::render(
         name: 'password',
         label: 'Password',
-        placeholder: 'Minimo 8 caratteri',
+        placeholder: Translate::t('Minimo 8 caratteri'),
         icon: 'fa-solid fa-lock',
         inputAttributes: [
             'autocomplete' => 'new-password',
@@ -84,13 +85,13 @@ $validationRules = $input->getRules();
 
     <?= PasswordInput::render(
         name: 'password_repeat',
-        label: 'Ripeti password',
-        placeholder: 'Conferma la password',
+        label: Translate::t('Ripeti password'),
+        placeholder: Translate::t('Conferma la password'),
         icon: 'fa-solid fa-shield-halved',
         inputAttributes: [
             'autocomplete' => 'new-password',
             'data-match-field' => 'password',
-            'data-match-message' => 'Le password non coincidono.',
+            'data-match-message' => Translate::t('Le password non coincidono.'),
         ],
         validationRules: $validationRules['passwordRepeat'] ?? [],
         validationErrors: $errors['passwordRepeat'] ?? [],
@@ -104,9 +105,9 @@ $validationRules = $input->getRules();
 
     <?= TextInput::render(
         name: 'captcha',
-        label: 'Verifica: ' . $captcha['question'],
+        label: Translate::t('Verifica: {question}', ['question' => $captcha['question']]),
         value: '',
-        placeholder: 'Risposta',
+        placeholder: Translate::t('Risposta'),
         icon: 'fa-solid fa-shield-halved',
         inputAttributes: [
             'autocomplete' => 'off',
@@ -118,11 +119,11 @@ $validationRules = $input->getRules();
     ) ?>
 
     <div class="d-grid">
-        <?= Field::submitButton('Registrati')->addButtonClass('w-100') ?>
+        <?= Field::submitButton(Translate::t('Registrati'))->addButtonClass('w-100') ?>
     </div>
 </form>
 
 <div class="text-center text-muted mt-3">
-    Hai gia un account?
-    <a href="/login">Vai al login</a>
+    <?= Translate::t('Hai gia un account?') ?>
+    <a href="/login"><?= Translate::t('Vai al login') ?></a>
 </div>

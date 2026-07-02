@@ -8,6 +8,7 @@ use App\Data\Core\User\ChangePasswordInput;
 use App\Data\Core\User\UserEntity;
 use App\Data\Core\User\UserIdentity;
 use App\Data\Core\User\UserRepository;
+use App\Helpers\Translate;
 use App\Params\Core\AuthParams;
 use App\Services\Core\AuthRateLimitResult;
 use App\Services\Core\AuthRateLimiter;
@@ -56,7 +57,7 @@ final readonly class ChangePasswordAction
             $tokenUser = $this->findUserByResetToken($token);
 
             if ($tokenUser === null && $request->getMethod() !== Method::POST) {
-                $this->flash->set('error', 'Il link per cambiare la password non e valido o e scaduto.');
+                $this->flash->set('error', Translate::t('Il link per cambiare la password non e valido o e scaduto.'));
 
                 return new RedirectResponse('/forgot-password');
             }
@@ -64,7 +65,7 @@ final readonly class ChangePasswordAction
 
         if (!$tokenMode && $this->currentUser->isGuest()) {
             $this->rememberedUrl->rememberCurrent('auth.return', $request);
-            $this->flash->set('warning', 'Effettua il login per cambiare la password.');
+            $this->flash->set('warning', Translate::t('Effettua il login per cambiare la password.'));
 
             return new RedirectResponse('/login');
         }
@@ -72,7 +73,7 @@ final readonly class ChangePasswordAction
         $user = $tokenMode ? $tokenUser : $this->currentUserEntity();
 
         if (!$tokenMode && $user === null) {
-            $this->flash->set('error', 'Utente non trovato.');
+            $this->flash->set('error', Translate::t('Utente non trovato.'));
 
             return new RedirectResponse('/login');
         }
@@ -108,17 +109,17 @@ final readonly class ChangePasswordAction
                 $user = $this->findUserByResetToken((string) $input->token);
 
                 if ($user === null) {
-                    $errors[''][] = 'Il link per cambiare la password non e valido o e scaduto.';
+                    $errors[''][] = Translate::t('Il link per cambiare la password non e valido o e scaduto.');
                 }
             } elseif ($user !== null && !$this->passwordHasher->verify((string) $input->currentPassword, $user->passwordHash)) {
-                $errors['currentPassword'][] = 'La password attuale non e corretta.';
+                $errors['currentPassword'][] = Translate::t('La password attuale non e corretta.');
             }
 
             if (($errors['password'] ?? []) === []
                 && $user !== null
                 && $this->passwordHasher->verify((string) $input->password, $user->passwordHash)
             ) {
-                $errors['password'][] = 'La nuova password deve essere diversa da quella attuale.';
+                $errors['password'][] = Translate::t('La nuova password deve essere diversa da quella attuale.');
             }
 
             if ($errors === []) {
@@ -139,7 +140,7 @@ final readonly class ChangePasswordAction
                 ));
                 $this->rateLimiter->clearPasswordChangeIdentity('user:' . $user->id);
 
-                $this->flash->set('success', 'Password aggiornata correttamente.');
+                $this->flash->set('success', Translate::t('Password aggiornata correttamente.'));
 
                 $response = new RedirectResponse($this->rememberedUrl->pull('auth.password_return', '/'));
 

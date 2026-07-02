@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Data\Core\Permission\PermissionPresenter;
+use App\Helpers\Translate;
 use App\Widgets\Crud\CrudActions;
 use App\Widgets\DataView\Grid;
 use App\Widgets\Filters\FilterModal;
@@ -22,45 +23,45 @@ use Yiisoft\Yii\View\Renderer\Csrf;
 /** @var bool $canUpdate */
 /** @var bool $canDelete */
 
-$this->setTitle('Permessi');
+$this->setTitle(Translate::t('Permessi'));
 $this->setParameter('pageIcon', 'pe-7s-key');
 $this->setParameter('breadcrumbs', [
-    ['label' => 'Dashboard', 'url' => '/'],
-    ['label' => 'Permessi'],
+    ['label' => Translate::t('Dashboard'), 'url' => '/'],
+    ['label' => Translate::t('Permessi')],
 ]);
 
 $filterModalId = 'permission-filter-modal';
 $filterFields = [
     [
         'name' => 'name',
-        'label' => 'Nome',
+        'label' => Translate::t('Nome'),
         'widget' => 'textFilter',
-        'placeholder' => 'Cerca per nome',
+        'placeholder' => Translate::t('Cerca per nome'),
         'icon' => 'fa-solid fa-magnifying-glass',
         'columnClass' => 'col-12 col-lg-6',
         'validationRules' => $filterRules['name'] ?? [],
     ],
     [
         'name' => 'code',
-        'label' => 'Codice',
+        'label' => Translate::t('Codice'),
         'widget' => 'textFilter',
-        'placeholder' => 'Es. ACCESS',
+        'placeholder' => Translate::t('Es. ACCESS'),
         'icon' => 'fa-solid fa-key',
         'columnClass' => 'col-12 col-lg-6',
         'validationRules' => $filterRules['code'] ?? [],
     ],
     [
         'name' => 'group_name',
-        'label' => 'Gruppo',
+        'label' => Translate::t('Gruppo'),
         'widget' => 'textFilter',
-        'placeholder' => 'Cerca per gruppo',
+        'placeholder' => Translate::t('Cerca per gruppo'),
         'icon' => 'fa-solid fa-layer-group',
         'columnClass' => 'col-12 col-lg-6',
         'validationRules' => $filterRules['group_name'] ?? [],
     ],
     [
         'name' => 'weight',
-        'label' => 'Peso',
+        'label' => Translate::t('Peso'),
         'widget' => 'textFilter',
         'placeholder' => '1',
         'icon' => 'fa-solid fa-weight-hanging',
@@ -69,7 +70,7 @@ $filterFields = [
     ],
     [
         'name' => 'created_at',
-        'label' => 'Creato il',
+        'label' => Translate::t('Creato il'),
         'widget' => 'dateFilter',
         'placeholder' => 'YYYY-MM-DD',
         'icon' => 'fa-regular fa-calendar',
@@ -80,7 +81,7 @@ $filterFields = [
 
 $createButton = $canCreate
     ? '<a href="/permission/create?_return=' . rawurlencode($currentUrl) . '" class="btn btn-primary btn-shadow btn-sm">'
-        . '<i class="fa-solid fa-plus me-1"></i>Nuovo permesso'
+        . '<i class="fa-solid fa-plus me-1"></i>' . Html::encode(Translate::t('Nuovo permesso'))
         . '</a>'
     : '';
 
@@ -99,7 +100,7 @@ $toolbar = sprintf(
 $permissionModals = [
     $filterModalId => FilterModal::render(
         id: $filterModalId,
-        title: 'Filtri permessi',
+        title: Translate::t('Filtri permessi'),
         action: '/permission',
         filters: $filters,
         fields: $filterFields,
@@ -108,7 +109,7 @@ $permissionModals = [
 ];
 
 $grid = Grid::render(
-    title: 'Elenco permessi',
+    title: Translate::t('Elenco permessi'),
     reader: $reader,
     toolbar: $toolbar,
     variant: 'info',
@@ -116,22 +117,22 @@ $grid = Grid::render(
     columns: [
         new DataColumn(
             property: 'name',
-            header: 'Nome',
+            header: Translate::t('Nome'),
             bodyAttributes: ['class' => 'text-wrap'],
             content: static function (array|object $row): string {
                 $permission = new PermissionPresenter($row);
 
                 return sprintf(
-                    '<div class="app-task-cell"><div class="app-task-cell__title">%s</div><div class="app-task-cell__meta">Permesso #%d</div></div>',
+                    '<div class="app-task-cell"><div class="app-task-cell__title">%s</div><div class="app-task-cell__meta">%s</div></div>',
                     htmlspecialchars($permission->name(), ENT_QUOTES, 'UTF-8'),
-                    (int) $permission->id(),
+                    Html::encode(Translate::t('Permesso #{id}', ['id' => (int) $permission->id()])),
                 );
             },
             encodeContent: false,
         ),
         new DataColumn(
             property: 'code',
-            header: 'Codice',
+            header: Translate::t('Codice'),
             bodyAttributes: ['class' => 'align-middle'],
             content: static function (array|object $row): string {
                 $permission = new PermissionPresenter($row);
@@ -142,7 +143,7 @@ $grid = Grid::render(
         ),
         new DataColumn(
             property: 'group_name',
-            header: 'Gruppo',
+            header: Translate::t('Gruppo'),
             bodyAttributes: ['class' => 'align-middle'],
             content: static function (array|object $row): string {
                 return htmlspecialchars((new PermissionPresenter($row))->groupName(), ENT_QUOTES, 'UTF-8');
@@ -151,20 +152,20 @@ $grid = Grid::render(
         ),
         new DataColumn(
             property: 'weight',
-            header: 'Peso',
+            header: Translate::t('Peso'),
             bodyAttributes: ['class' => 'align-middle'],
             content: static fn(array|object $row): string => (string) (new PermissionPresenter($row))->weight(),
         ),
         new DataColumn(
             property: 'created_at',
-            header: 'Creato il',
+            header: Translate::t('Creato il'),
             bodyAttributes: ['class' => 'align-middle'],
             content: static function (array|object $row): string {
                 return (new PermissionPresenter($row))->createdAt();
             },
         ),
         new DataColumn(
-            header: 'Azioni',
+            header: Translate::t('Azioni'),
             withSorting: false,
             headerAttributes: ['style' => 'width: 10rem;'],
             bodyAttributes: ['class' => 'align-middle'],
@@ -189,23 +190,23 @@ $grid = Grid::render(
                 if ($canDelete) {
                     $buttons[] = CrudActions::deleteTrigger($deleteModalId);
                     $deleteModalBody = CrudActions::deleteBody(
-                        'Stai eliminando il permesso <strong>' . Html::encode($permission->name()) . '</strong>. Dopo la conferma il record non sara piu recuperabile.',
+                        Translate::t('Stai eliminando il permesso {name}. Dopo la conferma il record non sara piu recuperabile.', ['name' => '<strong>' . Html::encode($permission->name()) . '</strong>']),
                         [
-                            'ID record' => '#' . $id,
-                            'Codice' => '<code>' . Html::encode($permission->code()) . '</code>',
+                            Translate::t('ID record') => '#' . $id,
+                            Translate::t('Codice') => '<code>' . Html::encode($permission->code()) . '</code>',
                         ],
                     );
 
                     $permissionModals[$deleteModalId] = CrudActions::deleteModal(
                         id: $deleteModalId,
-                        title: 'Elimina permesso',
+                        title: Translate::t('Elimina permesso'),
                         action: '/permission/delete/' . $id,
                         body: $deleteModalBody,
                         csrf: $csrf,
                     );
                 }
 
-                return CrudActions::group($buttons, 'Azioni permesso #' . $id);
+                return CrudActions::group($buttons, Translate::t('Azioni permesso #{id}', ['id' => $id]));
             },
             encodeContent: false,
         ),

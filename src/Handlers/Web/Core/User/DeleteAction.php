@@ -6,6 +6,7 @@ namespace App\Handlers\Web\Core\User;
 
 use App\Data\Core\User\UserPolicy;
 use App\Data\Core\User\UserRepository;
+use App\Helpers\Translate;
 use App\Services\Core\WebActionService;
 use Psr\Http\Message\ResponseInterface;
 use Yiisoft\Router\HydratorAttribute\RouteArgument;
@@ -35,14 +36,14 @@ final readonly class DeleteAction
         }
 
         if ((int) ($this->currentUser->getId() ?? 0) === $id) {
-            $this->flash->set('error', 'Non puoi eliminare l\'utente attualmente autenticato.');
+            $this->flash->set('error', Translate::t('Non puoi eliminare l\'utente attualmente autenticato.'));
 
             return $this->webAction->redirect($redirectUrl);
         }
 
         $actorId = $this->currentUser->getId();
         $this->userRepository->delete($id, $actorId === null || $actorId === '' ? null : (int) $actorId);
-        $this->flash->set('success', 'Utente eliminato con successo.');
+        $this->flash->set('success', Translate::t('Utente eliminato con successo.'));
 
         return $this->webAction->redirect($redirectUrl);
     }

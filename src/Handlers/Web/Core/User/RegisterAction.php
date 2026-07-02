@@ -8,6 +8,7 @@ use App\Data\Core\Role\RoleRepository;
 use App\Data\Core\User\RegisterInput;
 use App\Data\Core\User\UserEntity;
 use App\Data\Core\User\UserRepository;
+use App\Helpers\Translate;
 use App\Params\Core\AuthParams;
 use App\Services\Core\AuthRateLimitResult;
 use App\Services\Core\AuthRateLimiter;
@@ -59,18 +60,18 @@ final readonly class RegisterAction
             $errors = $result->getErrorMessagesIndexedByProperty();
 
             if (!$this->captcha->validate($input->captcha)) {
-                $errors['captcha'][] = 'Risposta di verifica non corretta o scaduta.';
+                $errors['captcha'][] = Translate::t('Risposta di verifica non corretta o scaduta.');
             }
 
             if ($input->website !== null && $input->website !== '') {
-                $errors[''][] = 'Registrazione non completata. Riprova tra qualche minuto.';
+                $errors[''][] = Translate::t('Registrazione non completata. Riprova tra qualche minuto.');
             }
 
             if (($errors['email'] ?? []) === []
                 && $input->email !== null
                 && $this->userRepository->findByEmail($input->email) !== null
             ) {
-                $errors['email'][] = 'Esiste gia un account con questa email.';
+                $errors['email'][] = Translate::t('Esiste gia un account con questa email.');
             }
 
             if ($errors === []) {
@@ -96,7 +97,7 @@ final readonly class RegisterAction
                     $this->userRepository->createWithRoles($user, $roleIds);
                 }
 
-                $this->flash->set('success', 'Account creato correttamente. Ora puoi accedere.');
+                $this->flash->set('success', Translate::t('Account creato correttamente. Ora puoi accedere.'));
                 $this->sendWelcomeEmail($request, (string) $input->email, (string) $input->name);
 
                 return (new Response(302))
@@ -150,7 +151,7 @@ final readonly class RegisterAction
         $roleId = $this->roleRepository->findIdByCode($roleCode);
 
         if ($roleId === null) {
-            $errors[''][] = sprintf('Ruolo predefinito di registrazione "%s" non configurato.', $roleCode);
+            $errors[''][] = Translate::t('Ruolo predefinito di registrazione "{role}" non configurato.', ['role' => $roleCode]);
 
             return [];
         }
@@ -170,12 +171,12 @@ final readonly class RegisterAction
             $this->mailer->sendView(
                 toEmail: $email,
                 toName: $name,
-                subject: 'Account creato',
+                subject: Translate::t('Account creato'),
                 view: 'core/user/welcome',
                 parameters: [
                     'name' => $name,
                     'loginUrl' => $loginUrl,
-                    'preheader' => 'Il tuo account è pronto per il login.',
+                    'preheader' => Translate::t('Il tuo account è pronto per il login.'),
                 ],
                 textBody: sprintf(
                     "Ciao %s,\n\nIl tuo account è stato creato correttamente.\nAccedi da: %s\n",
@@ -189,7 +190,7 @@ final readonly class RegisterAction
                 'exception' => $exception,
             ]);
 
-            $this->flash->set('warning', 'Account creato, ma non è stato possibile inviare l\'email di conferma.');
+            $this->flash->set('warning', Translate::t('Account creato, ma non è stato possibile inviare l\'email di conferma.'));
         }
     }
 }

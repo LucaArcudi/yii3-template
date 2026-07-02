@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Data\Core\User;
 
 use App\Data\Core\InputValue;
+use App\Helpers\Translate;
 use Yiisoft\Validator\Result;
 use Yiisoft\Validator\RulesProviderInterface;
 use Yiisoft\Validator\Rule\Email;
@@ -103,7 +104,7 @@ final class UserInput implements RulesProviderInterface
 
             if ($length < 8 || $length > 255) {
                 $result = $result->addError(
-                    'La password deve contenere tra 8 e 255 caratteri.',
+                    Translate::t('La password deve contenere tra 8 e 255 caratteri.'),
                     valuePath: ['password'],
                 );
             }
@@ -303,7 +304,7 @@ final class UserInput implements RulesProviderInterface
 
         if (!$passwordRequired && !$hasPassword) {
             return $result->addError(
-                'Compila la password prima di confermarla.',
+                Translate::t('Compila la password prima di confermarla.'),
                 valuePath: ['password'],
             );
         }
@@ -311,11 +312,11 @@ final class UserInput implements RulesProviderInterface
         if (!$hasPassword || !$hasPasswordRepeat) {
             return $passwordRequired
                 ? $result
-                : $result->addError('Ripeti la nuova password.', valuePath: ['passwordRepeat']);
+                : $result->addError(Translate::t('Ripeti la nuova password.'), valuePath: ['passwordRepeat']);
         }
 
         if ($password !== $passwordRepeat) {
-            $result = $result->addError('Le password non coincidono.', valuePath: ['passwordRepeat']);
+            $result = $result->addError(Translate::t('Le password non coincidono.'), valuePath: ['passwordRepeat']);
         }
 
         return $result;

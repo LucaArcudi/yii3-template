@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Handlers\Web\Core\User;
 
 use App\Data\Core\User\UserRepository;
+use App\Helpers\Translate;
 use App\Services\Core\RememberMeCookieService;
 use HttpSoft\Message\Response;
 use HttpSoft\Response\RedirectResponse;
@@ -27,7 +28,7 @@ final readonly class DeleteProfileAction
         $id = $this->currentUser->getId();
 
         if ($id === null || $id === '') {
-            $this->flash->set('warning', 'Effettua il login per gestire il profilo.');
+            $this->flash->set('warning', Translate::t('Effettua il login per gestire il profilo.'));
 
             return new RedirectResponse('/login');
         }
@@ -40,7 +41,7 @@ final readonly class DeleteProfileAction
 
         $this->userRepository->delete($userId, $userId);
         $this->currentUser->logout();
-        $this->flash->set('info', 'Profilo eliminato correttamente.');
+        $this->flash->set('info', Translate::t('Profilo eliminato correttamente.'));
 
         return $this->rememberMeCookie->expireCookie(
             $request,

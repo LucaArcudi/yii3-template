@@ -14,7 +14,7 @@ final class NotFoundHandlerCest
         $I->amOnPage('/non-existent-page');
         $I->canSeeResponseCodeIs(404);
         $I->see('404');
-        $I->see('The page you are looking for could not be found.');
+        $I->see('La pagina che cerchi non esiste o non è più disponibile.');
     }
 
     public function returnHome(WebTester $I): void
@@ -22,7 +22,7 @@ final class NotFoundHandlerCest
         $I->wantTo('check the not found page keeps a home link.');
         $I->amOnPage('/non-existent-page');
         $I->canSeeResponseCodeIs(404);
-        $I->click('Go to Home');
+        $I->click('Torna alla home');
         $I->expectTo('be redirected to login because dashboard is protected.');
         $I->seeInCurrentUrl('/login');
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Widgets\DataView;
 
+use App\Helpers\Translate;
 use Yiisoft\Html\Html;
 
 use function max;
@@ -25,8 +26,8 @@ final class Pagination
 
         $currentPage = min(max(1, $currentPage), $totalPages);
         $items = [];
-        $items[] = self::item('Prima', 1, $currentPage === 1, false, $urlCreator);
-        $items[] = self::item('Prec.', max(1, $currentPage - 1), $currentPage === 1, false, $urlCreator);
+        $items[] = self::item(Translate::t('Prima'), 1, $currentPage === 1, false, $urlCreator);
+        $items[] = self::item(Translate::t('Prec.'), max(1, $currentPage - 1), $currentPage === 1, false, $urlCreator);
 
         $start = max(1, $currentPage - 2);
         $end = min($totalPages, $currentPage + 2);
@@ -35,13 +36,13 @@ final class Pagination
             $items[] = self::item((string) $page, $page, false, $page === $currentPage, $urlCreator);
         }
 
-        $items[] = self::item('Succ.', min($totalPages, $currentPage + 1), $currentPage === $totalPages, false, $urlCreator);
-        $items[] = self::item('Ultima', $totalPages, $currentPage === $totalPages, false, $urlCreator);
+        $items[] = self::item(Translate::t('Succ.'), min($totalPages, $currentPage + 1), $currentPage === $totalPages, false, $urlCreator);
+        $items[] = self::item(Translate::t('Ultima'), $totalPages, $currentPage === $totalPages, false, $urlCreator);
 
         return (string) Html::tag(
             'nav',
             (string) Html::tag('ul', implode('', $items), ['class' => 'pagination pagination-sm mb-0'])->encode(false),
-            ['class' => 'app-admin-grid__pager', 'aria-label' => 'Paginazione'],
+            ['class' => 'app-admin-grid__pager', 'aria-label' => Translate::t('Paginazione')],
         )->encode(false);
     }
 

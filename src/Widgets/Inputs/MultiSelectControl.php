@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Widgets\Inputs;
 
+use App\Helpers\Translate;
 use Yiisoft\Html\Html;
 
 final class MultiSelectControl
@@ -82,7 +83,7 @@ final class MultiSelectControl
                 'div',
                 (string) Html::tag(
                     'span',
-                    $empty ? $emptyLabel : '0 di 0 selezionati',
+                    $empty ? $emptyLabel : Translate::t('{selected} di {total} selezionati', ['selected' => 0, 'total' => 0]),
                     [
                         'class' => 'app-multi-select__counter',
                         'data-multi-select-counter' => 'true',
@@ -91,7 +92,7 @@ final class MultiSelectControl
                 . (string) Html::tag(
                     'div',
                     (string) Html::button(
-                        'Seleziona tutti',
+                        Translate::t('Seleziona tutti'),
                         [
                             'type' => 'button',
                             'class' => 'btn btn-link btn-sm app-multi-select__action',

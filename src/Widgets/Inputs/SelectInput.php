@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Widgets\Inputs;
 
+use App\Helpers\Translate;
 use Yiisoft\Html\Html;
 
 use function preg_replace;
@@ -30,7 +31,7 @@ final class SelectInput
         $fieldId = self::buildFieldId($name);
         $labelId = $fieldId . '-label';
         $listId = $fieldId . '-listbox';
-        $placeholder = $prompt ?? 'Seleziona un elemento';
+        $placeholder = $prompt ?? Translate::t('Seleziona un elemento');
 
         $resolvedInputAttributes = InputValidation::inputAttributes('select', $inputAttributes, $validationRules);
         unset($resolvedInputAttributes['multiple'], $resolvedInputAttributes['name'], $resolvedInputAttributes['id']);
@@ -89,7 +90,7 @@ final class SelectInput
                 'class' => ['app-single-select', 'app-multi-select'],
                 'data-single-select' => 'true',
                 'data-placeholder' => $placeholder,
-                'data-empty-options-label' => 'Nessuna opzione disponibile.',
+                'data-empty-options-label' => Translate::t('Nessuna opzione disponibile.'),
                 'data-has-prompt' => $prompt !== null ? 'true' : 'false',
             ],
         )->encode(false);
@@ -176,7 +177,7 @@ final class SelectInput
                 'div',
                 (string) Html::tag(
                     'span',
-                    $empty ? 'Nessuna opzione disponibile.' : '0 di 0 selezionati',
+                    $empty ? Translate::t('Nessuna opzione disponibile.') : Translate::t('{selected} di {total} selezionati', ['selected' => 0, 'total' => 0]),
                     [
                         'class' => 'app-multi-select__counter',
                         'data-single-select-counter' => 'true',

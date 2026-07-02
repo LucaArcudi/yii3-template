@@ -10,6 +10,7 @@ use App\Data\Core\Role\RoleRepository;
 use App\Data\Core\User\UserPolicy;
 use App\Data\Core\User\UserPresenter;
 use App\Data\Core\User\UserReader;
+use App\Helpers\Translate;
 use App\Services\Core\WebActionService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -40,7 +41,7 @@ final readonly class ViewAction
         $row = $this->userReader->getView($id);
 
         if ($row === null) {
-            return $this->webAction->notFound('Utente non trovato.');
+            return $this->webAction->notFound(Translate::t('Utente non trovato.'));
         }
 
         $navigation = $this->webAction->viewNavigation('user', $id, $request, '/user');

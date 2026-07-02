@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Helpers\Translate;
 use App\Widgets\BackButton;
 use App\Widgets\Forms\FormCard;
 use App\Widgets\Forms\FormTheme;
@@ -20,20 +21,20 @@ use Yiisoft\View\WebView;
  * @var string|null $reason
  */
 
-$this->setTitle('Cambio password');
+$this->setTitle(Translate::t('Cambio password'));
 FormTheme::boot();
 
 $this->setParameter('pageIcon', 'pe-7s-lock');
 $this->setParameter('breadcrumbs', [
-    ['label' => 'Dashboard', 'url' => '/'],
-    ['label' => 'Cambio password'],
+    ['label' => Translate::t('Dashboard'), 'url' => '/'],
+    ['label' => Translate::t('Cambio password')],
 ]);
 $this->setParameter('pageActions', BackButton::render('/'));
 
 $validationRules = $input->getRules($requiresCurrentPassword);
 $subtitle = $reason === 'expired'
-    ? 'La password è scaduta. Scegline una nuova per proseguire.'
-    : ($tokenMode ? 'Imposta una nuova password usando il link ricevuto via email.' : 'Aggiorna la password del tuo account.');
+    ? Translate::t('La password è scaduta. Scegline una nuova per proseguire.')
+    : ($tokenMode ? Translate::t('Imposta una nuova password usando il link ricevuto via email.') : Translate::t('Aggiorna la password del tuo account.'));
 
 $form = '';
 $form .= '<div class="text-muted mb-3">' . Html::encode($subtitle) . '</div>';
@@ -52,8 +53,8 @@ if (($errors[''] ?? []) !== []) {
 if ($requiresCurrentPassword) {
     $form .= PasswordInput::render(
         name: 'current_password',
-        label: 'Password attuale',
-        placeholder: 'Inserisci la password attuale',
+        label: Translate::t('Password attuale'),
+        placeholder: Translate::t('Inserisci la password attuale'),
         icon: 'fa-solid fa-lock',
         inputAttributes: [
             'autocomplete' => 'current-password',
@@ -67,8 +68,8 @@ if ($requiresCurrentPassword) {
 
 $form .= PasswordInput::render(
     name: 'password',
-    label: 'Nuova password',
-    placeholder: 'Minimo 8 caratteri',
+    label: Translate::t('Nuova password'),
+    placeholder: Translate::t('Minimo 8 caratteri'),
     icon: 'fa-solid fa-key',
     inputAttributes: [
         'autocomplete' => 'new-password',
@@ -81,13 +82,13 @@ $form .= PasswordInput::render(
 
 $form .= PasswordInput::render(
     name: 'password_repeat',
-    label: 'Ripeti nuova password',
-    placeholder: 'Conferma la nuova password',
+    label: Translate::t('Ripeti nuova password'),
+    placeholder: Translate::t('Conferma la nuova password'),
     icon: 'fa-solid fa-shield-halved',
     inputAttributes: [
         'autocomplete' => 'new-password',
         'data-match-field' => 'password',
-        'data-match-message' => 'Le password non coincidono.',
+        'data-match-message' => Translate::t('Le password non coincidono.'),
     ],
     validationRules: $validationRules['passwordRepeat'] ?? [],
     validationErrors: $errors['passwordRepeat'] ?? [],
@@ -95,23 +96,23 @@ $form .= PasswordInput::render(
 );
 
 $form .= '<div class="app-form-actions mt-4">';
-$form .= Field::submitButton('Aggiorna password')->addButtonClass('px-4');
+$form .= Field::submitButton(Translate::t('Aggiorna password'))->addButtonClass('px-4');
 $form .= '</div>';
 $form .= '</form>';
 
 if ($tokenMode) {
     echo '<div class="text-center mb-4">';
-    echo '<h3 class="mb-1">Cambio password</h3>';
+    echo '<h3 class="mb-1">' . Html::encode(Translate::t('Cambio password')) . '</h3>';
     echo '<p class="text-muted mb-0">' . Html::encode($subtitle) . '</p>';
     echo '</div>';
     echo $form;
-    echo '<div class="text-center text-muted mt-3"><a href="/login">Torna al login</a></div>';
+    echo '<div class="text-center text-muted mt-3"><a href="/login">' . Html::encode(Translate::t('Torna al login')) . '</a></div>';
 
     return;
 }
 
 echo FormCard::render(
-    title: 'Cambio password',
+    title: Translate::t('Cambio password'),
     formHtml: $form,
     variant: 'secondary',
 );

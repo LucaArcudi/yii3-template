@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 use App\Assets\ArchitectUi\ArchitectUiAsset;
+use App\Helpers\AppLocales;
 use App\Helpers\PublicAssetResolver;
+use App\Helpers\Translate;
 use App\Params\Core\ApplicationParams;
 use App\Params\Core\LayoutParams;
 use App\Widgets\FlashMessages;
@@ -19,6 +21,7 @@ use Yiisoft\View\WebView;
  * @var LayoutParams $layoutParams
  * @var AssetManager $assetManager
  * @var FlashInterface $flash
+ * @var \Yiisoft\Translator\TranslatorInterface $translator
  */
 
 $assetManager->register(ArchitectUiAsset::class);
@@ -32,11 +35,21 @@ $this->addJsVars($assetManager->getJsVars());
 $title = $this->getTitle() ?: $applicationParams->name;
 $flashHtml = FlashMessages::render($flash);
 $logoUrl = PublicAssetResolver::url($layoutParams->logo);
-$headerSubtitle = (string) $this->getParameter('guestHeaderSubtitle', 'Area di accesso ArchitectUI');
+$headerSubtitle = (string) $this->getParameter('guestHeaderSubtitle', Translate::t('Area di accesso ArchitectUI'));
 $cardSubtitle = (string) $this->getParameter(
     'guestCardSubtitle',
-    'Accedi o crea un nuovo account per entrare nell\'area gestionale.',
+    Translate::t('Accedi o crea un nuovo account per entrare nell\'area gestionale.'),
 );
+$currentLocale = $translator->getLocale();
+$langLinks = [];
+
+foreach (AppLocales::SUPPORTED as $localeCode => $localeLabel) {
+    $langLinks[] = $localeCode === $currentLocale
+        ? '<span class="app-guest-lang__current">' . Html::encode($localeLabel) . '</span>'
+        : '<a href="/language/' . Html::encode($localeCode) . '">' . Html::encode($localeLabel) . '</a>';
+}
+
+$langSwitcherHtml = implode('<span class="mx-2">·</span>', $langLinks);
 $pageModalsParameter = $this->getParameter('pageModals', null);
 $pageModals = is_string($pageModalsParameter) && $pageModalsParameter !== ''
     ? $pageModalsParameter
@@ -44,11 +57,11 @@ $pageModals = is_string($pageModalsParameter) && $pageModalsParameter !== ''
 ?>
 <?php $this->beginPage() ?>
 <!doctype html>
-<html lang="it">
+<html lang="<?= Html::encode($currentLocale) ?>">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta http-equiv="Content-Language" content="it">
+    <meta http-equiv="Content-Language" content="<?= Html::encode($currentLocale) ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= Html::encode($title) ?></title>
     <link rel="icon" href="/favicon.ico">
@@ -86,6 +99,10 @@ $pageModals = is_string($pageModalsParameter) && $pageModalsParameter !== ''
                         <?= $content ?>
                     </div>
                 </div>
+
+                        <div class="text-center text-muted app-guest-lang">
+                            <?= $langSwitcherHtml ?>
+                        </div>
                     </div>
                 </div>
             </div>

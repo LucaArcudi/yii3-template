@@ -8,6 +8,7 @@ use App\Data\Core\User\UserIdentity;
 use App\Data\Core\User\UserInput;
 use App\Data\Core\User\UserEntity;
 use App\Data\Core\User\UserRepository;
+use App\Helpers\Translate;
 use App\Services\Core\PasswordHasher;
 use HttpSoft\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -35,7 +36,7 @@ final readonly class ProfileAction
         $user = $this->currentUserEntity();
 
         if ($user === null) {
-            $this->flash->set('warning', 'Effettua il login per gestire il profilo.');
+            $this->flash->set('warning', Translate::t('Effettua il login per gestire il profilo.'));
 
             return new RedirectResponse('/login');
         }
@@ -52,7 +53,7 @@ final readonly class ProfileAction
                 default => $this->renderProfile(
                     $user,
                     $input,
-                    profileErrors: ['' => ['Richiesta non valida.']],
+                    profileErrors: ['' => [Translate::t('Richiesta non valida.')]],
                     profileValidated: true,
                 ),
             };
@@ -85,7 +86,7 @@ final readonly class ProfileAction
 
         $this->userRepository->updateProfile($updatedUser);
         $this->refreshIdentity($updatedUser);
-        $this->flash->set('success', 'Profilo aggiornato correttamente.');
+        $this->flash->set('success', Translate::t('Profilo aggiornato correttamente.'));
 
         return new RedirectResponse('/profile');
     }
@@ -106,13 +107,13 @@ final readonly class ProfileAction
             && $input->email !== $user->email
             && $this->userRepository->emailExists($input->email, (int) $user->id)
         ) {
-            $errors['email'][] = 'Esiste gia un utente con questa email.';
+            $errors['email'][] = Translate::t('Esiste gia un utente con questa email.');
         }
 
         if (($errors['currentPassword'] ?? []) === []
             && !$this->passwordHasher->verify((string) $input->currentPassword, $user->passwordHash)
         ) {
-            $errors['currentPassword'][] = 'Password attuale non corretta.';
+            $errors['currentPassword'][] = Translate::t('Password attuale non corretta.');
         }
 
         if ($errors !== []) {
@@ -120,7 +121,7 @@ final readonly class ProfileAction
         }
 
         if ($input->email === $user->email) {
-            $this->flash->set('info', 'Questa email e gia associata al tuo profilo.');
+            $this->flash->set('info', Translate::t('Questa email e gia associata al tuo profilo.'));
 
             return new RedirectResponse('/profile');
         }
@@ -135,7 +136,7 @@ final readonly class ProfileAction
 
         $this->userRepository->updateProfile($updatedUser);
         $this->refreshIdentity($updatedUser);
-        $this->flash->set('success', 'Email aggiornata correttamente.');
+        $this->flash->set('success', Translate::t('Email aggiornata correttamente.'));
 
         return new RedirectResponse('/profile');
     }

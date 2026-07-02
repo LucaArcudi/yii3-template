@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Helpers\Translate;
 use Yiisoft\Html\Html;
 use Yiisoft\User\CurrentUser;
 use Yiisoft\View\WebView;
@@ -14,23 +15,23 @@ use Yiisoft\View\WebView;
 
 $isGuest = $currentUser->isGuest();
 $returnUrl = $isGuest ? '/login' : '/';
-$returnLabel = $isGuest ? 'Torna al login' : 'Torna alla dashboard';
+$returnLabel = $isGuest ? Translate::t('Torna al login') : Translate::t('Torna alla dashboard');
 $retryAfterMessage = null;
 
 if ($retryAfterSeconds !== null) {
     $minutes = max(1, (int) ceil($retryAfterSeconds / 60));
     $retryAfterMessage = $minutes === 1
-        ? 'Riprova tra circa 1 minuto.'
-        : 'Riprova tra circa ' . $minutes . ' minuti.';
+        ? Translate::t('Riprova tra circa 1 minuto.')
+        : Translate::t('Riprova tra circa {minutes} minuti.', ['minutes' => $minutes]);
 }
 
-$this->setTitle('Troppi tentativi');
-$this->setParameter('guestHeaderSubtitle', 'Protezione account');
-$this->setParameter('guestCardSubtitle', 'Attendi qualche minuto prima di riprovare.');
+$this->setTitle(Translate::t('Troppi tentativi'));
+$this->setParameter('guestHeaderSubtitle', Translate::t('Protezione account'));
+$this->setParameter('guestCardSubtitle', Translate::t('Attendi qualche minuto prima di riprovare.'));
 $this->setParameter('pageIcon', 'pe-7s-timer');
 $this->setParameter('breadcrumbs', [
-    ['label' => 'Dashboard', 'url' => '/'],
-    ['label' => 'Troppi tentativi'],
+    ['label' => Translate::t('Dashboard'), 'url' => '/'],
+    ['label' => Translate::t('Troppi tentativi')],
 ]);
 $this->setParameter(
     'pageActions',
@@ -47,9 +48,9 @@ $this->setParameter(
         <i class="fa-solid fa-hourglass-half"></i>
     </div>
     <div class="app-error-state__code">429</div>
-    <h1 class="app-error-state__title">Troppi tentativi</h1>
+    <h1 class="app-error-state__title"><?= Translate::t('Troppi tentativi') ?></h1>
     <p class="app-error-state__message">
-        Abbiamo limitato temporaneamente questa operazione per proteggere account e sistema.
+        <?= Translate::t('Abbiamo limitato temporaneamente questa operazione per proteggere account e sistema.') ?>
         <?php if ($retryAfterMessage !== null): ?>
             <strong><?= Html::encode($retryAfterMessage) ?></strong>
         <?php endif; ?>

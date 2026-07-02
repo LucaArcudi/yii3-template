@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Data\Core\User;
 
+use App\Helpers\Translate;
 use App\Widgets\Badge;
 
 final readonly class UserPresenter
@@ -49,7 +50,7 @@ final readonly class UserPresenter
 
     public function statusLabel(): string
     {
-        return UserEntity::statusOptions()[$this->status()] ?? 'Sconosciuto';
+        return UserEntity::statusOptions()[$this->status()] ?? Translate::t('Sconosciuto');
     }
 
     public function statusVariant(): string
@@ -115,7 +116,7 @@ final readonly class UserPresenter
         $value = $this->get('password_expires_at', $this->get('passwordExpiresAt'));
 
         if ($value === null || $value === '') {
-            return 'Mai';
+            return Translate::t('Mai');
         }
 
         return date('d/m/Y H:i', strtotime((string) $value));

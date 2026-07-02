@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Helpers\Translate;
 use App\Widgets\Forms\FormTheme;
 use App\Widgets\Inputs\EmailInput;
 use App\Widgets\Inputs\PasswordInput;
@@ -15,14 +16,14 @@ use Yiisoft\View\WebView;
  * @var bool $validated
  */
 
-$this->setTitle('Login');
+$this->setTitle(Translate::t('Login'));
 FormTheme::boot();
 
 $validationRules = $input->getRules();
 ?>
 <div class="text-center mb-4">
-    <h3 class="mb-1">Bentornato</h3>
-    <p class="text-muted mb-0">Inserisci le tue credenziali per continuare.</p>
+    <h3 class="mb-1"><?= Translate::t('Bentornato') ?></h3>
+    <p class="text-muted mb-0"><?= Translate::t('Inserisci le tue credenziali per continuare.') ?></p>
 </div>
 
 <form
@@ -40,7 +41,7 @@ $validationRules = $input->getRules();
         name: 'email',
         label: 'Email',
         value: (string) $input->email,
-        placeholder: 'nome@azienda.it',
+        placeholder: Translate::t('nome@azienda.it'),
         icon: 'fa-regular fa-envelope',
         inputAttributes: [
             'autocomplete' => 'username',
@@ -54,7 +55,7 @@ $validationRules = $input->getRules();
     <?= PasswordInput::render(
         name: 'password',
         label: 'Password',
-        placeholder: 'Inserisci la password',
+        placeholder: Translate::t('Inserisci la password'),
         icon: 'fa-solid fa-lock',
         inputAttributes: [
             'autocomplete' => 'current-password',
@@ -74,18 +75,18 @@ $validationRules = $input->getRules();
                 class="form-check-input"
                 <?= $input->rememberMe ? 'checked' : '' ?>
             >
-            <label class="form-check-label" for="remember-me">Ricordami</label>
+            <label class="form-check-label" for="remember-me"><?= Translate::t('Ricordami') ?></label>
         </div>
 
-        <a href="/forgot-password">Password dimenticata?</a>
+        <a href="/forgot-password"><?= Translate::t('Password dimenticata?') ?></a>
     </div>
 
     <div class="d-grid">
-        <?= Field::submitButton('Accedi')->addButtonClass('w-100') ?>
+        <?= Field::submitButton(Translate::t('Accedi'))->addButtonClass('w-100') ?>
     </div>
 </form>
 
 <div class="text-center text-muted mt-3">
-    Nessun account?
-    <a href="/register">Registrati</a>
+    <?= Translate::t('Nessun account?') ?>
+    <a href="/register"><?= Translate::t('Registrati') ?></a>
 </div>

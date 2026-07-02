@@ -6,6 +6,7 @@ namespace App\Handlers\Web\Mes\Task;
 
 use App\Data\Mes\Task\TaskPolicy;
 use App\Data\Mes\Task\TaskRepository;
+use App\Helpers\Translate;
 use App\Services\Core\CurrentActorProvider;
 use App\Services\Core\WebActionService;
 use Psr\Http\Message\ResponseInterface;
@@ -35,7 +36,7 @@ final readonly class DeleteAction
         }
 
         $this->taskRepository->delete($id, $this->currentActorProvider->id());
-        $this->flash->set('success', 'Task eliminata con successo.');
+        $this->flash->set('success', Translate::t('Task eliminata con successo.'));
 
         return $this->webAction->redirect($redirectUrl);
     }

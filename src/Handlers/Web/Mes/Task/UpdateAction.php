@@ -7,6 +7,7 @@ namespace App\Handlers\Web\Mes\Task;
 use App\Data\Mes\Task\TaskInput;
 use App\Data\Mes\Task\TaskPolicy;
 use App\Data\Mes\Task\TaskRepository;
+use App\Helpers\Translate;
 use App\Services\Core\CurrentActorProvider;
 use App\Services\Core\WebActionService;
 use Psr\Http\Message\ResponseInterface;
@@ -47,7 +48,7 @@ final readonly class UpdateAction
 
             if ($result->isValid()) {
                 $this->taskRepository->update($input->toTask($task, $this->currentActorProvider->id()));
-                $this->flash->set('success', 'Task aggiornata con successo.');
+                $this->flash->set('success', Translate::t('Task aggiornata con successo.'));
 
                 return $this->webAction->redirectToView('task', $id);
             }

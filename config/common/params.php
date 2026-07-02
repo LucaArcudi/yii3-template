@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Data\Core\Notification\NotificationPolicy;
 use App\Data\Core\Notification\NotificationReader;
+use App\Helpers\AppLocales;
 use App\Navigation\NavigationProvider;
 use App\Params\Core\ApplicationParams;
 use App\Params\Core\LayoutParams;
@@ -14,6 +15,7 @@ use Yiisoft\Session\Flash\FlashInterface;
 use Yiisoft\Form\Theme\ThemePath;
 use Yiisoft\Router\CurrentRoute;
 use Yiisoft\Router\UrlGeneratorInterface;
+use Yiisoft\Translator\TranslatorInterface;
 use Yiisoft\User\CurrentUser;
 use Yiisoft\Yii\View\Renderer\CsrfViewInjection;
 
@@ -109,6 +111,14 @@ return [
         'aliases' => require __DIR__ . '/aliases.php',
     ],
 
+    // fallbackLocale null: a ID mancante il translator restituisce l'ID stesso,
+    // che è già il testo sorgente (italiano per 'app', inglese per 'yii-validator').
+    'yiisoft/translator' => [
+        'locale' => AppLocales::DEFAULT,
+        'fallbackLocale' => null,
+        'defaultCategory' => 'app',
+    ],
+
     'yiisoft/form' => [
         'themes' => [
             'default' => require ThemePath::BOOTSTRAP5_VERTICAL,
@@ -143,6 +153,7 @@ return [
             'aliases' => Reference::to(Aliases::class),
             'flash' => Reference::to(FlashInterface::class),
             'currentUser' => Reference::to(CurrentUser::class),
+            'translator' => Reference::to(TranslatorInterface::class),
         ],
     ],
 
