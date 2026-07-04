@@ -1,0 +1,1152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="6.16.1@f1f5de594dc76faf8784e02d3dc4716c91c6f6ac">
+  <file src="src/Dashboard/DashboardComponentProvider.php">
+    <PossiblyNullArgument>
+      <code><![CDATA[$this->currentUser->getId()]]></code>
+    </PossiblyNullArgument>
+  </file>
+  <file src="src/Dashboard/DashboardComponentRenderer.php">
+    <UnresolvableInclude>
+      <code><![CDATA[require $viewFile]]></code>
+    </UnresolvableInclude>
+  </file>
+  <file src="src/Dashboard/DashboardComponentVisibility.php">
+    <RedundantCastGivenDocblockType>
+      <code><![CDATA[(bool) $visibility[$key]]]></code>
+    </RedundantCastGivenDocblockType>
+  </file>
+  <file src="src/Data/Core/Log/EntityLogRepository.php">
+    <InvalidCast>
+      <code><![CDATA[$parsedBody]]></code>
+    </InvalidCast>
+    <RedundantCastGivenDocblockType>
+      <code><![CDATA[(string) $part]]></code>
+    </RedundantCastGivenDocblockType>
+    <RedundantCondition>
+      <code><![CDATA['[unavailable]']]></code>
+    </RedundantCondition>
+    <RedundantConditionGivenDocblockType>
+      <code><![CDATA[is_object($parsedBody)]]></code>
+    </RedundantConditionGivenDocblockType>
+    <TypeDoesNotContainType>
+      <code><![CDATA[$argv === []]]></code>
+      <code><![CDATA[$argv === []]]></code>
+      <code><![CDATA[is_scalar($parsedBody)]]></code>
+    </TypeDoesNotContainType>
+  </file>
+  <file src="src/Data/Core/Log/LogPolicy.php">
+    <PossiblyNullArgument>
+      <code><![CDATA[$userId]]></code>
+    </PossiblyNullArgument>
+  </file>
+  <file src="src/Data/Core/Log/LogPresenter.php">
+    <PossiblyFalseArgument>
+      <code><![CDATA[strtotime((string) $value)]]></code>
+    </PossiblyFalseArgument>
+  </file>
+  <file src="src/Data/Core/Notification/NotificationRepository.php">
+    <RedundantCastGivenDocblockType>
+      <code><![CDATA[(int) $userId]]></code>
+    </RedundantCastGivenDocblockType>
+  </file>
+  <file src="src/Data/Core/Permission/PermissionFilter.php">
+    <InvalidArrayAccess>
+      <code><![CDATA[$rules['code']]]></code>
+      <code><![CDATA[$rules['createdAt']]]></code>
+      <code><![CDATA[$rules['groupName']]]></code>
+      <code><![CDATA[$rules['id']]]></code>
+      <code><![CDATA[$rules['name']]]></code>
+      <code><![CDATA[$rules['weight']]]></code>
+    </InvalidArrayAccess>
+  </file>
+  <file src="src/Data/Core/Permission/PermissionGroupFilter.php">
+    <InvalidArrayAccess>
+      <code><![CDATA[$rules['code']]]></code>
+      <code><![CDATA[$rules['createdAt']]]></code>
+      <code><![CDATA[$rules['id']]]></code>
+      <code><![CDATA[$rules['name']]]></code>
+    </InvalidArrayAccess>
+  </file>
+  <file src="src/Data/Core/Permission/PermissionGroupInput.php">
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[$this->getUpdateRules()]]></code>
+    </MixedArgumentTypeCoercion>
+  </file>
+  <file src="src/Data/Core/Permission/PermissionGroupPresenter.php">
+    <PossiblyFalseArgument>
+      <code><![CDATA[strtotime((string) $value)]]></code>
+    </PossiblyFalseArgument>
+  </file>
+  <file src="src/Data/Core/Permission/PermissionGroupReader.php">
+    <InvalidReturnStatement>
+      <code><![CDATA[$row === null ? null : $row]]></code>
+    </InvalidReturnStatement>
+    <InvalidReturnType>
+      <code><![CDATA[?array]]></code>
+    </InvalidReturnType>
+  </file>
+  <file src="src/Data/Core/Permission/PermissionGroupRepository.php">
+    <MixedArgument>
+      <code><![CDATA[$row['created_at'] ?? date('Y-m-d H:i:s')]]></code>
+      <code><![CDATA[$row['updated_at'] ?? null]]></code>
+    </MixedArgument>
+    <PossiblyInvalidArgument>
+      <code><![CDATA[$row]]></code>
+      <code><![CDATA[$row]]></code>
+    </PossiblyInvalidArgument>
+    <PossiblyInvalidArrayAccess>
+      <code><![CDATA[$row['code']]]></code>
+      <code><![CDATA[$row['id']]]></code>
+      <code><![CDATA[$row['name']]]></code>
+    </PossiblyInvalidArrayAccess>
+  </file>
+  <file src="src/Data/Core/Permission/PermissionInput.php">
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[$this->getDeleteRules()]]></code>
+      <code><![CDATA[$this->getUpdateRules()]]></code>
+    </MixedArgumentTypeCoercion>
+  </file>
+  <file src="src/Data/Core/Permission/PermissionPresenter.php">
+    <MixedPropertyFetch>
+      <code><![CDATA[$this->data->{$key}]]></code>
+    </MixedPropertyFetch>
+    <PossiblyFalseArgument>
+      <code><![CDATA[strtotime((string) $value)]]></code>
+      <code><![CDATA[strtotime((string) $value)]]></code>
+    </PossiblyFalseArgument>
+    <RedundantCondition>
+      <code><![CDATA[is_array($this->data)]]></code>
+    </RedundantCondition>
+  </file>
+  <file src="src/Data/Core/Permission/PermissionReader.php">
+    <InvalidReturnStatement>
+      <code><![CDATA[$row === null ? null : $row]]></code>
+    </InvalidReturnStatement>
+    <InvalidReturnType>
+      <code><![CDATA[?array]]></code>
+    </InvalidReturnType>
+  </file>
+  <file src="src/Data/Core/Permission/PermissionRepository.php">
+    <MixedArgument>
+      <code><![CDATA[$row]]></code>
+      <code><![CDATA[$row['created_at'] ?? null]]></code>
+      <code><![CDATA[$row['updated_at'] ?? null]]></code>
+    </MixedArgument>
+    <MixedArrayAccess>
+      <code><![CDATA[$row['code']]]></code>
+      <code><![CDATA[$row['id']]]></code>
+      <code><![CDATA[$row['id']]]></code>
+      <code><![CDATA[$row['name']]]></code>
+      <code><![CDATA[$row['weight']]]></code>
+    </MixedArrayAccess>
+    <PossiblyInvalidArgument>
+      <code><![CDATA[$row]]></code>
+      <code><![CDATA[fn(array $row) => $this->mapRow($row)]]></code>
+    </PossiblyInvalidArgument>
+    <PossiblyInvalidArrayAccess>
+      <code><![CDATA[$row['code']]]></code>
+      <code><![CDATA[$row['code']]]></code>
+      <code><![CDATA[$row['group_name']]]></code>
+      <code><![CDATA[$row['id']]]></code>
+      <code><![CDATA[$row['id']]]></code>
+      <code><![CDATA[$row['name']]]></code>
+      <code><![CDATA[$row['name']]]></code>
+    </PossiblyInvalidArrayAccess>
+    <RedundantFunctionCall>
+      <code><![CDATA[array_values]]></code>
+    </RedundantFunctionCall>
+  </file>
+  <file src="src/Data/Core/Role/RoleFilter.php">
+    <InvalidArrayAccess>
+      <code><![CDATA[$rules['code']]]></code>
+      <code><![CDATA[$rules['createdAt']]]></code>
+      <code><![CDATA[$rules['id']]]></code>
+      <code><![CDATA[$rules['name']]]></code>
+    </InvalidArrayAccess>
+  </file>
+  <file src="src/Data/Core/Role/RoleInput.php">
+    <InvalidPropertyAssignmentValue>
+      <code><![CDATA[$this->permissionIds]]></code>
+      <code><![CDATA[array_values($ids)]]></code>
+      <code><![CDATA[array_values($this->permissionIds)]]></code>
+    </InvalidPropertyAssignmentValue>
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[$this->getDeleteRules()]]></code>
+      <code><![CDATA[$this->getUpdateRules()]]></code>
+    </MixedArgumentTypeCoercion>
+    <PossiblyNullArrayOffset>
+      <code><![CDATA[$ids]]></code>
+      <code><![CDATA[$this->permissionIds]]></code>
+    </PossiblyNullArrayOffset>
+  </file>
+  <file src="src/Data/Core/Role/RolePresenter.php">
+    <MixedPropertyFetch>
+      <code><![CDATA[$this->data->{$key}]]></code>
+    </MixedPropertyFetch>
+    <PossiblyFalseArgument>
+      <code><![CDATA[strtotime((string) $value)]]></code>
+      <code><![CDATA[strtotime((string) $value)]]></code>
+    </PossiblyFalseArgument>
+    <RedundantCondition>
+      <code><![CDATA[is_array($this->data)]]></code>
+    </RedundantCondition>
+  </file>
+  <file src="src/Data/Core/Role/RoleReader.php">
+    <InvalidReturnStatement>
+      <code><![CDATA[$row === null ? null : $row]]></code>
+    </InvalidReturnStatement>
+    <InvalidReturnType>
+      <code><![CDATA[?array]]></code>
+    </InvalidReturnType>
+  </file>
+  <file src="src/Data/Core/Role/RoleRepository.php">
+    <MixedArgument>
+      <code><![CDATA[$row['created_at'] ?? null]]></code>
+      <code><![CDATA[$row['updated_at'] ?? null]]></code>
+    </MixedArgument>
+    <PossiblyInvalidArgument>
+      <code><![CDATA[$row]]></code>
+    </PossiblyInvalidArgument>
+    <PossiblyInvalidArrayAccess>
+      <code><![CDATA[$row['code']]]></code>
+      <code><![CDATA[$row['id']]]></code>
+      <code><![CDATA[$row['name']]]></code>
+    </PossiblyInvalidArrayAccess>
+  </file>
+  <file src="src/Data/Core/User/UserEntity.php">
+    <MixedReturnStatement>
+      <code><![CDATA[self::statusOptions()[$this->status] ?? Translate::t('Sconosciuto')]]></code>
+      <code><![CDATA[self::statusOptions()[$this->status] ?? Translate::t('Sconosciuto')]]></code>
+    </MixedReturnStatement>
+  </file>
+  <file src="src/Data/Core/User/UserFilter.php">
+    <InvalidArrayAccess>
+      <code><![CDATA[$rules['email']]]></code>
+      <code><![CDATA[$rules['id']]]></code>
+      <code><![CDATA[$rules['lastLoginAt']]]></code>
+      <code><![CDATA[$rules['name']]]></code>
+      <code><![CDATA[$rules['roleIds']]]></code>
+      <code><![CDATA[$rules['status']]]></code>
+    </InvalidArrayAccess>
+    <InvalidReturnStatement>
+      <code><![CDATA[[
+            'id' => [
+                new Integer(min: 1, skipOnEmpty: true),
+            ],
+            'email' => [
+                new Length(max: 190, skipOnEmpty: true),
+            ],
+            'name' => [
+                new Length(max: 120, skipOnEmpty: true),
+            ],
+            'status' => [
+                ...$this->statusRules(),
+            ],
+            'roleIds' => [
+                new Each($this->roleIdRules(), skipOnEmpty: true),
+            ],
+            'lastLoginAt' => [
+                new Date(format: 'php:Y-m-d', skipOnEmpty: true),
+            ],
+        ]]]></code>
+    </InvalidReturnStatement>
+    <InvalidReturnType>
+      <code><![CDATA[iterable]]></code>
+    </InvalidReturnType>
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[$rules]]></code>
+      <code><![CDATA[$this->roleIdRules()]]></code>
+      <code><![CDATA[$this->statusRules()]]></code>
+    </MixedArgumentTypeCoercion>
+    <MixedPropertyTypeCoercion>
+      <code><![CDATA[$allowedRoleIds]]></code>
+      <code><![CDATA[$this->stringList($data['role_ids'] ?? null, 20)]]></code>
+    </MixedPropertyTypeCoercion>
+  </file>
+  <file src="src/Data/Core/User/UserInput.php">
+    <ArgumentTypeCoercion>
+      <code><![CDATA[array_keys(UserEntity::statusOptions())]]></code>
+    </ArgumentTypeCoercion>
+    <InvalidPropertyAssignmentValue>
+      <code><![CDATA[array_values($ids)]]></code>
+      <code><![CDATA[array_values($roleIds)]]></code>
+    </InvalidPropertyAssignmentValue>
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[$this->getCreateRules()]]></code>
+      <code><![CDATA[$this->getDeleteRules()]]></code>
+      <code><![CDATA[$this->getEmailChangeRules()]]></code>
+      <code><![CDATA[$this->getProfileRules()]]></code>
+      <code><![CDATA[$this->getUpdateRules()]]></code>
+    </MixedArgumentTypeCoercion>
+    <MixedReturnTypeCoercion>
+      <code><![CDATA[int]]></code>
+      <code><![CDATA[max(array_keys(UserEntity::statusOptions()))]]></code>
+    </MixedReturnTypeCoercion>
+    <PossiblyNullArrayOffset>
+      <code><![CDATA[$ids]]></code>
+      <code><![CDATA[$roleIds]]></code>
+    </PossiblyNullArrayOffset>
+  </file>
+  <file src="src/Data/Core/User/UserPresenter.php">
+    <MixedPropertyFetch>
+      <code><![CDATA[$this->data->{$key}]]></code>
+    </MixedPropertyFetch>
+    <MixedReturnStatement>
+      <code><![CDATA[UserEntity::statusOptions()[$this->status()] ?? Translate::t('Sconosciuto')]]></code>
+      <code><![CDATA[UserEntity::statusOptions()[$this->status()] ?? Translate::t('Sconosciuto')]]></code>
+    </MixedReturnStatement>
+    <PossiblyFalseArgument>
+      <code><![CDATA[strtotime((string) $value)]]></code>
+      <code><![CDATA[strtotime((string) $value)]]></code>
+      <code><![CDATA[strtotime((string) $value)]]></code>
+      <code><![CDATA[strtotime((string) $value)]]></code>
+      <code><![CDATA[strtotime((string) $value)]]></code>
+    </PossiblyFalseArgument>
+    <RedundantCondition>
+      <code><![CDATA[is_array($this->data)]]></code>
+    </RedundantCondition>
+  </file>
+  <file src="src/Data/Core/User/UserReader.php">
+    <InvalidReturnStatement>
+      <code><![CDATA[$row === null ? null : $row]]></code>
+    </InvalidReturnStatement>
+    <InvalidReturnType>
+      <code><![CDATA[?array]]></code>
+    </InvalidReturnType>
+    <MixedArgument>
+      <code><![CDATA[$roleIds]]></code>
+    </MixedArgument>
+  </file>
+  <file src="src/Data/Core/User/UserRepository.php">
+    <PossiblyInvalidArgument>
+      <code><![CDATA[$row]]></code>
+      <code><![CDATA[$row]]></code>
+      <code><![CDATA[$row]]></code>
+    </PossiblyInvalidArgument>
+  </file>
+  <file src="src/Data/Mes/Task/TaskEntity.php">
+    <MixedReturnStatement>
+      <code><![CDATA[self::statusOptions()[$this->status] ?? Translate::t('Unknown')]]></code>
+      <code><![CDATA[self::statusOptions()[$this->status] ?? Translate::t('Unknown')]]></code>
+    </MixedReturnStatement>
+  </file>
+  <file src="src/Data/Mes/Task/TaskFilter.php">
+    <InvalidArrayAccess>
+      <code><![CDATA[$rules['createdAt']]]></code>
+      <code><![CDATA[$rules['description']]]></code>
+      <code><![CDATA[$rules['endDate']]]></code>
+      <code><![CDATA[$rules['id']]]></code>
+      <code><![CDATA[$rules['startDate']]]></code>
+      <code><![CDATA[$rules['status']]]></code>
+      <code><![CDATA[$rules['title']]]></code>
+    </InvalidArrayAccess>
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[$rules]]></code>
+      <code><![CDATA[$this->statusItemRules()]]></code>
+    </MixedArgumentTypeCoercion>
+    <MixedPropertyTypeCoercion>
+      <code><![CDATA[$this->stringList($data['status'] ?? null, 20)]]></code>
+    </MixedPropertyTypeCoercion>
+  </file>
+  <file src="src/Data/Mes/Task/TaskInput.php">
+    <ArgumentTypeCoercion>
+      <code><![CDATA[array_keys(TaskEntity::statusOptions())]]></code>
+    </ArgumentTypeCoercion>
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[$this->getDeleteRules()]]></code>
+      <code><![CDATA[$this->getUpdateRules()]]></code>
+    </MixedArgumentTypeCoercion>
+    <MixedReturnTypeCoercion>
+      <code><![CDATA[int]]></code>
+      <code><![CDATA[max(array_keys(TaskEntity::statusOptions()))]]></code>
+    </MixedReturnTypeCoercion>
+  </file>
+  <file src="src/Data/Mes/Task/TaskPresenter.php">
+    <MixedPropertyFetch>
+      <code><![CDATA[$this->data->{$key}]]></code>
+    </MixedPropertyFetch>
+    <MixedReturnStatement>
+      <code><![CDATA[TaskEntity::statusOptions()[$this->status()] ?? Translate::t('Unknown')]]></code>
+      <code><![CDATA[TaskEntity::statusOptions()[$this->status()] ?? Translate::t('Unknown')]]></code>
+    </MixedReturnStatement>
+    <PossiblyFalseArgument>
+      <code><![CDATA[strtotime((string) $value)]]></code>
+      <code><![CDATA[strtotime((string) $value)]]></code>
+      <code><![CDATA[strtotime((string) $value)]]></code>
+    </PossiblyFalseArgument>
+    <RedundantCast>
+      <code><![CDATA[(int) $this->status()]]></code>
+    </RedundantCast>
+    <RedundantCondition>
+      <code><![CDATA[is_array($this->data)]]></code>
+    </RedundantCondition>
+  </file>
+  <file src="src/Data/Mes/Task/TaskReader.php">
+    <InvalidReturnStatement>
+      <code><![CDATA[$row === null ? null : $row]]></code>
+    </InvalidReturnStatement>
+    <InvalidReturnType>
+      <code><![CDATA[?array]]></code>
+    </InvalidReturnType>
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[$statuses]]></code>
+    </MixedArgumentTypeCoercion>
+  </file>
+  <file src="src/Data/Mes/Task/TaskRepository.php">
+    <MixedArgument>
+      <code><![CDATA[$row['created_at'] ?? null]]></code>
+      <code><![CDATA[$row['end_date'] ?? null]]></code>
+      <code><![CDATA[$row['start_date'] ?? null]]></code>
+      <code><![CDATA[$row['updated_at'] ?? null]]></code>
+    </MixedArgument>
+    <PossiblyInvalidArgument>
+      <code><![CDATA[$row]]></code>
+      <code><![CDATA[fn(array $row) => $this->mapRow($row)]]></code>
+    </PossiblyInvalidArgument>
+  </file>
+  <file src="src/Handlers/Middleware/Core/StatusPageMiddleware.php">
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[$name]]></code>
+      <code><![CDATA[$name]]></code>
+    </MixedArgumentTypeCoercion>
+  </file>
+  <file src="src/Handlers/Web/Core/Permission/CreateAction.php">
+    <PossiblyInvalidArgument>
+      <code><![CDATA[$request->getParsedBody()]]></code>
+    </PossiblyInvalidArgument>
+  </file>
+  <file src="src/Handlers/Web/Core/Permission/UpdateAction.php">
+    <PossiblyInvalidArgument>
+      <code><![CDATA[$request->getParsedBody()]]></code>
+    </PossiblyInvalidArgument>
+  </file>
+  <file src="src/Handlers/Web/Core/Permission/ViewAction.php">
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[[
+            'permission' => new PermissionPresenter($row),
+            'logs' => $canViewLogs ? $this->logReader->findByEntity('permission', $id) : [],
+            'canViewLogs' => $canViewLogs,
+            'canUpdate' => $this->permissionPolicy->canUpdate(),
+            'canDelete' => $this->permissionPolicy->canDelete(),
+            ...$navigation->parameters(),
+        ]]]></code>
+    </MixedArgumentTypeCoercion>
+  </file>
+  <file src="src/Handlers/Web/Core/PermissionGroup/CreateAction.php">
+    <MixedArrayAssignment>
+      <code><![CDATA[$errors['code'][]]]></code>
+      <code><![CDATA[$errors['name'][]]]></code>
+    </MixedArrayAssignment>
+    <PossiblyInvalidArgument>
+      <code><![CDATA[$request->getParsedBody()]]></code>
+    </PossiblyInvalidArgument>
+  </file>
+  <file src="src/Handlers/Web/Core/PermissionGroup/UpdateAction.php">
+    <MixedArrayAssignment>
+      <code><![CDATA[$errors['code'][]]]></code>
+      <code><![CDATA[$errors['name'][]]]></code>
+    </MixedArrayAssignment>
+    <PossiblyInvalidArgument>
+      <code><![CDATA[$request->getParsedBody()]]></code>
+    </PossiblyInvalidArgument>
+  </file>
+  <file src="src/Handlers/Web/Core/PermissionGroup/ViewAction.php">
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[[
+            'group' => new PermissionGroupPresenter($row),
+            'logs' => $canViewLogs ? $this->logReader->findByEntity('permission_group', $id) : [],
+            'canViewLogs' => $canViewLogs,
+            'canUpdate' => $this->permissionGroupPolicy->canUpdate(),
+            'canDelete' => $this->permissionGroupPolicy->canDelete(),
+            ...$navigation->parameters(),
+        ]]]></code>
+    </MixedArgumentTypeCoercion>
+  </file>
+  <file src="src/Handlers/Web/Core/Role/CreateAction.php">
+    <MixedArrayAssignment>
+      <code><![CDATA[$errors['code'][]]]></code>
+      <code><![CDATA[$errors['name'][]]]></code>
+      <code><![CDATA[$errors['permissionIds'][]]]></code>
+      <code><![CDATA[$errors['permissionIds'][]]]></code>
+    </MixedArrayAssignment>
+    <PossiblyInvalidArgument>
+      <code><![CDATA[$request->getParsedBody()]]></code>
+    </PossiblyInvalidArgument>
+  </file>
+  <file src="src/Handlers/Web/Core/Role/UpdateAction.php">
+    <MixedArrayAssignment>
+      <code><![CDATA[$errors['code'][]]]></code>
+      <code><![CDATA[$errors['name'][]]]></code>
+      <code><![CDATA[$errors['permissionIds'][]]]></code>
+      <code><![CDATA[$errors['permissionIds'][]]]></code>
+    </MixedArrayAssignment>
+    <PossiblyInvalidArgument>
+      <code><![CDATA[$request->getParsedBody()]]></code>
+    </PossiblyInvalidArgument>
+  </file>
+  <file src="src/Handlers/Web/Core/Role/ViewAction.php">
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[[
+            'role' => new RolePresenter($row),
+            'permissionGroups' => $this->permissionRepository->findGroupedByRoleId($id),
+            'logs' => $canViewLogs ? $this->logReader->findByEntity('role', $id) : [],
+            'canViewLogs' => $canViewLogs,
+            'canUpdate' => $this->rolePolicy->canUpdate(),
+            'canDelete' => $this->rolePolicy->canDelete(),
+            ...$navigation->parameters(),
+        ]]]></code>
+    </MixedArgumentTypeCoercion>
+  </file>
+  <file src="src/Handlers/Web/Core/User/ChangePasswordAction.php">
+    <PossiblyNullArgument>
+      <code><![CDATA[$user->email]]></code>
+      <code><![CDATA[$user->name]]></code>
+    </PossiblyNullArgument>
+    <PossiblyNullOperand>
+      <code><![CDATA[$user->id]]></code>
+      <code><![CDATA[$user->id]]></code>
+    </PossiblyNullOperand>
+    <PossiblyNullPropertyFetch>
+      <code><![CDATA[$user->email]]></code>
+      <code><![CDATA[$user->id]]></code>
+      <code><![CDATA[$user->name]]></code>
+    </PossiblyNullPropertyFetch>
+    <RedundantCondition>
+      <code><![CDATA[$user !== null]]></code>
+    </RedundantCondition>
+  </file>
+  <file src="src/Handlers/Web/Core/User/CreateAction.php">
+    <MixedArrayAssignment>
+      <code><![CDATA[$errors['email'][]]]></code>
+      <code><![CDATA[$errors['roleIds'][]]]></code>
+      <code><![CDATA[$errors['roleIds'][]]]></code>
+    </MixedArrayAssignment>
+    <PossiblyInvalidArgument>
+      <code><![CDATA[$request->getParsedBody()]]></code>
+    </PossiblyInvalidArgument>
+  </file>
+  <file src="src/Handlers/Web/Core/User/RegisterAction.php">
+    <MixedArgument>
+      <code><![CDATA[$roleIds]]></code>
+    </MixedArgument>
+    <PossiblyNullArgument>
+      <code><![CDATA[$input->email]]></code>
+      <code><![CDATA[$input->name]]></code>
+    </PossiblyNullArgument>
+    <PossiblyUndefinedVariable>
+      <code><![CDATA[$roleIds]]></code>
+    </PossiblyUndefinedVariable>
+    <RedundantCast>
+      <code><![CDATA[(string) $input->email]]></code>
+      <code><![CDATA[(string) $input->name]]></code>
+    </RedundantCast>
+  </file>
+  <file src="src/Handlers/Web/Core/User/UpdateAction.php">
+    <MixedArrayAssignment>
+      <code><![CDATA[$errors['email'][]]]></code>
+      <code><![CDATA[$errors['roleIds'][]]]></code>
+      <code><![CDATA[$errors['roleIds'][]]]></code>
+    </MixedArrayAssignment>
+    <PossiblyInvalidArgument>
+      <code><![CDATA[$request->getParsedBody()]]></code>
+    </PossiblyInvalidArgument>
+    <RedundantCast>
+      <code><![CDATA[(string) $input->password]]></code>
+    </RedundantCast>
+  </file>
+  <file src="src/Handlers/Web/Core/User/ViewAction.php">
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[[
+            'user' => new UserPresenter($row),
+            'roles' => $this->roleRepository->findByUserId($id),
+            'logs' => $canViewLogs ? $this->logReader->findByEntity('user', $id) : [],
+            'canViewLogs' => $canViewLogs,
+            'canUpdate' => $this->userPolicy->canUpdate(),
+            'canDelete' => $this->userPolicy->canDelete(),
+            ...$navigation->parameters(),
+        ]]]></code>
+    </MixedArgumentTypeCoercion>
+  </file>
+  <file src="src/Handlers/Web/Mes/Task/CreateAction.php">
+    <PossiblyInvalidArgument>
+      <code><![CDATA[$request->getParsedBody()]]></code>
+    </PossiblyInvalidArgument>
+  </file>
+  <file src="src/Handlers/Web/Mes/Task/IndexAction.php">
+    <PossiblyUndefinedArrayOffset>
+      <code><![CDATA[$parts['query']]]></code>
+    </PossiblyUndefinedArrayOffset>
+  </file>
+  <file src="src/Handlers/Web/Mes/Task/UpdateAction.php">
+    <PossiblyInvalidArgument>
+      <code><![CDATA[$request->getParsedBody()]]></code>
+    </PossiblyInvalidArgument>
+  </file>
+  <file src="src/Handlers/Web/Mes/Task/ViewAction.php">
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[[
+            'task' => new TaskPresenter($row),
+            'logs' => $canViewLogs ? $this->logReader->findByEntity('task', $id) : [],
+            'canViewLogs' => $canViewLogs,
+            'canUpdate' => $this->taskPolicy->canUpdate(),
+            'canDelete' => $this->taskPolicy->canDelete(),
+            ...$navigation->parameters(),
+        ]]]></code>
+    </MixedArgumentTypeCoercion>
+  </file>
+  <file src="src/Navigation/NavigationProvider.php">
+    <PossiblyNullArgument>
+      <code><![CDATA[$this->currentUser->getId()]]></code>
+    </PossiblyNullArgument>
+  </file>
+  <file src="src/Navigation/NavigationTreeVisibility.php">
+    <MixedArgument>
+      <code><![CDATA[$item]]></code>
+      <code><![CDATA[$item['_children'] ?? []]]></code>
+      <code><![CDATA[$item['_children'] ?? []]]></code>
+    </MixedArgument>
+  </file>
+  <file src="src/Services/Core/AuthTokenService.php">
+    <TypeDoesNotContainType>
+      <code><![CDATA[$hash === false]]></code>
+    </TypeDoesNotContainType>
+  </file>
+  <file src="src/Services/Core/AuthorizationService.php">
+    <LessSpecificReturnStatement>
+      <code><![CDATA[array_map(static fn(mixed $code): string => strtoupper((string) $code), $codes)]]></code>
+    </LessSpecificReturnStatement>
+    <MoreSpecificReturnType>
+      <code><![CDATA[list<string>]]></code>
+    </MoreSpecificReturnType>
+  </file>
+  <file src="src/Services/Core/Mail/EmailRenderer.php">
+    <UnresolvableInclude>
+      <code><![CDATA[require $file]]></code>
+    </UnresolvableInclude>
+  </file>
+  <file src="src/Services/Core/PasswordHasher.php">
+    <TypeDoesNotContainType>
+      <code><![CDATA[$hash === false]]></code>
+    </TypeDoesNotContainType>
+  </file>
+  <file src="src/Services/Core/RememberedUrlService.php">
+    <MixedOperand>
+      <code><![CDATA[$parts['fragment']]]></code>
+      <code><![CDATA[$parts['query']]]></code>
+    </MixedOperand>
+    <RedundantCast>
+      <code><![CDATA[(int) $parts['port']]]></code>
+      <code><![CDATA[(string) $parts['host']]]></code>
+      <code><![CDATA[(string) ($parts['path'] ?? '')]]></code>
+    </RedundantCast>
+  </file>
+  <file src="src/Services/Core/WebActionService.php">
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[$arguments]]></code>
+    </MixedArgumentTypeCoercion>
+  </file>
+  <file src="src/Widgets/Badge.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[Badge]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/Widgets/Breadcrumb.php">
+    <RedundantCastGivenDocblockType>
+      <code><![CDATA[(string) $item['url']]]></code>
+      <code><![CDATA[(string) ($item['icon'] ?? '')]]></code>
+      <code><![CDATA[(string) ($item['label'] ?? '')]]></code>
+    </RedundantCastGivenDocblockType>
+  </file>
+  <file src="src/Widgets/Card.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[Card]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/Widgets/Crud/CrudActions.php">
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[$meta]]></code>
+    </MixedArgumentTypeCoercion>
+  </file>
+  <file src="src/Widgets/DataView/CardList.php">
+    <ArgumentTypeCoercion>
+      <code><![CDATA[$pageSize]]></code>
+    </ArgumentTypeCoercion>
+  </file>
+  <file src="src/Widgets/DataView/Detail.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[Detail]]></code>
+    </ClassMustBeFinal>
+    <MixedArgument>
+      <code><![CDATA[$fields]]></code>
+    </MixedArgument>
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[$fieldAttributes]]></code>
+      <code><![CDATA[$valueAttributes]]></code>
+    </MixedArgumentTypeCoercion>
+    <NamedArgumentNotAllowed>
+      <code><![CDATA[$fields]]></code>
+    </NamedArgumentNotAllowed>
+  </file>
+  <file src="src/Widgets/DataView/Grid.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[Grid]]></code>
+    </ClassMustBeFinal>
+    <InvalidArgument>
+      <code><![CDATA[OffsetPagination::widget()
+                    ->containerAttributes(['class' => 'app-admin-grid__pager'])
+                    ->listTag('ul')
+                    ->listAttributes(['class' => 'pagination pagination-sm mb-0'])
+                    ->itemTag('li')
+                    ->itemAttributes(['class' => 'page-item'])
+                    ->currentItemClass('active')
+                    ->disabledItemClass('disabled')
+                    ->linkClass('page-link')
+                    ->currentLinkClass('page-link')
+                    ->disabledLinkClass('page-link')]]></code>
+    </InvalidArgument>
+    <MixedArgument>
+      <code><![CDATA[$columns]]></code>
+    </MixedArgument>
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[$urlCreator]]></code>
+    </MixedArgumentTypeCoercion>
+  </file>
+  <file src="src/Widgets/Filters/DateFilter.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[DateFilter]]></code>
+    </ClassMustBeFinal>
+    <RedundantCast>
+      <code><![CDATA[(string) ($context->value ?? '')]]></code>
+    </RedundantCast>
+  </file>
+  <file src="src/Widgets/Filters/FilterBar.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[FilterBar]]></code>
+    </ClassMustBeFinal>
+    <MixedArgument>
+      <code><![CDATA[$field]]></code>
+    </MixedArgument>
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[[
+                ...self::renderHiddenFields($filters, $fields),
+                (string) Html::div(
+                    implode('', self::renderFields($formId, $filters, $fields, 'form-label')),
+                    ['class' => 'row g-3'],
+                )->encode(false),
+            ]]]></code>
+      <code><![CDATA[self::renderFields($formId, $filters, $fields, 'form-label')]]></code>
+    </MixedArgumentTypeCoercion>
+    <MixedArrayAccess>
+      <code><![CDATA[$field['name']]]></code>
+      <code><![CDATA[$field['name']]]></code>
+    </MixedArrayAccess>
+    <MixedArrayTypeCoercion>
+      <code><![CDATA[$fieldNames[$name]]]></code>
+    </MixedArrayTypeCoercion>
+  </file>
+  <file src="src/Widgets/Filters/FilterField.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[FilterField]]></code>
+    </ClassMustBeFinal>
+    <MixedArgument>
+      <code><![CDATA[$widgetOptions]]></code>
+      <code><![CDATA[is_array($widgetOptions['options'] ?? null)
+                    ? $widgetOptions['options']
+                    : (is_array($field['options'] ?? null) ? $field['options'] : [])]]></code>
+      <code><![CDATA[is_array($widgetOptions['options'] ?? null)
+                    ? $widgetOptions['options']
+                    : (is_array($field['options'] ?? null) ? $field['options'] : [])]]></code>
+    </MixedArgument>
+    <MixedArrayAccess>
+      <code><![CDATA[$widgetOptions['icon']]]></code>
+      <code><![CDATA[$widgetOptions['inputClass']]]></code>
+      <code><![CDATA[$widgetOptions['placeholder']]]></code>
+    </MixedArrayAccess>
+    <MixedReturnStatement>
+      <code><![CDATA[$widgetOptions[$name]]]></code>
+      <code><![CDATA[$widgetOptions[$name]]]></code>
+      <code><![CDATA[is_array($field[$name] ?? null) ? $field[$name] : []]]></code>
+      <code><![CDATA[is_array($field[$name] ?? null) ? $field[$name] : []]]></code>
+      <code><![CDATA[is_bool($field[$name] ?? null) ? $field[$name] : $default]]></code>
+      <code><![CDATA[is_bool($field[$name] ?? null) ? $field[$name] : $default]]></code>
+    </MixedReturnStatement>
+    <RedundantFunctionCall>
+      <code><![CDATA[array_values]]></code>
+    </RedundantFunctionCall>
+  </file>
+  <file src="src/Widgets/Filters/FilterModal.php">
+    <MixedArgument>
+      <code><![CDATA[$field]]></code>
+    </MixedArgument>
+    <MixedArrayAccess>
+      <code><![CDATA[$field['name']]]></code>
+      <code><![CDATA[$field['name']]]></code>
+    </MixedArrayAccess>
+    <MixedArrayAssignment>
+      <code><![CDATA[$field['autoSubmit']]]></code>
+    </MixedArrayAssignment>
+    <MixedArrayTypeCoercion>
+      <code><![CDATA[$fieldNames[$name]]]></code>
+    </MixedArrayTypeCoercion>
+  </file>
+  <file src="src/Widgets/Filters/MultiSelectFilter.php">
+    <InvalidArgument>
+      <code><![CDATA[$options]]></code>
+    </InvalidArgument>
+    <PossiblyInvalidArgument>
+      <code><![CDATA[$values]]></code>
+    </PossiblyInvalidArgument>
+  </file>
+  <file src="src/Widgets/Filters/SelectFilter.php">
+    <InvalidArgument>
+      <code><![CDATA[$options]]></code>
+    </InvalidArgument>
+    <RedundantCast>
+      <code><![CDATA[(string) ($context->value ?? '')]]></code>
+    </RedundantCast>
+  </file>
+  <file src="src/Widgets/Filters/TextFilter.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[TextFilter]]></code>
+    </ClassMustBeFinal>
+    <RedundantCast>
+      <code><![CDATA[(string) ($context->value ?? '')]]></code>
+    </RedundantCast>
+  </file>
+  <file src="src/Widgets/FlashMessages.php">
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[$type]]></code>
+      <code><![CDATA[$type]]></code>
+      <code><![CDATA[$type]]></code>
+    </MixedArgumentTypeCoercion>
+  </file>
+  <file src="src/Widgets/Forms/FormCard.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[FormCard]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/Widgets/Forms/FormTheme.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[FormTheme]]></code>
+    </ClassMustBeFinal>
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[[
+                'vertical' => require ThemePath::BOOTSTRAP5_VERTICAL,
+                'horizontal' => require ThemePath::BOOTSTRAP5_HORIZONTAL,
+            ]]]></code>
+    </MixedArgumentTypeCoercion>
+    <UnresolvableInclude>
+      <code><![CDATA[require ThemePath::BOOTSTRAP5_HORIZONTAL]]></code>
+      <code><![CDATA[require ThemePath::BOOTSTRAP5_VERTICAL]]></code>
+    </UnresolvableInclude>
+  </file>
+  <file src="src/Widgets/Inputs/CheckboxGroupInput.php">
+    <MixedArgument>
+      <code><![CDATA[$items]]></code>
+    </MixedArgument>
+    <MixedArrayAccess>
+      <code><![CDATA[$group['items']]]></code>
+      <code><![CDATA[$group['label']]]></code>
+      <code><![CDATA[$item['code']]]></code>
+      <code><![CDATA[$item['id']]]></code>
+      <code><![CDATA[$item['name']]]></code>
+      <code><![CDATA[$item['weight']]]></code>
+    </MixedArrayAccess>
+  </file>
+  <file src="src/Widgets/Inputs/InputValidation.php">
+    <ArgumentTypeCoercion>
+      <code><![CDATA[self::resolveValidationErrors($value, $validationErrors, $validated)]]></code>
+    </ArgumentTypeCoercion>
+  </file>
+  <file src="src/Widgets/Inputs/MultiSelectInput.php">
+    <InvalidArgument>
+      <code><![CDATA[$options]]></code>
+    </InvalidArgument>
+    <PossiblyInvalidArgument>
+      <code><![CDATA[$values]]></code>
+    </PossiblyInvalidArgument>
+  </file>
+  <file src="src/Widgets/Inputs/SelectInput.php">
+    <InvalidArgument>
+      <code><![CDATA[$options]]></code>
+    </InvalidArgument>
+    <MixedArgument>
+      <code><![CDATA[$value]]></code>
+    </MixedArgument>
+  </file>
+  <file src="src/Widgets/Menu.php">
+    <MixedArgument>
+      <code><![CDATA[$children]]></code>
+      <code><![CDATA[$children]]></code>
+      <code><![CDATA[$item]]></code>
+      <code><![CDATA[$item]]></code>
+      <code><![CDATA[$item['_children'] ?? []]]></code>
+      <code><![CDATA[$item['_children'] ?? []]]></code>
+    </MixedArgument>
+    <MixedArrayAccess>
+      <code><![CDATA[$item['_children']]]></code>
+      <code><![CDATA[$item['header']]]></code>
+      <code><![CDATA[$item['name']]]></code>
+      <code><![CDATA[$item['separator']]]></code>
+      <code><![CDATA[$item['url']]]></code>
+    </MixedArrayAccess>
+    <RedundantCast>
+      <code><![CDATA[(string) Html::openTag('li', $liAttributes)]]></code>
+    </RedundantCast>
+    <RedundantCastGivenDocblockType>
+      <code><![CDATA[(bool) $visibility[$key]]]></code>
+    </RedundantCastGivenDocblockType>
+  </file>
+  <file src="src/Widgets/Tabs.php">
+    <PossiblyUndefinedArrayOffset>
+      <code><![CDATA[$item['icon']]]></code>
+      <code><![CDATA[$item['url']]]></code>
+    </PossiblyUndefinedArrayOffset>
+    <RedundantCastGivenDocblockType>
+      <code><![CDATA[(string) $item['id']]]></code>
+      <code><![CDATA[(string) $item['url']]]></code>
+    </RedundantCastGivenDocblockType>
+  </file>
+  <file src="src/resources/emails/core/user/password-reset.php">
+    <RedundantCastGivenDocblockType>
+      <code><![CDATA[(int) $expiresMinutes]]></code>
+    </RedundantCastGivenDocblockType>
+  </file>
+  <file src="src/resources/emails/layout.php">
+    <RedundantCastGivenDocblockType>
+      <code><![CDATA[(string) ($preheader ?? '')]]></code>
+      <code><![CDATA[(string) ($subject ?? $applicationName)]]></code>
+    </RedundantCastGivenDocblockType>
+  </file>
+  <file src="src/resources/layouts/main.php">
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[$breadcrumbs]]></code>
+    </MixedArgumentTypeCoercion>
+  </file>
+  <file src="src/resources/views/core/error/access-denied.php">
+    <InvalidScope>
+      <code><![CDATA[$this->setTitle(Translate::t('Accesso negato'))]]></code>
+    </InvalidScope>
+  </file>
+  <file src="src/resources/views/core/error/invalid-request.php">
+    <InvalidScope>
+      <code><![CDATA[$this->setTitle(Translate::t('Richiesta non valida'))]]></code>
+    </InvalidScope>
+  </file>
+  <file src="src/resources/views/core/error/too-many-requests.php">
+    <InvalidScope>
+      <code><![CDATA[$this->setTitle(Translate::t('Troppi tentativi'))]]></code>
+    </InvalidScope>
+  </file>
+  <file src="src/resources/views/core/home/index.php">
+    <InvalidScope>
+      <code><![CDATA[$this->setTitle($applicationParams->name)]]></code>
+    </InvalidScope>
+  </file>
+  <file src="src/resources/views/core/not-found/index.php">
+    <InvalidScope>
+      <code><![CDATA[$this->setTitle(Translate::t('Pagina non trovata'))]]></code>
+    </InvalidScope>
+    <UndefinedDocblockClass>
+      <code><![CDATA[$this->setTitle(Translate::t('Pagina non trovata'));]]></code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="src/resources/views/core/notification/index.php">
+    <InvalidScope>
+      <code><![CDATA[$this]]></code>
+    </InvalidScope>
+  </file>
+  <file src="src/resources/views/core/permission-group/form.php">
+    <InvalidScope>
+      <code><![CDATA[$this]]></code>
+    </InvalidScope>
+  </file>
+  <file src="src/resources/views/core/permission-group/index.php">
+    <InvalidScope>
+      <code><![CDATA[$this]]></code>
+    </InvalidScope>
+  </file>
+  <file src="src/resources/views/core/permission-group/view.php">
+    <InvalidScope>
+      <code><![CDATA[$this]]></code>
+    </InvalidScope>
+  </file>
+  <file src="src/resources/views/core/permission/form.php">
+    <InvalidScope>
+      <code><![CDATA[$this]]></code>
+    </InvalidScope>
+  </file>
+  <file src="src/resources/views/core/permission/index.php">
+    <InvalidScope>
+      <code><![CDATA[$this]]></code>
+    </InvalidScope>
+  </file>
+  <file src="src/resources/views/core/permission/view.php">
+    <InvalidScope>
+      <code><![CDATA[$this]]></code>
+    </InvalidScope>
+  </file>
+  <file src="src/resources/views/core/role/form.php">
+    <InvalidScope>
+      <code><![CDATA[$this]]></code>
+    </InvalidScope>
+  </file>
+  <file src="src/resources/views/core/role/index.php">
+    <InvalidScope>
+      <code><![CDATA[$this]]></code>
+    </InvalidScope>
+  </file>
+  <file src="src/resources/views/core/role/view.php">
+    <InvalidScope>
+      <code><![CDATA[$this]]></code>
+    </InvalidScope>
+  </file>
+  <file src="src/resources/views/core/user/change-password.php">
+    <InvalidArrayAccess>
+      <code><![CDATA[$validationRules['currentPassword']]]></code>
+      <code><![CDATA[$validationRules['password']]]></code>
+      <code><![CDATA[$validationRules['passwordRepeat']]]></code>
+    </InvalidArrayAccess>
+    <MixedArgument>
+      <code><![CDATA[$errors['currentPassword'] ?? []]]></code>
+      <code><![CDATA[$errors['password'] ?? []]]></code>
+      <code><![CDATA[$errors['passwordRepeat'] ?? []]]></code>
+      <code><![CDATA[$validationRules['currentPassword'] ?? []]]></code>
+      <code><![CDATA[$validationRules['password'] ?? []]]></code>
+      <code><![CDATA[$validationRules['passwordRepeat'] ?? []]]></code>
+    </MixedArgument>
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[['' => $errors['']]]]></code>
+    </MixedArgumentTypeCoercion>
+    <MixedMethodCall>
+      <code><![CDATA[hiddenInput]]></code>
+    </MixedMethodCall>
+    <MixedOperand>
+      <code><![CDATA[$csrf->hiddenInput()]]></code>
+    </MixedOperand>
+    <UndefinedGlobalVariable>
+      <code><![CDATA[$csrf]]></code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="src/resources/views/core/user/forgot-password.php">
+    <InvalidArrayAccess>
+      <code><![CDATA[$validationRules['email']]]></code>
+    </InvalidArrayAccess>
+    <MixedArgument>
+      <code><![CDATA[$csrf->hiddenInput()]]></code>
+      <code><![CDATA[$errors['email'] ?? []]]></code>
+      <code><![CDATA[$validationRules['email'] ?? []]]></code>
+    </MixedArgument>
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[['' => $errors['']]]]></code>
+    </MixedArgumentTypeCoercion>
+    <MixedMethodCall>
+      <code><![CDATA[hiddenInput]]></code>
+    </MixedMethodCall>
+    <UndefinedGlobalVariable>
+      <code><![CDATA[$csrf]]></code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="src/resources/views/core/user/form.php">
+    <InvalidScope>
+      <code><![CDATA[$this]]></code>
+    </InvalidScope>
+  </file>
+  <file src="src/resources/views/core/user/index.php">
+    <InvalidScope>
+      <code><![CDATA[$this]]></code>
+    </InvalidScope>
+  </file>
+  <file src="src/resources/views/core/user/login.php">
+    <InvalidArrayAccess>
+      <code><![CDATA[$validationRules['email']]]></code>
+      <code><![CDATA[$validationRules['password']]]></code>
+    </InvalidArrayAccess>
+    <MixedArgument>
+      <code><![CDATA[$csrf->hiddenInput()]]></code>
+      <code><![CDATA[$errors['email'] ?? []]]></code>
+      <code><![CDATA[$errors['password'] ?? []]]></code>
+      <code><![CDATA[$validationRules['email'] ?? []]]></code>
+      <code><![CDATA[$validationRules['password'] ?? []]]></code>
+    </MixedArgument>
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[['' => $errors['']]]]></code>
+    </MixedArgumentTypeCoercion>
+    <MixedMethodCall>
+      <code><![CDATA[hiddenInput]]></code>
+    </MixedMethodCall>
+    <UndefinedGlobalVariable>
+      <code><![CDATA[$csrf]]></code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="src/resources/views/core/user/profile.php">
+    <DocblockTypeContradiction>
+      <code><![CDATA[$errors ?? []]]></code>
+      <code><![CDATA[$validated ?? false]]></code>
+      <code><![CDATA[(string) $input->email]]></code>
+      <code><![CDATA[[]]]></code>
+      <code><![CDATA[false]]></code>
+    </DocblockTypeContradiction>
+    <InvalidScope>
+      <code><![CDATA[$this]]></code>
+    </InvalidScope>
+    <RedundantConditionGivenDocblockType>
+      <code><![CDATA[$currentEmail]]></code>
+      <code><![CDATA[$emailErrors]]></code>
+      <code><![CDATA[$emailValidated]]></code>
+      <code><![CDATA[$profileErrors]]></code>
+      <code><![CDATA[$profileValidated]]></code>
+    </RedundantConditionGivenDocblockType>
+  </file>
+  <file src="src/resources/views/core/user/register.php">
+    <InvalidArrayAccess>
+      <code><![CDATA[$validationRules['captcha']]]></code>
+      <code><![CDATA[$validationRules['email']]]></code>
+      <code><![CDATA[$validationRules['name']]]></code>
+      <code><![CDATA[$validationRules['password']]]></code>
+      <code><![CDATA[$validationRules['passwordRepeat']]]></code>
+    </InvalidArrayAccess>
+    <MixedArgument>
+      <code><![CDATA[$csrf->hiddenInput()]]></code>
+      <code><![CDATA[$errors['captcha'] ?? []]]></code>
+      <code><![CDATA[$errors['email'] ?? []]]></code>
+      <code><![CDATA[$errors['name'] ?? []]]></code>
+      <code><![CDATA[$errors['password'] ?? []]]></code>
+      <code><![CDATA[$errors['passwordRepeat'] ?? []]]></code>
+      <code><![CDATA[$validationRules['captcha'] ?? []]]></code>
+      <code><![CDATA[$validationRules['email'] ?? []]]></code>
+      <code><![CDATA[$validationRules['name'] ?? []]]></code>
+      <code><![CDATA[$validationRules['password'] ?? []]]></code>
+      <code><![CDATA[$validationRules['passwordRepeat'] ?? []]]></code>
+    </MixedArgument>
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[['' => $errors['']]]]></code>
+    </MixedArgumentTypeCoercion>
+    <MixedMethodCall>
+      <code><![CDATA[hiddenInput]]></code>
+    </MixedMethodCall>
+    <UndefinedGlobalVariable>
+      <code><![CDATA[$csrf]]></code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="src/resources/views/core/user/view.php">
+    <InvalidScope>
+      <code><![CDATA[$this]]></code>
+    </InvalidScope>
+  </file>
+  <file src="src/resources/views/mes/task/form.php">
+    <InvalidScope>
+      <code><![CDATA[$this]]></code>
+    </InvalidScope>
+  </file>
+  <file src="src/resources/views/mes/task/index.php">
+    <InvalidScope>
+      <code><![CDATA[$this]]></code>
+    </InvalidScope>
+  </file>
+  <file src="src/resources/views/mes/task/view.php">
+    <InvalidScope>
+      <code><![CDATA[$this]]></code>
+    </InvalidScope>
+  </file>
+</files>
