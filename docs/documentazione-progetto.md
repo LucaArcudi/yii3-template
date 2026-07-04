@@ -477,7 +477,9 @@ dello script — il deploy risulterebbe verde ma interrotto a metà:
    `.env.prod` sul VPS (non dall'env del container, che riflette `.env.prod`
    solo al momento della *creazione* del container: dopo una rotazione
    password sarebbe stantio); `--single-transaction` evita lock sull'app
-   live e un dump vuoto fa fallire lo step;
+   live e un dump vuoto fa fallire lo step. Retention automatica: i dump
+   più vecchi di 14 giorni vengono eliminati (glob stretto sul timestamp:
+   i backup rinominati a mano si salvano);
 4. **Deploy** — `docker compose pull`, poi le migration del framework con
    l'immagine nuova (`run --rm app ./yii migrate:up -y`, idempotenti: lo
    schema è pronto prima che parta il nuovo codice), quindi
@@ -611,8 +613,16 @@ cAdvisor (metriche container), mysqld-exporter (utente MySQL dedicato
   `docker compose -f docker/monitoring/compose.yml up -d --wait`.
 - Dashboard consigliate (import per ID da grafana.com): **1860** (Node
   Exporter Full), **14282** (cAdvisor), **14057** (MySQL).
-- Estensioni future: metriche HTTP di Caddy/FrankenPHP, endpoint
-  `/metrics` applicativo, alerting (Grafana alerting o Alertmanager).
+- Il job `caddy` scrappa le metriche HTTP del reverse proxy
+  (`caddy-proxy:9180`, abilitate da `docker/proxy/Caddyfile.base`; porta
+  mai pubblicata sull'host): latenze e status code del traffico pubblico.
+- Alert in `prometheus/rules/alerts.yml` (CPU, memoria, disco, target
+  down, MySQL down, container app assente), validati in CI con `promtool
+  check config`; visibili in Prometheus `/alerts` e in Grafana (metrica
+  `ALERTS`). Le notifiche push si aggiungono collegando un contact point
+  Grafana o un Alertmanager.
+- Estensione futura: endpoint `/metrics` applicativo (richiede la scelta
+  delle metriche di business e uno storage per i contatori).
 
 ## 9. Runbook operativi
 

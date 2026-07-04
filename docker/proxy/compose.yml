@@ -11,11 +11,15 @@ services:
       - "443:443"
     environment:
       CADDY_INGRESS_NETWORKS: caddy_public
+      # Caddyfile base fuso con la config generata: abilita le metriche
+      # HTTP servite su :9180 (solo rete interna, vedi Caddyfile.base).
+      CADDY_DOCKER_CADDYFILE_PATH: /etc/caddy/Caddyfile.base
     networks:
       - caddy_public
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - caddy_proxy_data:/data
+      - ./Caddyfile.base:/etc/caddy/Caddyfile.base:ro
 
 volumes:
   caddy_proxy_data:

@@ -31,4 +31,8 @@ docker compose \
 # Un dump vuoto è un backup finto: meglio fallire qui che al restore.
 [ -s "$OUT" ]
 
+# Retention 14 giorni, SOLO sui dump automatici: il glob stretto sul
+# timestamp risparmia i backup rinominati a mano (es. *_before_rotation).
+find backups -maxdepth 1 -name 'db_????-??-??_??-??-??.sql' -mtime +14 -delete
+
 ls -lh backups | tail
