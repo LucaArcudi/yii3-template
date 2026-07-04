@@ -54,107 +54,19 @@ jobs:
             git -C /opt/yii3 log -1 --oneline
           EOF
 
+      # La logica di backup e deploy vive in scripts/*.sh, versionati nel
+      # repo e allineati sul VPS dallo step precedente: il workflow li
+      # INVOCA soltanto. Mai heredoc via stdin: docker compose run/exec
+      # leggono stdin e divorano il resto dello script (deploy "verdi" ma
+      # interrotti a metà, 2026-07-04).
       - name: Backup DB on VPS
-        run: |
-          ssh -i ~/.ssh/vps_key -o IdentitiesOnly=yes -o BatchMode=yes "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" << 'EOF'
-            set -euo pipefail
-
-            cd /opt/yii3
-
-            mkdir -p /opt/yii3/backups
-
-            # Credenziali lette da .env.prod (fonte di verità), NON dall'env del
-            # container db: un container creato prima dell'ultima rotazione
-            # avrebbe ancora la password vecchia (Access denied, 2026-07-04).
-            DB_USERNAME=$(grep -E '^DB_USERNAME=' .env.prod | head -1 | cut -d= -f2- || true)
-            DB_DATABASE=$(grep -E '^DB_DATABASE=' .env.prod | head -1 | cut -d= -f2- || true)
-            DB_PASSWORD=$(grep -E '^DB_PASSWORD=' .env.prod | head -1 | cut -d= -f2- || true)
-            [ -n "$DB_PASSWORD" ] || { echo "DB_PASSWORD assente in .env.prod"; exit 1; }
-
-            OUT="/opt/yii3/backups/db_$(date +%F_%H-%M-%S).sql"
-
-            # MYSQL_PWD tiene la password fuori dalla riga di comando;
-            # --single-transaction evita lock sulle tabelle dell'app live.
-            docker compose \
-              --env-file .env.prod \
-              -f docker/prod/compose.yml \
-              -f docker/prod/compose.local.yml \
-              exec -T -e MYSQL_PWD="$DB_PASSWORD" db \
-              mysqldump --no-tablespaces --single-transaction \
-              -u"${DB_USERNAME:-yii3_template}" "${DB_DATABASE:-yii3_template}" \
-              > "$OUT" || { rm -f "$OUT"; exit 1; }
-
-            # Un dump vuoto è un backup finto: meglio fallire qui che al restore.
-            [ -s "$OUT" ]
-
-            ls -lh /opt/yii3/backups | tail
-          EOF
+        run: >
+          ssh -i ~/.ssh/vps_key -o IdentitiesOnly=yes -o BatchMode=yes
+          "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}"
+          'bash /opt/yii3/scripts/backup-db.sh'
 
       - name: Deploy on VPS
-        run: |
-          ssh -i ~/.ssh/vps_key -o IdentitiesOnly=yes -o BatchMode=yes "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" << 'EOF'
-            set -euo pipefail
-
-            cd /opt/yii3
-
-            docker compose \
-              --env-file .env.prod \
-              -f docker/prod/compose.yml \
-              -f docker/prod/compose.local.yml \
-              pull
-
-            # Migration del framework con l'immagine appena pullata, PRIMA di
-            # avviare la nuova versione dell'app: lo schema è pronto quando
-            # il nuovo codice parte. Idempotenti: nessun effetto se già applicate.
-            docker compose \
-              --env-file .env.prod \
-              -f docker/prod/compose.yml \
-              -f docker/prod/compose.local.yml \
-              run --rm app ./yii migrate:up -y
-
-            docker compose \
-              --env-file .env.prod \
-              -f docker/prod/compose.yml \
-              -f docker/prod/compose.local.yml \
-              up -d --wait --wait-timeout 120
-
-            # Il pull da solo non basta: due deploy consecutivi hanno lasciato
-            # il container app sull'immagine precedente nonostante il pull
-            # avesse scaricato quella nuova. L'app va ricreata esplicitamente.
-            docker compose \
-              --env-file .env.prod \
-              -f docker/prod/compose.yml \
-              -f docker/prod/compose.local.yml \
-              up -d --wait --wait-timeout 120 --force-recreate --no-deps app
-
-            # Invariante del deploy: il container app DEVE girare l'immagine
-            # a cui punta ora il suo tag; se non è così, fallire qui.
-            CID=$(docker compose \
-              --env-file .env.prod \
-              -f docker/prod/compose.yml \
-              -f docker/prod/compose.local.yml \
-              ps -q app)
-            RUNNING=$(docker inspect --format '{{.Image}}' "$CID")
-            WANT=$(docker image inspect --format '{{.Id}}' "$(docker inspect --format '{{.Config.Image}}' "$CID")")
-            if [ "$RUNNING" != "$WANT" ]; then
-              echo "ERRORE: app su immagine $RUNNING, attesa $WANT"
-              exit 1
-            fi
-
-            docker compose \
-              --env-file .env.prod \
-              -f docker/prod/compose.yml \
-              -f docker/prod/compose.local.yml \
-              ps
-
-            # -f fa fallire il deploy su HTTP >= 400; i retry coprono i secondi
-            # di avvio del container appena ricreato. X-Forwarded-Proto simula
-            # il proxy TLS: senza, il cookie Secure di sessione risponde 500.
-            curl -fsS -m 10 \
-              --retry 12 --retry-delay 5 --retry-all-errors \
-              -H 'X-Forwarded-Proto: https' \
-              -o /dev/null \
-              http://127.0.0.1:8080/login
-
-            echo "Health check OK"
-          EOF
+        run: >
+          ssh -i ~/.ssh/vps_key -o IdentitiesOnly=yes -o BatchMode=yes
+          "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}"
+          'bash /opt/yii3/scripts/deploy.sh'
