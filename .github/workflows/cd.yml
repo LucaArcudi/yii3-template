@@ -118,6 +118,29 @@ jobs:
               -f docker/prod/compose.local.yml \
               up -d --wait --wait-timeout 120
 
+            # Il pull da solo non basta: due deploy consecutivi hanno lasciato
+            # il container app sull'immagine precedente nonostante il pull
+            # avesse scaricato quella nuova. L'app va ricreata esplicitamente.
+            docker compose \
+              --env-file .env.prod \
+              -f docker/prod/compose.yml \
+              -f docker/prod/compose.local.yml \
+              up -d --wait --wait-timeout 120 --force-recreate --no-deps app
+
+            # Invariante del deploy: il container app DEVE girare l'immagine
+            # a cui punta ora il suo tag; se non è così, fallire qui.
+            CID=$(docker compose \
+              --env-file .env.prod \
+              -f docker/prod/compose.yml \
+              -f docker/prod/compose.local.yml \
+              ps -q app)
+            RUNNING=$(docker inspect --format '{{.Image}}' "$CID")
+            WANT=$(docker image inspect --format '{{.Id}}' "$(docker inspect --format '{{.Config.Image}}' "$CID")")
+            if [ "$RUNNING" != "$WANT" ]; then
+              echo "ERRORE: app su immagine $RUNNING, attesa $WANT"
+              exit 1
+            fi
+
             docker compose \
               --env-file .env.prod \
               -f docker/prod/compose.yml \

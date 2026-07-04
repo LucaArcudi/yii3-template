@@ -7,7 +7,8 @@
 - CD: step `migrate:up` tra backup e avvio della nuova versione dell'app.
 - Corretto l'ordine degli script initdb.d nei compose (root e prod): `release_1_0_2` è lo schema base completo e deve precedere le altre release, che ne referenziano le tabelle via FK.
 - Inclusa `database/` nell'immagine prod (`.dockerignore` è una allowlist e la escludeva: il `migrate:up` del CD legge gli snapshot da `/app/database`); nuovo step CI che verifica l'artefatto prod (file richiesti dal deploy e bit di esecuzione).
-- CI più severa: `composer audit` ora è bloccante (niente più `|| true`) e Psalm è uno step obbligatorio del job di test. Aggiornate le dipendenze dev con advisory: guzzle 7.13.1, psr7 2.12.3, dom-crawler e yaml 8.1.1 — audit pulito.
+- CI più severa: `composer audit` ora è bloccante (niente più `|| true`) e Psalm è uno step obbligatorio del job di test (con baseline committata per il debito storico). Aggiornate le dipendenze dev con advisory: guzzle 7.13.1, psr7 2.12.3, dom-crawler e yaml 8.1.1 — audit pulito.
+- CD: il container app viene ricreato esplicitamente a ogni deploy e il run verifica che giri l'immagine appena pubblicata (due deploy avevano lasciato attiva l'immagine precedente nonostante il pull).
 
 ## 1.0.0 - 2026-05-02
 
