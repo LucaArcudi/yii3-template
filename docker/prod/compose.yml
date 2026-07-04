@@ -36,7 +36,11 @@ services:
       MYSQL_PASSWORD: "${DB_PASSWORD:?Set DB_PASSWORD in .env.prod}"
       MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env.prod}"
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      # -h 127.0.0.1 forza il TCP: con "localhost" (socket) il ping risponde
+      # anche durante la fase initdb.d, quando il server temporaneo gira senza
+      # rete e la porta 3306 è ancora chiusa — e --wait/depends_on scattano
+      # prima che il server vero accetti connessioni.
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
       interval: 5s
       timeout: 3s
       retries: 20
