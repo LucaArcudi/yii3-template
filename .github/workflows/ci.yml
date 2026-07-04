@@ -72,6 +72,13 @@ jobs:
             echo "Codeception is not configured; skipping tests."
           fi
 
+      - name: Validate Prometheus config and rules
+        run: |
+          docker run --rm \
+            -v "$PWD/docker/monitoring/prometheus:/etc/prometheus:ro" \
+            --entrypoint promtool prom/prometheus:v3.1.0 \
+            check config /etc/prometheus/prometheus.yml
+
       - name: Validate framework migrations
         run: |
           docker compose -f compose.yml up -d --wait db

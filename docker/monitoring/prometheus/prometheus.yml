@@ -2,6 +2,9 @@ global:
   scrape_interval: 15s
   evaluation_interval: 15s
 
+rule_files:
+  - rules/*.yml
+
 scrape_configs:
   - job_name: prometheus
     static_configs:
@@ -18,3 +21,9 @@ scrape_configs:
   - job_name: mysql
     static_configs:
       - targets: ["mysqld-exporter:9104"]
+
+  # Metriche HTTP del reverse proxy (latenze e status code del traffico
+  # pubblico), servite dal Caddyfile.base su :9180, solo rete interna.
+  - job_name: caddy
+    static_configs:
+      - targets: ["caddy-proxy:9180"]

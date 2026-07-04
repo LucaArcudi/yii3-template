@@ -11,6 +11,7 @@
 - CD: il container app viene ricreato esplicitamente a ogni deploy e il run verifica che giri l'immagine appena pubblicata (due deploy avevano lasciato attiva l'immagine precedente nonostante il pull).
 - Aggiunto stack di monitoring (`docker/monitoring/`): Prometheus, Grafana (esposta via Caddy con TLS), node-exporter, cAdvisor e mysqld-exporter; solo Grafana è pubblica, il resto su rete interna. Config in `.env` locale (modello committato).
 - CD: la logica di backup e deploy è spostata in `scripts/backup-db.sh` e `scripts/deploy.sh`, eseguiti sul VPS dal checkout allineato. Corregge il bug per cui i deploy risultavano verdi ma si interrompevano dopo il `migrate:up`: lo script arrivava via heredoc/stdin e `docker compose run` ne divorava le righe restanti (app mai ricreata, invariante mai eseguito).
+- Osservabilità completata: metriche HTTP di Caddy scrappate da Prometheus (endpoint interno `:9180` via `docker/proxy/Caddyfile.base`), regole di alert versionate in `prometheus/rules/alerts.yml` e validate in CI con promtool (CPU, RAM, disco, target down, MySQL down, app assente), retention automatica dei backup (14 giorni, solo dump automatici).
 
 ## 1.0.0 - 2026-05-02
 

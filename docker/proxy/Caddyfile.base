@@ -1,0 +1,15 @@
+# Caddyfile base fuso da caddy-docker-proxy con la config generata dalle
+# label (CADDY_DOCKER_CADDYFILE_PATH nel compose).
+#
+# Abilita le metriche HTTP di Caddy e le serve su :9180, porta NON
+# pubblicata sull'host: la raggiunge solo chi sta sulla rete caddy_public
+# (Prometheus). L'admin API resta sul default localhost del container.
+{
+	servers {
+		metrics
+	}
+}
+
+:9180 {
+	metrics /metrics
+}

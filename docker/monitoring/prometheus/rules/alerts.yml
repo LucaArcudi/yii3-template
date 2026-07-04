@@ -1,0 +1,54 @@
+# Regole di alert valutate da Prometheus (visibili in /alerts e in Grafana
+# via la metrica ALERTS). Le notifiche push arriveranno quando verrà
+# collegato un canale (Alertmanager o contact point Grafana): per ora gli
+# alert "firing" si vedono nelle UI. Validate in CI con promtool.
+groups:
+  - name: infrastruttura
+    rules:
+      - alert: TargetDown
+        expr: up == 0
+        for: 3m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Target {{ $labels.job }} ({{ $labels.instance }}) irraggiungibile da 3 minuti"
+
+      - alert: HighCpu
+        expr: 100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU del VPS sopra il 90% da 10 minuti"
+
+      - alert: HighMemory
+        expr: (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100 < 10
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Memoria disponibile del VPS sotto il 10% da 10 minuti"
+
+      - alert: DiskAlmostFull
+        expr: (node_filesystem_avail_bytes{mountpoint="/", fstype!~"tmpfs|overlay"} / node_filesystem_size_bytes{mountpoint="/", fstype!~"tmpfs|overlay"}) * 100 < 15
+        for: 15m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Spazio libero su / sotto il 15%"
+
+      - alert: MysqlDown
+        expr: mysql_up == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "MySQL non raggiungibile dal mysqld-exporter da 2 minuti"
+
+      - alert: AppContainerAssente
+        expr: (time() - container_last_seen{name="yii3-template-prod-app-1"} > 120) or absent(container_last_seen{name="yii3-template-prod-app-1"})
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Il container app di produzione non viene visto da cAdvisor da oltre 2 minuti"
