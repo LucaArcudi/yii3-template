@@ -44,3 +44,6 @@ backups/
 *.sql.zip
 *.dump
 *.bak
+
+# Ansible inventory reale (partire da ansible/inventory.example.ini)
+ansible/inventory.ini

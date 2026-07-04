@@ -1,60 +1,80 @@
 # Yii3 Template
 
-Applicazione Yii3 con tema ArchitectUI e domini admin per utenti, ruoli, permessi, menu, task e notifiche.
+Template applicativo [Yii3](https://www.yiiframework.com/) con tema
+ArchitectUI e domini admin pronti all'uso: utenti, ruoli e permessi, menu,
+task e notifiche. Include una pipeline completa: test e scansioni in CI,
+immagine pubblicata su GHCR, deploy automatico su VPS via SSH.
 
-## Release 1.0.0
+Licenza [MIT](LICENSE) — contributi benvenuti, vedi
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
-Prima del deploy applicare gli script SQL idempotenti:
+## Requisiti
 
-```powershell
-Get-Content database\migrations\release_1_0_0.sql | mysql -uroot yii3_template
-Get-Content database\seeders\release_1_0_0.sql | mysql -uroot yii3_template
-```
+- Docker con Compose v2
+- GNU make per i target di qualità (su Windows: WSL2)
 
-Gli script aggiungono:
+## Avvio rapido
 
-- `core_notification` e `core_notification_user` per notifiche utente.
-- layout configurato via Param/env (`APP_LOGO`, `APP_LOGO_SMALL`, `APP_FOOTER_LEFT`, `APP_FOOTER_RIGHT`).
-- pulizia dei permessi `*_VIEW` generici rimasti, sostituiti da `*_VIEW_ALL` e `*_VIEW_OWN`.
-
-Il testo UI introdotto in questa release usa italiano come default. Non e presente una struttura locale di cataloghi traduzione nel progetto; quando verra aggiunta, le stringhe nuove sono concentrate nelle view/widget dei moduli `Notification` e `Task`.
-
-## Verifica locale
-
-```powershell
-$env:APP_ENV='test'; vendor\bin\codecept.bat run Unit
-$env:APP_ENV='test'; vendor\bin\codecept.bat run Functional
-```
-
-Per smoke test manuale:
-
-```powershell
-$env:APP_ENV='dev'; php yii serve --port=8088
-```
-
-## Trivy
-
-Le scansioni locali usano l'immagine ufficiale `aquasec/trivy:0.71.2`, quindi non richiedono una installazione locale di Trivy. In questa fase sono in modalita report-only con `exit-code 0`.
+Il compose di riferimento è `compose.yml` alla radice (lo stesso usato dalla
+CI): servizio `app` (FrankenPHP, build target `dev` con Xdebug) + servizio
+`db` (MySQL 8.4).
 
 ```bash
-make trivy
+git clone https://github.com/LucaArcudi/yii3-template.git
+cd yii3-template
+cp .env.example .env
+docker compose up -d
+docker compose run --rm app composer install
 ```
 
-Per scansionare anche l'immagine Docker:
+App su <http://localhost:8080> (porta: `DEV_PORT` in `.env`), MySQL esposto
+su `localhost:3306` (`DB_PORT`). Il codice è bind-montato in `/app`: le
+modifiche sono attive subito. Xdebug si abilita con `XDEBUG_MODE=debug` in
+`.env`.
+
+Alla **prima** inizializzazione del volume, MySQL applica da solo le
+migration (`database/migrations/`) e il seeder (`database/seeders/`:
+permessi, ruoli, menu). Per ripartire da un DB pulito:
+`docker compose down -v && docker compose up -d`.
+
+> **Nota**: il seeder non crea ancora un utente admin: il primo utente va
+> inserito a mano. In roadmap: migration e seeder gestiti dal framework
+> (incluso l'utente iniziale) e step di migrazione automatico nel CD.
+
+## Test e qualità
+
+Sono gli stessi check eseguiti dalla CI: falli passare prima di aprire
+una PR.
+
+| Comando | Cosa fa |
+|---|---|
+| `make test` | suite Codeception (ambiente test dedicato) |
+| `make psalm` | analisi statica |
+| `make cs-fix` | PHP CS Fixer |
+| `make rector` | refactoring automatici |
+| `make composer-dependency-analyser` | igiene delle dipendenze |
+| `make help` | elenco completo dei target |
+
+Le scansioni Trivy locali usano l'immagine ufficiale `aquasec/trivy`
+(nessuna installazione richiesta), in modalità report-only con
+`exit-code 0`; esclusioni in `trivy.yaml`:
 
 ```bash
+make trivy        # filesystem + configurazioni
 docker compose -f compose.yml build app
-make trivy-image
+make trivy-image  # scansione dell'immagine app
 ```
 
-Sono esclusi `.local`, `dump`, `dumps`, `backup`, `backups`, `.git`, `vendor`, `.env` e i dump compressi/locali configurati in `trivy.yaml`. In CI l'action e pinnata a `aquasecurity/trivy-action@v0.36.0`; per contesti piu rigidi sostituire il tag con un commit SHA verificato.
+## CI/CD
 
-## GitHub Container Registry
+- **CI** (`.github/workflows/ci.yml`): build, scansioni Trivy, `composer
+  validate`/`audit` e suite Codeception nel compose di root, su ogni push e
+  PR; su push a `main` pubblica l'immagine su GHCR
+  (`ghcr.io/lucaarcudi/yii3-template`, tag `latest` e SHA del commit).
+- **CD** (`.github/workflows/cd.yml`): al successo della CI su `main`
+  allinea i file sul VPS via SSH, esegue il backup del DB e fa
+  `docker compose pull` + `up` con health check finale.
 
-La CI pubblica l'immagine del servizio `app` su `ghcr.io/<owner>/<repo>` solo su `push` verso `main`, dopo il job di test e Trivy. Usa `GITHUB_TOKEN` con permessi `contents: read` e `packages: write`, e pubblica i tag `${GITHUB_SHA}` e `latest`.
-
-## Produzione
-
-La configurazione Docker di produzione usa l'immagine GHCR `ghcr.io/lucaarcudi/yii3-template:latest` tramite `docker/prod/compose.yml`. Non esegue build locali dell'app nel compose di produzione. Per sovrascrivere il riferimento senza cambiare il file, usare `APP_IMAGE`.
-
-Per il deploy manuale ripetibile vedere `README_DEPLOY.md`.
+Dettagli operativi: [README_DEPLOY.md](README_DEPLOY.md) e
+[docs/documentazione-progetto.md](docs/documentazione-progetto.md).
+Note di release: [CHANGELOG.md](CHANGELOG.md).

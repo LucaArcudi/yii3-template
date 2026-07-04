@@ -68,7 +68,7 @@ pipeline CI/CD su GitHub Actions. Vedi la [sezione DevOps](#8-devops).
 │   └── environments/      #   Override per dev / test / prod
 ├── database/
 │   ├── migrations/        # Script SQL idempotenti per release (release_X_Y_Z.sql)
-│   └── seeders/           # Dati iniziali (ruoli, permessi, utente admin…)
+│   └── seeders/           # Dati iniziali (gruppi permessi, permessi, ruoli…)
 ├── docker/
 │   ├── Dockerfile         # Multi-stage: base → dev / prod-builder → prod
 │   ├── compose.yml        # Frammento comune (volumi caddy) usato dal Makefile
@@ -478,12 +478,12 @@ Trigger: `workflow_run` (CI conclusa con successo su `main`) o
 `VPS_SSH_KEY` (chiave dedicata `yii3_github_actions_cd`; la pubblica sta in
 `/home/deploy/.ssh/authorized_keys` sul VPS), `VPS_KNOWN_HOSTS` (righe
 complete in formato `known_hosts` per lo stesso host di `VPS_HOST`, generate
-con `ssh-keyscan -t ed25519,ecdsa,rsa 173.212.248.57`; **non** la sola
+con `ssh-keyscan -t ed25519,ecdsa,rsa <VPS_IP>`; **non** la sola
 fingerprint `SHA256:...`).
 
 ### 8.5 Infrastruttura di produzione
 
-**Server**: VPS Contabo, IP `173.212.248.57`, host pubblico
+**Server**: VPS Contabo, IP `<VPS_IP>`, host pubblico
 `yii3-template.duckdns.org`. Utente operativo `deploy` (gruppo `docker`, sudo
 con password); `root` solo per emergenze. Il DB **non è esposto
 pubblicamente** (solo loopback + tunnel SSH).
@@ -576,7 +576,7 @@ automatizzato (vedi §10).
 ### 9.1 Stato e log in produzione
 
 ```bash
-ssh deploy@173.212.248.57
+ssh deploy@<VPS_IP>
 cd /opt/yii3
 
 # alias della tripletta compose usata in tutti i comandi seguenti
@@ -646,7 +646,7 @@ Restore da backup: stesso comando `mysql` con in input il file di dump.
 ### 9.6 Accesso al DB dal PC locale (tunnel SSH)
 
 ```bash
-ssh -N -L 3307:127.0.0.1:3307 deploy@173.212.248.57
+ssh -N -L 3307:127.0.0.1:3307 deploy@<VPS_IP>
 ```
 
 Poi collegarsi con il client SQL a `127.0.0.1:3307` usando le credenziali di

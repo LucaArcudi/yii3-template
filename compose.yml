@@ -45,8 +45,12 @@ services:
       - "${DB_PORT:-3306}:3306"
     volumes:
       - db_data:/var/lib/mysql
+      # initdb.d gira solo alla prima inizializzazione del volume, in ordine
+      # alfabetico: migration in sequenza di release, seeder per ultimo.
       - ./database/migrations/release_1_0_0.sql:/docker-entrypoint-initdb.d/01-release_1_0_0.sql:ro
-      - ./database/seeders/release_1_0_0.sql:/docker-entrypoint-initdb.d/02-release_1_0_0.sql:ro
+      - ./database/migrations/release_1_0_1.sql:/docker-entrypoint-initdb.d/02-release_1_0_1.sql:ro
+      - ./database/migrations/release_1_0_2.sql:/docker-entrypoint-initdb.d/03-release_1_0_2.sql:ro
+      - ./database/seeders/release_1_0_0.sql:/docker-entrypoint-initdb.d/04-seed-release_1_0_0.sql:ro
 
 volumes:
   caddy_data:

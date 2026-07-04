@@ -18,7 +18,7 @@ Server
 
 VPS Contabo:
 
-IP: 173.212.248.57
+IP: <VPS_IP>
 Percorso progetto: /opt/yii3
 Utente deploy: deploy
 
@@ -38,7 +38,7 @@ Accesso SSH
 
 Da PC locale:
 
-ssh deploy@173.212.248.57
+ssh deploy@<VPS_IP>
 
 Se configurato in ~/.ssh/config:
 
@@ -92,7 +92,7 @@ Deploy manuale da VPS
 
 Da VPS:
 
-ssh deploy@173.212.248.57
+ssh deploy@<VPS_IP>
 cd /opt/yii3
 
 Pull immagine:
@@ -154,7 +154,7 @@ Il DB non deve essere esposto pubblicamente.
 
 Da PC locale:
 
-ssh -N -L 3307:127.0.0.1:3307 deploy@173.212.248.57
+ssh -N -L 3307:127.0.0.1:3307 deploy@<VPS_IP>
 
 Se il terminale resta fermo, il tunnel è attivo.
 
@@ -186,7 +186,7 @@ VPS_SSH_KEY
 
 Esempio:
 
-VPS_HOST=173.212.248.57
+VPS_HOST=<VPS_IP>
 VPS_USER=deploy
 VPS_SSH_KEY=chiave privata SSH dedicata a GitHub Actions
 
