@@ -6,6 +6,7 @@
 - Aggiunto comando console `user:create` per il primo utente admin (password generata stampata una sola volta, ruolo di default `ADMIN`).
 - CD: step `migrate:up` tra backup e avvio della nuova versione dell'app.
 - Corretto l'ordine degli script initdb.d nei compose (root e prod): `release_1_0_2` è lo schema base completo e deve precedere le altre release, che ne referenziano le tabelle via FK.
+- Inclusa `database/` nell'immagine prod (`.dockerignore` è una allowlist e la escludeva: il `migrate:up` del CD legge gli snapshot da `/app/database`); nuovo step CI che verifica l'artefatto prod (file richiesti dal deploy e bit di esecuzione).
 
 ## 1.0.0 - 2026-05-02
 

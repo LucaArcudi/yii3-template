@@ -81,6 +81,23 @@ jobs:
           docker compose -f compose.yml run --rm app ./yii migrate:up -y
           docker compose -f compose.yml run --rm app ./yii migrate:history
 
+      - name: Verify prod image artifact
+        run: |
+          DOCKER_BUILDKIT=1 docker build --file docker/Dockerfile --target prod --tag yii3-template-prod:ci-check .
+          # Il CD esegue ./yii migrate:up DALL'IMMAGINE, non dal checkout
+          # bind-montato: questi file devono esistere nell'artefatto
+          # (esclusioni .dockerignore e bit di esecuzione inclusi).
+          docker run --rm --entrypoint sh yii3-template-prod:ci-check -c '
+            set -e
+            test -x /app/yii
+            test -f /app/database/migrations/release_1_0_0.sql
+            test -f /app/database/migrations/release_1_0_1.sql
+            test -f /app/database/migrations/release_1_0_2.sql
+            test -f /app/database/seeders/release_1_0_0.sql
+            test -d /app/vendor
+            echo "Artefatto prod: OK"
+          '
+
       - name: Stop services
         if: always()
         run: docker compose -f compose.yml down --remove-orphans

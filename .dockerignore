@@ -6,6 +6,9 @@
 !/config
 !/public
 !/src
+# Gli snapshot SQL servono a runtime: il CD esegue ./yii migrate:up
+# dall'immagine prod e le migration li leggono da /app/database.
+!/database
 !autoload.php
 !yii
 !composer.json
