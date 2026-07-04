@@ -580,9 +580,34 @@ automatizzato (vedi §10).
   (usa l'immagine `aquasec/trivy:0.71.2`, nessuna installazione richiesta).
   Attualmente report-only; per renderlo bloccante alzare `exit-code` in
   `trivy.yaml`/workflow.
-- **`composer audit`** in CI (non bloccante).
+- **`composer audit`** in CI, **bloccante**: una advisory nuova ferma il
+  run. **Psalm** è anch'esso uno step obbligatorio, con baseline committata
+  (`psalm-baseline.xml`) per il debito storico.
 - Audit manuale completo: vedi
   [analisi-sicurezza-e-migliorie-2026-07-02.md](analisi-sicurezza-e-migliorie-2026-07-02.md).
+
+### 8.9 Monitoring (Prometheus + Grafana)
+
+Stack separato in `docker/monitoring/compose.yml`, con ciclo di vita
+indipendente dai deploy (il CD ricrea l'app, non il monitoring):
+Prometheus (retention 15 giorni), Grafana, node-exporter (metriche host),
+cAdvisor (metriche container), mysqld-exporter (utente MySQL dedicato
+`exporter` con soli grant di monitoraggio). Config locale in
+`docker/monitoring/.env`, fuori git (modello in `.env.example`).
+
+- Esposto **solo Grafana**: `https://<GRAFANA_HOST>` via caddy-docker-proxy
+  con TLS automatico (con DuckDNS i sottodomini wildcard del proprio nome
+  risolvono già). Signup disabilitato, admin con password generata.
+- Prometheus e gli exporter restano su rete interna; la UI di Prometheus
+  ascolta solo sul loopback del VPS (`127.0.0.1:9090`), raggiungibile con
+  `ssh -L 9090:127.0.0.1:9090 deploy@<VPS_IP>` e poi
+  `http://localhost:9090` in locale.
+- Avvio/aggiornamento sul VPS, da `/opt/yii3`:
+  `docker compose -f docker/monitoring/compose.yml up -d --wait`.
+- Dashboard consigliate (import per ID da grafana.com): **1860** (Node
+  Exporter Full), **14282** (cAdvisor), **14057** (MySQL).
+- Estensioni future: metriche HTTP di Caddy/FrankenPHP, endpoint
+  `/metrics` applicativo, alerting (Grafana alerting o Alertmanager).
 
 ## 9. Runbook operativi
 
