@@ -1,0 +1,105 @@
+# Stack di monitoring per il VPS: Prometheus + Grafana + exporter.
+#
+# Vive in un compose SEPARATO dallo stack app: il suo ciclo di vita è
+# indipendente dai deploy (il CD ricrea l'app, non il monitoring).
+# Config locale in docker/monitoring/.env (fuori git, vedi .env.example).
+#
+# Avvio sul VPS:
+#   cd /opt/yii3 && docker compose -f docker/monitoring/compose.yml up -d --wait
+#
+# Esposizione: SOLO Grafana, via caddy-docker-proxy con TLS su
+# https://${GRAFANA_HOST}. Prometheus e gli exporter restano su rete
+# interna (per il debug: tunnel SSH verso prometheus:9090).
+
+services:
+  prometheus:
+    image: prom/prometheus:v3.1.0
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=15d
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prom_data:/prometheus
+    ports:
+      # Solo loopback del VPS: UI raggiungibile via tunnel SSH
+      # (ssh -L 9090:127.0.0.1:9090 deploy@<VPS_IP>).
+      - "127.0.0.1:9090:9090"
+    networks:
+      - monitoring
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GF_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GF_ADMIN_PASSWORD:?Set GF_ADMIN_PASSWORD in docker/monitoring/.env}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_SERVER_ROOT_URL: https://${GRAFANA_HOST:?Set GRAFANA_HOST in docker/monitoring/.env}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    networks:
+      - monitoring
+      - caddy_public
+    labels:
+      caddy: ${GRAFANA_HOST}
+      caddy.reverse_proxy: "{{upstreams 3000}}"
+    restart: unless-stopped
+
+  node-exporter:
+    image: prom/node-exporter:v1.8.2
+    command:
+      - --path.rootfs=/host
+    pid: host
+    volumes:
+      - /:/host:ro,rslave
+    networks:
+      - monitoring
+    restart: unless-stopped
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    # privileged + mount di sistema: richiesti da cAdvisor per leggere
+    # cgroup e stato dei container dal host.
+    privileged: true
+    devices:
+      - /dev/kmsg
+    command:
+      - --docker_only=true
+      - --housekeeping_interval=30s
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /dev/disk:/dev/disk:ro
+    networks:
+      - monitoring
+    restart: unless-stopped
+
+  mysqld-exporter:
+    image: prom/mysqld-exporter:v0.16.0
+    # Si collega al MySQL dello stack app attraverso la sua network
+    # (external): serve l'utente dedicato "exporter" con soli grant di
+    # monitoraggio (PROCESS, REPLICATION CLIENT, SELECT su performance_schema).
+    command:
+      - --mysqld.username=${MYSQLD_EXPORTER_USER:-exporter}
+      - --mysqld.address=db:3306
+    environment:
+      MYSQLD_EXPORTER_PASSWORD: ${MYSQLD_EXPORTER_PASSWORD:?Set MYSQLD_EXPORTER_PASSWORD in docker/monitoring/.env}
+    networks:
+      - monitoring
+      - app_internal
+    restart: unless-stopped
+
+volumes:
+  prom_data:
+  grafana_data:
+
+networks:
+  monitoring:
+  caddy_public:
+    external: true
+  app_internal:
+    name: ${APP_NETWORK:-yii3-template-prod_app_internal}
+    external: true

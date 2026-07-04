@@ -9,6 +9,7 @@
 - Inclusa `database/` nell'immagine prod (`.dockerignore` è una allowlist e la escludeva: il `migrate:up` del CD legge gli snapshot da `/app/database`); nuovo step CI che verifica l'artefatto prod (file richiesti dal deploy e bit di esecuzione).
 - CI più severa: `composer audit` ora è bloccante (niente più `|| true`) e Psalm è uno step obbligatorio del job di test (con baseline committata per il debito storico). Aggiornate le dipendenze dev con advisory: guzzle 7.13.1, psr7 2.12.3, dom-crawler e yaml 8.1.1 — audit pulito.
 - CD: il container app viene ricreato esplicitamente a ogni deploy e il run verifica che giri l'immagine appena pubblicata (due deploy avevano lasciato attiva l'immagine precedente nonostante il pull).
+- Aggiunto stack di monitoring (`docker/monitoring/`): Prometheus, Grafana (esposta via Caddy con TLS), node-exporter, cAdvisor e mysqld-exporter; solo Grafana è pubblica, il resto su rete interna. Config in `.env` locale (modello committato).
 
 ## 1.0.0 - 2026-05-02
 
