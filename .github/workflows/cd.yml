@@ -28,8 +28,15 @@ jobs:
           install -m 700 -d ~/.ssh
           printf '%s\n' "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/vps_key
           chmod 600 ~/.ssh/vps_key
-          printf '%s\n' "${{ secrets.VPS_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          # tr -d '\r' tollera un secret incollato con fine riga Windows.
+          printf '%s\n' "${{ secrets.VPS_KNOWN_HOSTS }}" | tr -d '\r' > ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
+          # Un secret vuoto o senza la riga per VPS_HOST emergerebbe solo come
+          # "Host key verification failed" (exit 255) opaco al primo ssh.
+          ssh-keygen -F "${{ secrets.VPS_HOST }}" -f ~/.ssh/known_hosts > /dev/null || {
+            echo "::error::VPS_KNOWN_HOSTS non contiene una riga known_hosts per l'host di VPS_HOST"
+            exit 1
+          }
 
       - name: Update repo files on VPS
         run: |

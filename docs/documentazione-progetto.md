@@ -449,8 +449,10 @@ Il tag `<sha>` per ogni release è ciò che rende possibile il rollback (§9.3).
 Trigger: `workflow_run` (CI conclusa con successo su `main`) o
 `workflow_dispatch`. Un job `deploy` in quattro step, tutti via SSH:
 
-1. **Setup SSH** — chiave privata dal secret `VPS_SSH_KEY`, `ssh-keyscan`
-   dell'host in `known_hosts`;
+1. **Setup SSH** — chiave privata dal secret `VPS_SSH_KEY`; `known_hosts`
+   popolato dal secret `VPS_KNOWN_HOSTS` (fingerprint pinnata: sostituisce
+   l'`ssh-keyscan` a ogni deploy, che era trust-on-first-use ripetuto), con
+   verifica immediata che il secret contenga una riga per `VPS_HOST`;
 2. **Allineamento repo sul VPS** — `git fetch` + `merge --ff-only
    origin/main` in `/opt/yii3`: senza questo passo il deploy aggiornerebbe
    solo l'immagine, lasciando compose/migration/config alla versione vecchia;
@@ -470,7 +472,10 @@ Trigger: `workflow_run` (CI conclusa con successo su `main`) o
 
 **Secrets richiesti** (repository secrets): `VPS_HOST`, `VPS_USER`,
 `VPS_SSH_KEY` (chiave dedicata `yii3_github_actions_cd`; la pubblica sta in
-`/home/deploy/.ssh/authorized_keys` sul VPS).
+`/home/deploy/.ssh/authorized_keys` sul VPS), `VPS_KNOWN_HOSTS` (righe
+complete in formato `known_hosts` per lo stesso host di `VPS_HOST`, generate
+con `ssh-keyscan -t ed25519,ecdsa,rsa 173.212.248.57`; **non** la sola
+fingerprint `SHA256:...`).
 
 ### 8.5 Infrastruttura di produzione
 
