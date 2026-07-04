@@ -5,9 +5,9 @@
 # pubblicata sull'host: la raggiunge solo chi sta sulla rete caddy_public
 # (Prometheus). L'admin API resta sul default localhost del container.
 {
-	servers {
-		metrics
-	}
+	# Forma globale (>= Caddy 2.8): quella annidata in `servers` è deprecata
+	# e riempiva i log di warning a ogni refresh di caddy-docker-proxy.
+	metrics
 }
 
 :9180 {

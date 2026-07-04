@@ -46,7 +46,11 @@ groups:
           summary: "MySQL non raggiungibile dal mysqld-exporter da 2 minuti"
 
       - alert: AppContainerAssente
-        expr: (time() - container_last_seen{name="yii3-template-prod-app-1"} > 120) or absent(container_last_seen{name="yii3-template-prod-app-1"})
+        # max(): a ogni deploy il container viene ricreato e la serie del
+        # container VECCHIO (stesso name, id diverso) resta stale ~5 minuti
+        # facendo scattare un falso positivo; il max prende sempre la serie
+        # più fresca, quindi l'alert scatta solo se l'app è sparita davvero.
+        expr: (time() - max(container_last_seen{name="yii3-template-prod-app-1"}) > 120) or absent(container_last_seen{name="yii3-template-prod-app-1"})
         for: 2m
         labels:
           severity: critical
