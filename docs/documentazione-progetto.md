@@ -457,7 +457,11 @@ Trigger: `workflow_run` (CI conclusa con successo su `main`) o
    origin/main` in `/opt/yii3`: senza questo passo il deploy aggiornerebbe
    solo l'immagine, lasciando compose/migration/config alla versione vecchia;
 3. **Backup DB** — `mysqldump` dentro il container `db` →
-   `/opt/yii3/backups/db_<timestamp>.sql`;
+   `/opt/yii3/backups/db_<timestamp>.sql`. Le credenziali sono lette da
+   `.env.prod` sul VPS (non dall'env del container, che riflette `.env.prod`
+   solo al momento della *creazione* del container: dopo una rotazione
+   password sarebbe stantio); `--single-transaction` evita lock sull'app
+   live e un dump vuoto fa fallire lo step;
 4. **Deploy** — `docker compose pull` + `up -d --wait --wait-timeout 120`,
    poi health check:
 

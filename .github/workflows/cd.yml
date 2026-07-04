@@ -62,12 +62,29 @@ jobs:
 
             mkdir -p /opt/yii3/backups
 
+            # Credenziali lette da .env.prod (fonte di verità), NON dall'env del
+            # container db: un container creato prima dell'ultima rotazione
+            # avrebbe ancora la password vecchia (Access denied, 2026-07-04).
+            DB_USERNAME=$(grep -E '^DB_USERNAME=' .env.prod | head -1 | cut -d= -f2- || true)
+            DB_DATABASE=$(grep -E '^DB_DATABASE=' .env.prod | head -1 | cut -d= -f2- || true)
+            DB_PASSWORD=$(grep -E '^DB_PASSWORD=' .env.prod | head -1 | cut -d= -f2- || true)
+            [ -n "$DB_PASSWORD" ] || { echo "DB_PASSWORD assente in .env.prod"; exit 1; }
+
+            OUT="/opt/yii3/backups/db_$(date +%F_%H-%M-%S).sql"
+
+            # MYSQL_PWD tiene la password fuori dalla riga di comando;
+            # --single-transaction evita lock sulle tabelle dell'app live.
             docker compose \
               --env-file .env.prod \
               -f docker/prod/compose.yml \
               -f docker/prod/compose.local.yml \
-              exec -T db sh -lc 'mysqldump --no-tablespaces -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' \
-              > /opt/yii3/backups/db_$(date +%F_%H-%M-%S).sql
+              exec -T -e MYSQL_PWD="$DB_PASSWORD" db \
+              mysqldump --no-tablespaces --single-transaction \
+              -u"${DB_USERNAME:-yii3_template}" "${DB_DATABASE:-yii3_template}" \
+              > "$OUT" || { rm -f "$OUT"; exit 1; }
+
+            # Un dump vuoto è un backup finto: meglio fallire qui che al restore.
+            [ -s "$OUT" ]
 
             ls -lh /opt/yii3/backups | tail
           EOF
