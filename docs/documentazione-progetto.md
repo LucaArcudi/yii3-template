@@ -457,8 +457,13 @@ Il tag `<sha>` per ogni release è ciò che rende possibile il rollback (§9.3).
 
 ### 8.4 CD (`.github/workflows/cd.yml`)
 
-Trigger: `workflow_run` (CI conclusa con successo su `main`) o
-`workflow_dispatch`. Un job `deploy` in quattro step, tutti via SSH:
+Trigger: `workflow_run` (CI conclusa con successo su `main`, solo per run
+innescati da `push`) o `workflow_dispatch`. Un job `deploy` in quattro step,
+tutti via SSH. La logica di backup e deploy vive in `scripts/backup-db.sh`
+e `scripts/deploy.sh`, versionati nel repo ed eseguiti dal checkout
+allineato: il workflow li invoca soltanto. **Mai** logica remota via
+heredoc: `docker compose run`/`exec` leggono stdin e divorano il resto
+dello script — il deploy risulterebbe verde ma interrotto a metà:
 
 1. **Setup SSH** — chiave privata dal secret `VPS_SSH_KEY`; `known_hosts`
    popolato dal secret `VPS_KNOWN_HOSTS` (fingerprint pinnata: sostituisce
