@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Adottato `yiisoft/db-migration`: gli snapshot SQL di release sono eseguiti da una catena di migration (`App\Migrations`) validata in CI sia per idempotenza su DB esistente sia per bootstrap da database vuoto.
+- Aggiunto comando console `user:create` per il primo utente admin (password generata stampata una sola volta, ruolo di default `ADMIN`).
+- CD: step `migrate:up` tra backup e avvio della nuova versione dell'app.
+- Corretto l'ordine degli script initdb.d nei compose (root e prod): `release_1_0_2` è lo schema base completo e deve precedere le altre release, che ne referenziano le tabelle via FK.
+
 ## 1.0.0 - 2026-05-02
 
 - Aggiunto dominio notifiche con tabelle, repository, reader, centro notifiche, apertura con mark-read e dropdown ArchitectUI in header con badge non lette.

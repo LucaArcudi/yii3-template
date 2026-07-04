@@ -69,6 +69,18 @@ jobs:
             echo "Codeception is not configured; skipping tests."
           fi
 
+      - name: Validate framework migrations
+        run: |
+          docker compose -f compose.yml up -d --wait db
+          # Idempotenza: le migration rieseguono gli snapshot sopra lo schema
+          # già creato da initdb.d (stesso scenario del primo run in prod).
+          docker compose -f compose.yml run --rm app ./yii migrate:up -y
+          # Bootstrap da zero: un DB vuoto deve essere ricostruibile dalla
+          # sola catena di migration (disaster recovery / ambiente dev nuovo).
+          docker compose -f compose.yml exec -T db mysql -e "DROP DATABASE yii3_template; CREATE DATABASE yii3_template;"
+          docker compose -f compose.yml run --rm app ./yii migrate:up -y
+          docker compose -f compose.yml run --rm app ./yii migrate:history
+
       - name: Stop services
         if: always()
         run: docker compose -f compose.yml down --remove-orphans

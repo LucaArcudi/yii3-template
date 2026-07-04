@@ -32,14 +32,27 @@ su `localhost:3306` (`DB_PORT`). Il codice è bind-montato in `/app`: le
 modifiche sono attive subito. Xdebug si abilita con `XDEBUG_MODE=debug` in
 `.env`.
 
-Alla **prima** inizializzazione del volume, MySQL applica da solo le
-migration (`database/migrations/`) e il seeder (`database/seeders/`:
-permessi, ruoli, menu). Per ripartire da un DB pulito:
-`docker compose down -v && docker compose up -d`.
+Alla **prima** inizializzazione del volume, MySQL carica gli snapshot SQL
+di `database/` via initdb.d. Lo schema è comunque gestito dalle **migration
+del framework** (`yiisoft/db-migration`), che eseguono gli stessi snapshot
+idempotenti: su un DB già inizializzato registrano solo la history, su un
+DB vuoto fanno il bootstrap completo (la CI valida entrambi gli scenari).
 
-> **Nota**: il seeder non crea ancora un utente admin: il primo utente va
-> inserito a mano. In roadmap: migration e seeder gestiti dal framework
-> (incluso l'utente iniziale) e step di migrazione automatico nel CD.
+```bash
+docker compose run --rm app ./yii migrate:up -y      # applica le migration
+docker compose run --rm app ./yii migrate:history    # stato
+docker compose run --rm app ./yii migrate:create ... # nuova migration
+```
+
+Primo utente admin (il seed, per scelta, non crea utenti):
+
+```bash
+docker compose run --rm app ./yii user:create admin@example.com "Admin"
+```
+
+Stampa una password generata, mostrata una sola volta; opzioni `--password`
+e `--role` (default `ADMIN`). Reset totale del DB:
+`docker compose down -v && docker compose up -d`.
 
 ## Test e qualità
 
@@ -72,8 +85,9 @@ make trivy-image  # scansione dell'immagine app
   PR; su push a `main` pubblica l'immagine su GHCR
   (`ghcr.io/lucaarcudi/yii3-template`, tag `latest` e SHA del commit).
 - **CD** (`.github/workflows/cd.yml`): al successo della CI su `main`
-  allinea i file sul VPS via SSH, esegue il backup del DB e fa
-  `docker compose pull` + `up` con health check finale.
+  allinea i file sul VPS via SSH, esegue il backup del DB, applica le
+  migration (`migrate:up`) e fa `docker compose pull` + `up` con health
+  check finale.
 
 Dettagli operativi: [README_DEPLOY.md](README_DEPLOY.md) e
 [docs/documentazione-progetto.md](docs/documentazione-progetto.md).

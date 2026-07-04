@@ -46,10 +46,12 @@ services:
     volumes:
       - db_data:/var/lib/mysql
       # initdb.d gira solo alla prima inizializzazione del volume, in ordine
-      # alfabetico: migration in sequenza di release, seeder per ultimo.
-      - ./database/migrations/release_1_0_0.sql:/docker-entrypoint-initdb.d/01-release_1_0_0.sql:ro
-      - ./database/migrations/release_1_0_1.sql:/docker-entrypoint-initdb.d/02-release_1_0_1.sql:ro
-      - ./database/migrations/release_1_0_2.sql:/docker-entrypoint-initdb.d/03-release_1_0_2.sql:ro
+      # alfabetico. release_1_0_2 è lo schema base completo (crea anche
+      # core_user, referenziata dalle FK di release_1_0_0) e DEVE andare
+      # prima; stesso ordine della catena App\Migrations.
+      - ./database/migrations/release_1_0_2.sql:/docker-entrypoint-initdb.d/01-release_1_0_2.sql:ro
+      - ./database/migrations/release_1_0_0.sql:/docker-entrypoint-initdb.d/02-release_1_0_0.sql:ro
+      - ./database/migrations/release_1_0_1.sql:/docker-entrypoint-initdb.d/03-release_1_0_1.sql:ro
       - ./database/seeders/release_1_0_0.sql:/docker-entrypoint-initdb.d/04-seed-release_1_0_0.sql:ro
 
 volumes:

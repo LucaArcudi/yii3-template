@@ -103,6 +103,15 @@ jobs:
               -f docker/prod/compose.local.yml \
               pull
 
+            # Migration del framework con l'immagine appena pullata, PRIMA di
+            # avviare la nuova versione dell'app: lo schema è pronto quando
+            # il nuovo codice parte. Idempotenti: nessun effetto se già applicate.
+            docker compose \
+              --env-file .env.prod \
+              -f docker/prod/compose.yml \
+              -f docker/prod/compose.local.yml \
+              run --rm app ./yii migrate:up -y
+
             docker compose \
               --env-file .env.prod \
               -f docker/prod/compose.yml \

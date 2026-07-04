@@ -291,18 +291,29 @@ Tabelle (prefisso `core_` per il modulo Core, `mes_` per il modulo Mes):
 
 ### 5.2 Migrazioni e seed
 
-Non si usa un motore di migrazioni: gli schema change sono **script SQL
-idempotenti per release** in `database/migrations/release_X_Y_Z.sql`
-(attualmente `1_0_0`, `1_0_1`, `1_0_2`) più i seed in `database/seeders/`.
+Lo schema è gestito da **`yiisoft/db-migration`**: la catena in
+`src/Migrations/` (namespace `App\Migrations`, classe base
+`SqlSnapshotMigration`) esegue gli **script SQL idempotenti per release**
+di `database/migrations/` e `database/seeders/`, che restano la fonte di
+verità unica.
 
-Regole:
+Regole e comandi:
 
-- ogni script deve essere rieseguibile senza errori (`CREATE TABLE IF NOT
-  EXISTS`, `INSERT ... ON DUPLICATE KEY` ecc.);
-- nei compose gli script sono montati in `/docker-entrypoint-initdb.d` e
-  MySQL li esegue **solo alla prima inizializzazione del volume**, in ordine
-  alfabetico: le migration precedono il seeder (prefissi `00-`…`03-`);
-- su un database già esistente le patch vanno applicate a mano (vedi §9.4).
+- `./yii migrate:up -y` applica le migration mancanti; `migrate:history`
+  mostra lo stato; `migrate:create` genera una nuova classe in
+  `src/Migrations/` (nome `M<yyyymmddHHMM><Nome>`);
+- la prima migration è `release_1_0_2`, lo **schema base completo** (crea
+  anche `core_user`, referenziata dalle FK delle altre release); seguono
+  `1_0_0`, `1_0_1` e il seed — stesso ordine nei mount initdb.d dei compose;
+- ogni script resta rieseguibile senza errori (`CREATE TABLE IF NOT EXISTS`,
+  `INSERT ... ON DUPLICATE KEY` ecc.): su un DB già inizializzato la catena
+  registra solo la history, su un DB vuoto fa il bootstrap completo — la CI
+  valida entrambi gli scenari;
+- initdb.d resta come fast-path del primo `up` (MySQL lo esegue **solo alla
+  prima inizializzazione del volume**); in produzione le migration girano
+  nel CD prima dell'avvio della nuova versione (§8.4);
+- primo utente: `./yii user:create <email> "<nome>"` (ruolo di default
+  `ADMIN`, password generata e stampata una sola volta).
 
 ## 6. Sviluppo locale
 
@@ -462,8 +473,10 @@ Trigger: `workflow_run` (CI conclusa con successo su `main`) o
    solo al momento della *creazione* del container: dopo una rotazione
    password sarebbe stantio); `--single-transaction` evita lock sull'app
    live e un dump vuoto fa fallire lo step;
-4. **Deploy** — `docker compose pull` + `up -d --wait --wait-timeout 120`,
-   poi health check:
+4. **Deploy** — `docker compose pull`, poi le migration del framework con
+   l'immagine nuova (`run --rm app ./yii migrate:up -y`, idempotenti: lo
+   schema è pronto prima che parta il nuovo codice), quindi
+   `up -d --wait --wait-timeout 120` e health check:
 
    ```bash
    curl -fsS -m 10 --retry 12 --retry-delay 5 --retry-all-errors \
