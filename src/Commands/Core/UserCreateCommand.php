@@ -83,10 +83,11 @@ final class UserCreateCommand extends Command
 
         /** @var string|null $password */
         $password = $input->getOption('password');
-        $generated = $password === null;
+        $generated = false;
 
-        if ($generated) {
+        if ($password === null) {
             $password = $this->generatePassword();
+            $generated = true;
         }
 
         $now = date('Y-m-d H:i:s');

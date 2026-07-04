@@ -59,7 +59,10 @@ jobs:
         run: docker compose -f compose.yml run --rm --no-deps app composer validate
 
       - name: Audit Composer dependencies
-        run: docker compose -f compose.yml run --rm --no-deps app composer audit --no-interaction || true
+        run: docker compose -f compose.yml run --rm --no-deps app composer audit --no-interaction
+
+      - name: Run Psalm static analysis
+        run: docker compose -f compose.yml run --rm --no-deps app ./vendor/bin/psalm --no-progress --no-cache --output-format=github
 
       - name: Run Codeception tests
         run: |
