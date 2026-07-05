@@ -45,14 +45,15 @@ groups:
         annotations:
           summary: "MySQL non raggiungibile dal mysqld-exporter da 2 minuti"
 
-      - alert: AppContainerAssente
-        # max(): a ogni deploy il container viene ricreato e la serie del
-        # container VECCHIO (stesso name, id diverso) resta stale ~5 minuti
-        # facendo scattare un falso positivo; il max prende sempre la serie
-        # più fresca, quindi l'alert scatta solo se l'app è sparita davvero.
-        expr: (time() - max(container_last_seen{name="yii3-template-prod-app-1"}) > 120) or absent(container_last_seen{name="yii3-template-prod-app-1"})
+      - alert: UpstreamProxyDown
+        # Fonte: lo stato degli upstream visto dal reverse proxy (app e
+        # Grafana). Più affidabile di cAdvisor, che su host Docker con
+        # snapshotter containerd (storage driver "overlayfs", come questo
+        # VPS) non esporta le serie per-container — limite upstream
+        # verificato anche con la v0.52.
+        expr: caddy_reverse_proxy_upstreams_healthy == 0
         for: 2m
         labels:
           severity: critical
         annotations:
-          summary: "Il container app di produzione non viene visto da cAdvisor da oltre 2 minuti"
+          summary: "Upstream {{ $labels.upstream }} non sano per il reverse proxy da 2 minuti"

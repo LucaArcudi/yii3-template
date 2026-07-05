@@ -617,10 +617,15 @@ cAdvisor (metriche container), mysqld-exporter (utente MySQL dedicato
   (`caddy-proxy:9180`, abilitate da `docker/proxy/Caddyfile.base`; porta
   mai pubblicata sull'host): latenze e status code del traffico pubblico.
 - Alert in `prometheus/rules/alerts.yml` (CPU, memoria, disco, target
-  down, MySQL down, container app assente), validati in CI con `promtool
-  check config`; visibili in Prometheus `/alerts` e in Grafana (metrica
-  `ALERTS`). Le notifiche push si aggiungono collegando un contact point
-  Grafana o un Alertmanager.
+  down, MySQL down, upstream del proxy non sano), validati in CI con
+  `promtool check config`; visibili in Prometheus `/alerts` e in Grafana
+  (metrica `ALERTS`). Le notifiche push si aggiungono collegando un
+  contact point Grafana o un Alertmanager.
+- Limite noto: con Docker che usa lo snapshotter containerd (storage
+  driver `overlayfs`, com'è sul VPS attuale) cAdvisor esporta solo il
+  cgroup root e niente serie per-container (anche in v0.52): la dashboard
+  14282 resta vuota e la liveness dell'app si misura dagli upstream di
+  Caddy. Su host con overlay2 classico cAdvisor funziona per intero.
 - Estensione futura: endpoint `/metrics` applicativo (richiede la scelta
   delle metriche di business e uno storage per i contatori).
 
