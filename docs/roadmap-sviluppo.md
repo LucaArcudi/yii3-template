@@ -2,7 +2,8 @@
 
 Backlog funzionale del template, estratto dai componenti della dashboard
 (2026-07-05) e aggiornato con lo stato reale. La roadmap infrastrutturale
-e AI vive in [roadmap-ai-codex-claude-code.md](roadmap-ai-codex-claude-code.md);
+vive in [roadmap-infrastruttura.md](roadmap-infrastruttura.md), quella AI
+in [roadmap-ai-codex-claude-code.md](roadmap-ai-codex-claude-code.md);
 lo stato di CI/CD e monitoring è documentato in
 [documentazione-progetto.md](documentazione-progetto.md) §8.
 

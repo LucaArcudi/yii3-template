@@ -17,6 +17,7 @@
 - Visibilità di menu e dashboard centralizzata sulle policy: le definizioni dichiarano una `policyClass` e il rendering usa `canAccess()`, rimuovendo le condizioni extra dalle view.
 - Aggiunte linee guida operative `AGENTS.md` per Codex e convenzione `Co-Authored-By` per tracciare Codex tra i contributor AI.
 - Aggiunta `docs/roadmap-ai-codex-claude-code.md`: integrazione di Codex e Claude Code nel workflow di sviluppo e nella pipeline, rivista e ampliata con stato reale del repo, centralizzazione log (Loki/Alloy), percorso alert→notifiche→incident e guardrail sui permessi GitHub degli agenti.
+- Riorganizzata `docs/`: i temi infrastrutturali (centralizzazione log Loki/Alloy, canale di notifica degli alert, self-healing deterministico e rollback automatico) escono dalla roadmap AI e vivono nella nuova `docs/roadmap-infrastruttura.md`; la roadmap AI resta focalizzata sugli agenti e rimanda ai prerequisiti.
 
 ## 1.0.0 - 2026-05-02
 

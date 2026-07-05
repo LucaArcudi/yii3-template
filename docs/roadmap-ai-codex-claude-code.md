@@ -12,11 +12,15 @@ Claude Code
 GitHub Issues
 Pull Request
 CI/CD
-self-healing controllato
+self-healing assistito da AI
 automazione da pre-analisi tecnica
-centralizzazione log
 alerting → incident
 ```
+
+I prerequisiti infrastrutturali (centralizzazione log con Loki, canale di
+notifica degli alert, rollback automatico) NON sono materia di questo
+documento: vivono in [roadmap-infrastruttura.md](roadmap-infrastruttura.md)
+e qui vengono solo referenziati.
 
 La logica corretta non è dare all'AI il controllo libero della produzione.
 
@@ -595,38 +599,19 @@ Fix NON accettabili:
 
 ---
 
-## 12. Self-healing controllato
+## 12. Self-healing assistito da AI
 
-Diviso in due parti:
+Il primo livello di self-healing è quello deterministico (restart su
+healthcheck, invariante immagine, rollback automatico) e non richiede AI:
+vive in [roadmap-infrastruttura.md](roadmap-infrastruttura.md) §3.
 
-```text
-self-healing deterministico
-self-healing assistito da AI
-```
-
-### 12.1 Self-healing deterministico
-
-Non richiede AI ed è il livello più importante. In questo repo è in gran
-parte GIÀ attivo:
-
-```text
-✔ container unhealthy → restart (restart: unless-stopped + healthcheck)
-✔ deploy: migrate PRIMA dell'avvio, app sempre ricreata, invariante
-  immagine (il drift fa fallire il run), health check con retry
-✔ backup pre-deploy con retention e guardia sul dump vuoto
-✔ alert Prometheus su CPU/RAM/disco/target/MySQL/upstream
-- rollback automatico su smoke test fallito (oggi manuale: runbook §9.3,
-  APP_IMAGE=<sha> + up) → candidato prossimo step
-```
-
-### 12.2 Self-healing assistito da AI
-
-Qui l'AI non tocca la produzione.
+Il livello assistito da AI si appoggia sopra, e l'AI non tocca la
+produzione:
 
 ```text
 alert Prometheus
     ↓
-webhook (vedi §19)
+webhook (vedi §16)
     ↓
 issue incident GitHub
     ↓
@@ -754,68 +739,29 @@ AI non può deployare direttamente.
 
 ---
 
-## 16. Centralizzazione dei log
+## 16. Dall'alert all'incident issue
 
-Stato attuale dei log, sparsi su tre livelli:
+Presupposti infrastrutturali (vedi
+[roadmap-infrastruttura.md](roadmap-infrastruttura.md)):
 
 ```text
-- docker logs <container>          (stdout/stderr, si perdono al ricreate
-                                    se non si usa un driver persistente)
-- runtime/logs/app.log             (errori applicativi, volume runtime)
-- core_log                         (audit di dominio, tabella MySQL)
+- log centralizzati in Loki (§1): un incident senza log allegabili
+  costringe a SSH manuale, che è esattamente ciò che non si vuole dare
+  all'AI. Con Loki l'issue include il LINK alla query dell'intervallo
+  dell'alert e l'AI riceve estratti selezionati via query, non SSH.
+- canale di notifica degli alert (§2): prima le notifiche umane, poi
+  l'automazione.
 ```
 
-Per il workflow AI questo è il pezzo mancante più importante: un incident
-senza log allegabili costringe a SSH manuale, che è esattamente ciò che
-non si vuole dare all'AI.
-
-Target consigliato, coerente con lo stack esistente (Grafana già in piedi):
+Con questi in piedi, l'incident automation:
 
 ```text
-Loki (storage log) + Alloy o Promtail (agente di raccolta)
-    → nuovo servizio nello stack docker/monitoring/
-    → raccoglie stdout/stderr di TUTTI i container via Docker service discovery
-    → bind del file runtime/logs/app.log per i log applicativi
-    → datasource Loki provisionato in Grafana accanto a Prometheus
-    → retention 14-30 giorni (allineata ai backup)
-```
-
-Benefici immediati:
-
-```text
-- i log sopravvivono alla ricreazione dei container (oggi ogni deploy
-  ricrea l'app e azzera docker logs)
-- query LogQL da Grafana: una sola UI per metriche e log
-- le issue incident possono includere il LINK alla query Loki
-  dell'intervallo dell'alert, invece di dump incollati a mano
-- l'AI riceve estratti di log selezionati via query, non accesso SSH
-```
-
-Alternative valutate e scartate per un singolo VPS: ELK/OpenSearch
-(troppo pesante), servizi SaaS (costo e dati fuori dal server).
-
----
-
-## 17. Dalla metrica all'incident: notifiche e webhook
-
-Stato attuale: 6 regole di alert Prometheus versionate e validate, ma
-senza canale di notifica — gli alert si vedono solo nelle UI.
-
-Percorso consigliato, in due passi:
-
-```text
-Passo 1 — Notifiche umane (subito):
-  Grafana contact point (Telegram o email)
-  + alert rule Grafana che rilancia ALERTS di Prometheus,
-  oppure Alertmanager dedicato nello stack monitoring.
-
-Passo 2 — Incident automation (quando serve l'AI):
-  Alertmanager webhook → GitHub API repository_dispatch
-      ↓
-  workflow ai-incident.yml crea l'issue incident precompilata
-  (alert, severity, timestamp, commit deployato, link Grafana/Loki)
-      ↓
-  mention @claude per la diagnosi (vedi §12.2)
+Alertmanager webhook → GitHub API repository_dispatch
+    ↓
+workflow ai-incident.yml crea l'issue incident precompilata
+(alert, severity, timestamp, commit deployato, link Grafana/Loki)
+    ↓
+mention @claude per la diagnosi (vedi §12)
 ```
 
 Regole:
@@ -829,7 +775,7 @@ Regole:
 
 ---
 
-## 18. Guardrail e permessi GitHub per gli agenti
+## 17. Guardrail e permessi GitHub per gli agenti
 
 Prima di dare agli agenti un ruolo nei workflow GitHub:
 
@@ -850,7 +796,7 @@ Prima di dare agli agenti un ruolo nei workflow GitHub:
 
 ---
 
-## 19. Roadmap pratica di implementazione
+## 18. Roadmap pratica di implementazione
 
 ### Fase A — Preparare il repo per l'AI
 
@@ -875,16 +821,17 @@ Anche manualmente all'inizio, da terminale.
 issue → Codex/Claude Code → branch ai/* → PR → CI → review umana → merge
 ```
 
-### Fase D — Centralizzazione log
+### Fase D — Prerequisiti infrastrutturali
 
 ```text
-Loki + Alloy nello stack monitoring, datasource in Grafana (vedi §16)
+centralizzazione log (Loki + Alloy) e canale di notifica degli alert:
+vedi roadmap-infrastruttura.md §1 e §2
 ```
 
-### Fase E — Notifiche e incident issue
+### Fase E — Incident issue automatiche
 
 ```text
-contact point Telegram → poi webhook → issue incident (vedi §17)
+webhook → issue incident precompilata (vedi §16)
 ```
 
 ### Fase F — Fix CI e incident diagnosis assistiti
@@ -896,7 +843,8 @@ alert → issue incident → AI diagnosis → eventuale PR
 
 ### Fase G — Self-healing limitato
 
-Solo azioni sicure e deterministiche:
+Solo azioni sicure e deterministiche (il grosso vive in
+roadmap-infrastruttura.md §3):
 
 ```text
 - restart container (già attivo via healthcheck)
@@ -907,7 +855,7 @@ Solo azioni sicure e deterministiche:
 
 ---
 
-## 20. Cosa NON fare
+## 19. Cosa NON fare
 
 ```text
 - AI con SSH libero alla VPS
@@ -923,7 +871,7 @@ Solo azioni sicure e deterministiche:
 
 ---
 
-## 21. Setup minimo consigliato
+## 20. Setup minimo consigliato
 
 ```text
 Codex CLI in locale
@@ -936,8 +884,9 @@ docs/ai/prompts
 runbook estratti in docs/runbooks/
 CI robusta            (✔ già presente)
 CD con script versionati (✔ già presente; rollback automatico da aggiungere)
-alert Prometheus      (✔ già presenti; manca il canale di notifica)
-centralizzazione log  (da fare, §16)
+alert Prometheus      (✔ già presenti; manca il canale di notifica,
+                       roadmap-infrastruttura.md §2)
+centralizzazione log  (da fare, roadmap-infrastruttura.md §1)
 incident issue manuale o semi-automatica
 ```
 
@@ -952,7 +901,7 @@ AI incident diagnosis
 
 ---
 
-## 22. Esempio workflow completo
+## 21. Esempio workflow completo
 
 ```text
 1. Scrivi o ricevi una pre-analisi
@@ -975,7 +924,7 @@ AI incident diagnosis
 
 ---
 
-## 23. Sintesi finale
+## 22. Sintesi finale
 
 ```text
 Codex e Claude Code non devono comandare la pipeline.

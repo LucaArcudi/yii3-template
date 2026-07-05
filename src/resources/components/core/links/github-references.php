@@ -37,6 +37,12 @@ $links = [
         'icon' => 'pe-7s-map-2',
     ],
     [
+        'title' => Translate::t('Roadmap infrastruttura'),
+        'meta' => Translate::t('Centralizzazione log, notifiche degli alert e self-healing.'),
+        'url' => $repoUrl . '/blob/main/docs/roadmap-infrastruttura.md',
+        'icon' => 'pe-7s-server',
+    ],
+    [
         'title' => Translate::t('Roadmap AI (Codex + Claude Code)'),
         'meta' => Translate::t('Integrazione degli agenti AI nel workflow di sviluppo.'),
         'url' => $repoUrl . '/blob/main/docs/roadmap-ai-codex-claude-code.md',
