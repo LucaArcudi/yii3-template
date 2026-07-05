@@ -74,9 +74,11 @@ pipeline CI/CD su GitHub Actions. Vedi la [sezione DevOps](#8-devops).
 │   ├── compose.yml        # Frammento comune (volumi caddy) usato dal Makefile
 │   ├── dev/, test/        # Override compose ereditati dal template upstream (vedi §6.4)
 │   ├── prod/compose.yml   # Compose di produzione (VPS)
-│   └── proxy/compose.yml  # Reverse proxy Caddy per il VPS
-├── docs/                  # Documentazione di progetto (questo file, audit…)
+│   ├── proxy/             # Reverse proxy Caddy per il VPS (+ Caddyfile.base metriche)
+│   └── monitoring/        # Stack Prometheus/Grafana/exporter (vedi §8.9)
+├── docs/                  # Documentazione di progetto (questo file, roadmap, audit…)
 ├── public/                # Docroot: index.php, favicon, robots.txt, asset pubblicati
+├── scripts/               # Script operativi eseguiti sul VPS dal CD (backup, deploy)
 ├── src/                   # Codice applicativo (namespace App\, vedi §4)
 ├── tests/                 # Suite Codeception
 ├── compose.yml            # Compose di sviluppo/CI principale (app + MySQL)
@@ -87,6 +89,27 @@ pipeline CI/CD su GitHub Actions. Vedi la [sezione DevOps](#8-devops).
 ├── codeception.yml        # Configurazione test + coverage
 └── yii                    # Entrypoint console (./yii serve, ./yii hello…)
 ```
+
+### 3.1 Guida rapida alle cartelle di `src/`
+
+Dove mettere le mani per ogni tipo di modifica (contenuto estratto dal
+componente "Guida progetto" della dashboard):
+
+| Percorso | Cosa contiene | File di riferimento |
+|---|---|---|
+| `config/` | Alias, container DI, route, parametri e configurazioni separate per web, console e ambienti. | `config/common/di/db.php`, `config/common/routes.php`, `config/environments/dev/params.php` |
+| `src/Data/` | Modello dati e regole di dominio: entità, input, filtri, presenter, policy, repository, reader e scope dei moduli. | `src/Data/Core/User/UserEntity.php`, `src/Data/Core/Role/RoleRepository.php`, `src/Data/Mes/Task/TaskPolicy.php` |
+| `src/Handlers/` | Ingresso delle richieste: action web/API e middleware — validazione, orchestrazione e passaggio ai servizi. | `src/Handlers/Web/Core/Home/IndexAction.php`, `src/Handlers/Middleware/Core/RedirectGuestToLoginMiddleware.php` |
+| `src/Services/` | Logica riusabile tra handler e moduli: autorizzazione, autenticazione, mail, supporto alle viste. | `src/Services/Core/AuthorizationService.php`, `src/Services/Core/Mail/Mailer.php` |
+| `src/Migrations/` | Migration del framework (`yiisoft/db-migration`) che eseguono gli snapshot SQL di release (vedi §5.2). | `src/Migrations/SqlSnapshotMigration.php` |
+| `src/Dashboard/` | Definizione, visibilità e rendering dei blocchi mostrati nella home autenticata. | `src/Dashboard/DashboardComponentProvider.php`, `src/resources/components/core/` |
+| `src/resources/` | View, layout, componenti dashboard, template email, cataloghi traduzioni e risorse ArchitectUI. | `src/resources/layouts/main.php`, `src/resources/views/core/user`, `src/resources/messages/en/app.php` |
+| `src/Widgets/` | Widget UI riusabili: form, input, CRUD, liste, badge, menu, modali, viste dettaglio. | `src/Widgets/Card.php`, `src/Widgets/Crud/CrudActions.php`, `src/Widgets/Forms` |
+| `src/Assets/` e `assets/` | Bundle PHP che pubblicano gli asset e file statici sorgente (CSS custom). | `src/Assets/ArchitectUi/ArchitectUiAsset.php`, `assets/main/site.css` |
+| `database/` | Snapshot SQL idempotenti di release e seed, eseguiti da initdb.d e dalle migration del framework. | `database/migrations/release_1_0_2.sql`, `database/seeders/release_1_0_0.sql` |
+| `public/` | Document root: entry point web, favicon, robots, asset pubblicati. | `public/index.php`, `public/assets` |
+| `tests/` | Suite Codeception: unit, functional, console. | `tests/Unit`, `tests/Functional`, `codeception.yml` |
+| `runtime/`, `vendor/` | File generati (cache, log, sessioni) e dipendenze Composer: non contengono codice applicativo da modificare. | `runtime/logs/app.log`, `composer.json` |
 
 ## 4. Architettura applicativa
 
