@@ -64,6 +64,11 @@ services:
     image: gcr.io/cadvisor/cadvisor:v0.49.1
     # privileged + mount di sistema: richiesti da cAdvisor per leggere
     # cgroup e stato dei container dal host.
+    # NB: se Docker usa lo snapshotter containerd (storage driver
+    # "overlayfs") cAdvisor esporta solo il cgroup root, niente serie
+    # per-container: limite upstream, presente anche in v0.52. Con il
+    # classico overlay2 funziona per intero. Per questo l'alert sull'app
+    # si basa sugli upstream di Caddy, non su cAdvisor.
     privileged: true
     devices:
       - /dev/kmsg
