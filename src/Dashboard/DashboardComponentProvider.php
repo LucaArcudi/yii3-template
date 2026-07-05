@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace App\Dashboard;
 
-use App\Services\Core\AuthorizationService;
-use Yiisoft\User\CurrentUser;
+use App\Dashboard\Links\GithubReferencesPolicy;
 
 final readonly class DashboardComponentProvider
 {
     public function __construct(
-        private CurrentUser $currentUser,
-        private AuthorizationService $authorizationService,
+        private DashboardComponentVisibility $componentVisibility,
     ) {}
 
     /**
@@ -19,10 +17,7 @@ final readonly class DashboardComponentProvider
      */
     public function findVisible(): array
     {
-        $components = array_values(array_filter(
-            self::definitions(),
-            fn(DashboardComponentDefinition $component): bool => $component->active && $this->hasAccess($component),
-        ));
+        $components = $this->componentVisibility->filter(self::definitions());
 
         usort(
             $components,
@@ -30,19 +25,6 @@ final readonly class DashboardComponentProvider
         );
 
         return $components;
-    }
-
-    private function hasAccess(DashboardComponentDefinition $component): bool
-    {
-        if ($component->roleCodes === []) {
-            return true;
-        }
-
-        if ($this->currentUser->isGuest()) {
-            return false;
-        }
-
-        return $this->authorizationService->userHasAnyRole($this->currentUser->getId(), $component->roleCodes);
     }
 
     /**
@@ -59,6 +41,7 @@ final readonly class DashboardComponentProvider
                 viewName: 'links/github-references',
                 width: 'col-12 col-xl-6',
                 sortOrder: 10,
+                policyClass: GithubReferencesPolicy::class,
             ),
         ];
     }

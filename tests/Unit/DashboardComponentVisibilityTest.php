@@ -6,37 +6,47 @@ namespace App\Tests\Unit;
 
 use App\Dashboard\DashboardComponentDefinition;
 use App\Dashboard\DashboardComponentVisibility;
+use App\Services\Core\PolicyAccessResolver;
+use App\Tests\Unit\Support\AllowAccessPolicy;
+use App\Tests\Unit\Support\ArrayContainer;
+use App\Tests\Unit\Support\DenyAccessPolicy;
 use Codeception\Test\Unit;
 
 final class DashboardComponentVisibilityTest extends Unit
 {
-    public function testRuntimeVisibilityConditionsHideMatchingComponents(): void
+    public function testPolicyClassControlsComponentVisibility(): void
     {
-        $components = DashboardComponentVisibility::filter(
+        $visibility = new DashboardComponentVisibility(new PolicyAccessResolver(new ArrayContainer([
+            AllowAccessPolicy::class => new AllowAccessPolicy(),
+            DenyAccessPolicy::class => new DenyAccessPolicy(),
+        ])));
+
+        $components = $visibility->filter(
             [
-                new DashboardComponentDefinition(code: 'admin-control'),
-                new DashboardComponentDefinition(code: 'developer-workbench'),
+                new DashboardComponentDefinition(code: 'admin-control', policyClass: DenyAccessPolicy::class),
+                new DashboardComponentDefinition(code: 'developer-workbench', policyClass: AllowAccessPolicy::class),
+                new DashboardComponentDefinition(code: 'public-reference'),
             ],
+        );
+
+        self::assertSame(['developer-workbench', 'public-reference'], array_map(
+            static fn(DashboardComponentDefinition $component): string => $component->code,
+            $components,
+        ));
+    }
+
+    public function testInactiveComponentsAreHidden(): void
+    {
+        $visibility = new DashboardComponentVisibility(new PolicyAccessResolver(new ArrayContainer([])));
+
+        $components = $visibility->filter(
             [
-                'code:admin-control' => false,
+                new DashboardComponentDefinition(code: 'active'),
+                new DashboardComponentDefinition(code: 'inactive', active: false),
             ],
         );
 
         self::assertCount(1, $components);
-        self::assertSame('developer-workbench', $components[0]->code);
-    }
-
-    public function testRuntimeVisibilityConditionsCanUseCodeKeys(): void
-    {
-        $components = DashboardComponentVisibility::filter(
-            [
-                new DashboardComponentDefinition(code: 'admin-control'),
-            ],
-            [
-                'admin-control' => false,
-            ],
-        );
-
-        self::assertSame([], $components);
+        self::assertSame('active', $components[0]->code);
     }
 }

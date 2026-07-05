@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Data\Core\Notification;
 
+use App\Data\AccessPolicyInterface;
 use App\Services\Core\AuthorizationService;
 use Yiisoft\User\CurrentUser;
 
-final readonly class NotificationPolicy
+final readonly class NotificationPolicy implements AccessPolicyInterface
 {
     public const GROUP = 'NOTIFICATION';
     public const ACCESS = 'ACCESS';

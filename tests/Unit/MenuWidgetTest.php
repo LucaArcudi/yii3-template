@@ -9,91 +9,7 @@ use Codeception\Test\Unit;
 
 final class MenuWidgetTest extends Unit
 {
-    public function testRuntimeVisibilityConditionsHideMatchingItems(): void
-    {
-        $html = Menu::render(
-            [
-                [
-                    'id' => 1,
-                    'name' => 'Dashboard',
-                    'url' => '/',
-                    '_children' => [],
-                ],
-                [
-                    'id' => 2,
-                    'name' => 'Reports',
-                    'url' => '/reports',
-                    '_children' => [],
-                ],
-                [
-                    'id' => 3,
-                    'name' => 'Users',
-                    'url' => '/users',
-                    'permission_code' => 'user.view',
-                    '_children' => [],
-                ],
-            ],
-            '/reports',
-            [
-                'id:2' => false,
-                'permission:user.view' => false,
-            ],
-        );
-
-        self::assertStringContainsString('Dashboard', $html);
-        self::assertStringNotContainsString('Reports', $html);
-        self::assertStringNotContainsString('Users', $html);
-    }
-
-    public function testRuntimeVisibilityConditionsCanUseUrlKeys(): void
-    {
-        $html = Menu::render(
-            [
-                [
-                    'id' => 1,
-                    'name' => 'Dashboard',
-                    'url' => '/',
-                    '_children' => [],
-                ],
-                [
-                    'id' => 2,
-                    'name' => 'Reports',
-                    'url' => '/reports',
-                    '_children' => [],
-                ],
-            ],
-            '/',
-            [
-                '/reports' => false,
-            ],
-        );
-
-        self::assertStringContainsString('Dashboard', $html);
-        self::assertStringNotContainsString('Reports', $html);
-    }
-
-    public function testRuntimeVisibilityConditionsAreCombined(): void
-    {
-        $html = Menu::render(
-            [
-                [
-                    'id' => 2,
-                    'name' => 'Reports',
-                    'url' => '/reports',
-                    '_children' => [],
-                ],
-            ],
-            '/',
-            [
-                '/reports' => true,
-                'url:/reports' => false,
-            ],
-        );
-
-        self::assertSame('', $html);
-    }
-
-    public function testEmptyHeadersAndTogglesAreHiddenAfterVisibilityFiltering(): void
+    public function testEmptyHeadersTogglesAndLinksWithoutUrlsAreHidden(): void
     {
         $html = Menu::render(
             [
@@ -101,34 +17,21 @@ final class MenuWidgetTest extends Unit
                     'id' => 1,
                     'name' => 'Admin',
                     'header' => true,
-                    '_children' => [
-                        [
-                            'id' => 2,
-                            'name' => 'Users',
-                            'url' => '/users',
-                            '_children' => [],
-                        ],
-                    ],
+                    '_children' => [],
                 ],
                 [
                     'id' => 3,
                     'name' => 'Reports',
                     'toggle' => true,
-                    '_children' => [
-                        [
-                            'id' => 4,
-                            'name' => 'Sales',
-                            'url' => '/reports/sales',
-                            '_children' => [],
-                        ],
-                    ],
+                    '_children' => [],
+                ],
+                [
+                    'id' => 4,
+                    'name' => 'Invalid',
+                    '_children' => [],
                 ],
             ],
             '/',
-            [
-                'url:/users' => false,
-                'url:/reports/sales' => false,
-            ],
         );
 
         self::assertSame('', $html);

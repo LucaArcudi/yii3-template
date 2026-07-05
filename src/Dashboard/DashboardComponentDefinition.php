@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Dashboard;
 
+use App\Data\AccessPolicyInterface;
+
 final readonly class DashboardComponentDefinition
 {
     /**
-     * @param list<string> $roleCodes
+     * @param class-string<AccessPolicyInterface>|null $policyClass
      */
     public function __construct(
         public string $code,
@@ -15,6 +17,6 @@ final readonly class DashboardComponentDefinition
         public string $width = 'col-12 col-xl-6',
         public int $sortOrder = 0,
         public bool $active = true,
-        public array $roleCodes = [],
+        public ?string $policyClass = null,
     ) {}
 }
