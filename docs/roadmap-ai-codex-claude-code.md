@@ -224,7 +224,11 @@ CLAUDE.md
 
 ## 5. AGENTS.md per Codex
 
-Contenuto consigliato:
+Il repository contiene ora un file `AGENTS.md` alla root. Quello è il punto di
+verità operativo da passare a Codex: regole di sviluppo, limiti di sicurezza,
+comandi di verifica e convenzione di co-autorship.
+
+Contenuto consigliato di base:
 
 ```md
 # Project instructions for Codex
@@ -840,6 +844,7 @@ Prima di dare agli agenti un ruolo nei workflow GitHub:
   attivare PRIMA di dare a un agente la possibilità di innescare deploy
 - ogni commit AI porta il Co-Authored-By dell'agente: tracciabilità
   (convenzione già in uso in questo repo)
+- trailer Codex: `Co-Authored-By: Codex <noreply@openai.com>`
 - label dedicate: ai:proposed, ai:approved, incident
 ```
 

@@ -15,6 +15,7 @@
 - Alert di liveness dell'app basato sugli upstream del reverse proxy (`caddy_reverse_proxy_upstreams_healthy`) invece che su cAdvisor: con lo snapshotter containerd di Docker (driver `overlayfs`) cAdvisor non esporta serie per-container — limite upstream verificato fino alla v0.52 e documentato.
 - Dashboard ripulita: guida progetto, backlog admin e prossimi step sono diventati documentazione (`docs/documentazione-progetto.md` §3.1 e `docs/roadmap-sviluppo.md`); al loro posto un unico componente con i riferimenti GitHub (repo, docs, roadmap, issue, Actions).
 - Visibilità di menu e dashboard centralizzata sulle policy: le definizioni dichiarano una `policyClass` e il rendering usa `canAccess()`, rimuovendo le condizioni extra dalle view.
+- Aggiunte linee guida operative `AGENTS.md` per Codex e convenzione `Co-Authored-By` per tracciare Codex tra i contributor AI.
 - Aggiunta `docs/roadmap-ai-codex-claude-code.md`: integrazione di Codex e Claude Code nel workflow di sviluppo e nella pipeline, rivista e ampliata con stato reale del repo, centralizzazione log (Loki/Alloy), percorso alert→notifiche→incident e guardrail sui permessi GitHub degli agenti.
 
 ## 1.0.0 - 2026-05-02
