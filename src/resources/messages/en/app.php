@@ -19,6 +19,8 @@ return [
     'Architettura, database, DevOps e runbook operativi.' => 'Architecture, database, DevOps and operational runbooks.',
     'Roadmap di sviluppo' => 'Development roadmap',
     'Backlog funzionale: cose fatte e prossimi step.' => 'Functional backlog: what is done and next steps.',
+    'Roadmap infrastruttura' => 'Infrastructure roadmap',
+    'Centralizzazione log, notifiche degli alert e self-healing.' => 'Log centralization, alert notifications and self-healing.',
     'Roadmap AI (Codex + Claude Code)' => 'AI roadmap (Codex + Claude Code)',
     'Integrazione degli agenti AI nel workflow di sviluppo.' => 'Integrating AI agents into the development workflow.',
     'Storia delle release e delle modifiche.' => 'History of releases and changes.',
