@@ -32,6 +32,9 @@ c3.php
 # Local-only files
 .local/
 
+# Claude Code local state (settings, worktrees)
+.claude/
+
 # Trivy local cache
 .cache/trivy/
 
