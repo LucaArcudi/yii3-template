@@ -26,6 +26,19 @@ contribuendo accetti che il tuo codice sia distribuito con la stessa licenza.
 - Per refactoring meccanici è disponibile `make rector`.
 - Aggiorna `CHANGELOG.md` per le modifiche visibili agli utenti.
 
+## Contributor AI
+
+Le modifiche assistite da agenti AI devono essere tracciabili nel commit con
+un trailer `Co-Authored-By`, come già avviene per Claude Code.
+
+```text
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+Co-Authored-By: Codex <noreply@openai.com>
+```
+
+Per Codex le linee guida operative persistenti del repository sono in
+[`AGENTS.md`](AGENTS.md).
+
 ## Segnalazioni
 
 - Bug e proposte: apri una issue.
