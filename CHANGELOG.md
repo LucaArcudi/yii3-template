@@ -14,6 +14,7 @@
 - Osservabilità completata: metriche HTTP di Caddy scrappate da Prometheus (endpoint interno `:9180` via `docker/proxy/Caddyfile.base`), regole di alert versionate in `prometheus/rules/alerts.yml` e validate in CI con promtool (CPU, RAM, disco, target down, MySQL down, upstream proxy), retention automatica dei backup (14 giorni, solo dump automatici).
 - Alert di liveness dell'app basato sugli upstream del reverse proxy (`caddy_reverse_proxy_upstreams_healthy`) invece che su cAdvisor: con lo snapshotter containerd di Docker (driver `overlayfs`) cAdvisor non esporta serie per-container — limite upstream verificato fino alla v0.52 e documentato.
 - Dashboard ripulita: guida progetto, backlog admin e prossimi step sono diventati documentazione (`docs/documentazione-progetto.md` §3.1 e `docs/roadmap-sviluppo.md`); al loro posto un unico componente con i riferimenti GitHub (repo, docs, roadmap, issue, Actions).
+- Visibilità di menu e dashboard centralizzata sulle policy: le definizioni dichiarano una `policyClass` e il rendering usa `canAccess()`, rimuovendo le condizioni extra dalle view.
 - Aggiunta `docs/roadmap-ai-codex-claude-code.md`: integrazione di Codex e Claude Code nel workflow di sviluppo e nella pipeline, rivista e ampliata con stato reale del repo, centralizzazione log (Loki/Alloy), percorso alert→notifiche→incident e guardrail sui permessi GitHub degli agenti.
 
 ## 1.0.0 - 2026-05-02

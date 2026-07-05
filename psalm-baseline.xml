@@ -1,19 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="6.16.1@f1f5de594dc76faf8784e02d3dc4716c91c6f6ac">
-  <file src="src/Dashboard/DashboardComponentProvider.php">
-    <PossiblyNullArgument>
-      <code><![CDATA[$this->currentUser->getId()]]></code>
-    </PossiblyNullArgument>
-  </file>
   <file src="src/Dashboard/DashboardComponentRenderer.php">
     <UnresolvableInclude>
       <code><![CDATA[require $viewFile]]></code>
     </UnresolvableInclude>
-  </file>
-  <file src="src/Dashboard/DashboardComponentVisibility.php">
-    <RedundantCastGivenDocblockType>
-      <code><![CDATA[(bool) $visibility[$key]]]></code>
-    </RedundantCastGivenDocblockType>
   </file>
   <file src="src/Data/Core/Log/EntityLogRepository.php">
     <InvalidCast>
@@ -594,11 +584,6 @@
         ]]]></code>
     </MixedArgumentTypeCoercion>
   </file>
-  <file src="src/Navigation/NavigationProvider.php">
-    <PossiblyNullArgument>
-      <code><![CDATA[$this->currentUser->getId()]]></code>
-    </PossiblyNullArgument>
-  </file>
   <file src="src/Navigation/NavigationTreeVisibility.php">
     <MixedArgument>
       <code><![CDATA[$item]]></code>
@@ -893,9 +878,6 @@
     <RedundantCast>
       <code><![CDATA[(string) Html::openTag('li', $liAttributes)]]></code>
     </RedundantCast>
-    <RedundantCastGivenDocblockType>
-      <code><![CDATA[(bool) $visibility[$key]]]></code>
-    </RedundantCastGivenDocblockType>
   </file>
   <file src="src/Widgets/Tabs.php">
     <PossiblyUndefinedArrayOffset>
@@ -936,11 +918,6 @@
   <file src="src/resources/views/core/error/too-many-requests.php">
     <InvalidScope>
       <code><![CDATA[$this->setTitle(Translate::t('Troppi tentativi'))]]></code>
-    </InvalidScope>
-  </file>
-  <file src="src/resources/views/core/home/index.php">
-    <InvalidScope>
-      <code><![CDATA[$this->setTitle($applicationParams->name)]]></code>
     </InvalidScope>
   </file>
   <file src="src/resources/views/core/not-found/index.php">

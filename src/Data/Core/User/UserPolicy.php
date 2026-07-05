@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Data\Core\User;
 
+use App\Data\AccessPolicyInterface;
 use App\Services\Core\AuthorizationService;
 use Yiisoft\User\CurrentUser;
 
-final readonly class UserPolicy
+final readonly class UserPolicy implements AccessPolicyInterface
 {
     public const GROUP = 'USER';
     public const ACCESS = 'ACCESS';

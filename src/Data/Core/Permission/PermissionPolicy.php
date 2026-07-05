@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Data\Core\Permission;
 
+use App\Data\AccessPolicyInterface;
 use App\Services\Core\AuthorizationService;
 use Yiisoft\User\CurrentUser;
 
-final readonly class PermissionPolicy
+final readonly class PermissionPolicy implements AccessPolicyInterface
 {
     public const GROUP = 'PERMISSION';
     public const ACCESS = 'ACCESS';

@@ -12,13 +12,12 @@ final class Menu
 {
     /**
      * @param array<array-key, mixed> $items
-     * @param array<int|string, bool> $visibility
      */
-    public static function render(array $items, string $currentPath, array $visibility = []): string
+    public static function render(array $items, string $currentPath): string
     {
         $items = NavigationTreeVisibility::filter(
             $items,
-            static fn(array $item): bool => self::isVisibleByCondition($item, $visibility),
+            static fn(array $item): bool => true,
         );
 
         if ($items === []) {
@@ -26,49 +25,6 @@ final class Menu
         }
 
         return self::renderItems($items, $currentPath);
-    }
-
-    /**
-     * @param array<array-key, mixed> $item
-     * @param array<int|string, bool> $visibility
-     */
-    private static function isVisibleByCondition(array $item, array $visibility): bool
-    {
-        foreach (self::visibilityKeys($item) as $key) {
-            if (array_key_exists($key, $visibility) && !(bool) $visibility[$key]) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * @param array<array-key, mixed> $item
-     * @return list<int|string>
-     */
-    private static function visibilityKeys(array $item): array
-    {
-        $keys = [];
-
-        if (($item['id'] ?? null) !== null) {
-            $id = (int) $item['id'];
-            $keys[] = $id;
-            $keys[] = 'id:' . $id;
-        }
-
-        $url = trim((string) ($item['url'] ?? ''));
-        if ($url !== '') {
-            $keys[] = $url;
-            $keys[] = 'url:' . $url;
-        }
-
-        $permissionCode = trim((string) ($item['permission_code'] ?? ''));
-        if ($permissionCode !== '') {
-            $keys[] = 'permission:' . $permissionCode;
-        }
-
-        return $keys;
     }
 
     private static function renderItems(array $items, string $currentPath): string

@@ -4,40 +4,32 @@ declare(strict_types=1);
 
 namespace App\Navigation;
 
+use App\Data\Core\Permission\PermissionGroupPolicy;
+use App\Data\Core\Permission\PermissionPolicy;
+use App\Data\Core\Role\RolePolicy;
+use App\Data\Core\User\UserPolicy;
+use App\Data\Mes\Task\TaskPolicy;
 use App\Helpers\Translate;
-use App\Services\Core\AuthorizationService;
-use Yiisoft\User\CurrentUser;
+use App\Services\Core\PolicyAccessResolver;
+
+use function is_string;
 
 final readonly class NavigationProvider
 {
     public function __construct(
-        private CurrentUser $currentUser,
-        private AuthorizationService $authorizationService,
+        private PolicyAccessResolver $policyAccess,
     ) {}
 
     public function getVisibleTree(): array
     {
-        return NavigationTreeVisibility::filter(self::tree(), fn(array $item): bool => $this->hasPermission($item));
+        return NavigationTreeVisibility::filter(self::tree(), fn(array $item): bool => $this->hasAccess($item));
     }
 
-    private function hasPermission(array $item): bool
+    private function hasAccess(array $item): bool
     {
-        $permissionGroupCode = trim((string) ($item['permission_group_code'] ?? ''));
-        $permissionCode = trim((string) ($item['permission_code'] ?? ''));
+        $policyClass = $item['policyClass'] ?? null;
 
-        if ($permissionCode === '') {
-            return true;
-        }
-
-        if ($permissionGroupCode === '' || $this->currentUser->isGuest()) {
-            return false;
-        }
-
-        return $this->authorizationService->userHasPermission(
-            $this->currentUser->getId(),
-            $permissionGroupCode,
-            $permissionCode,
-        );
+        return $this->policyAccess->canAccess(is_string($policyClass) ? $policyClass : null);
     }
 
     private static function tree(): array
@@ -63,8 +55,7 @@ final readonly class NavigationProvider
                         'name' => Translate::t('Task'),
                         'icon' => 'pe-7s-check',
                         'url' => '/task',
-                        'permission_group_code' => 'TASK',
-                        'permission_code' => 'TASK_ACCESS',
+                        'policyClass' => TaskPolicy::class,
                         '_children' => [],
                     ],
                 ],
@@ -77,39 +68,33 @@ final readonly class NavigationProvider
                         'name' => Translate::t('Utenti'),
                         'icon' => 'pe-7s-users',
                         'url' => '/user',
-                        'permission_group_code' => 'USER',
-                        'permission_code' => 'USER_ACCESS',
+                        'policyClass' => UserPolicy::class,
                         '_children' => [],
                     ],
                     [
                         'name' => Translate::t('Ruoli'),
                         'icon' => 'pe-7s-shield',
                         'url' => '/role',
-                        'permission_group_code' => 'ROLE',
-                        'permission_code' => 'ROLE_ACCESS',
+                        'policyClass' => RolePolicy::class,
                         '_children' => [],
                     ],
                     [
                         'name' => Translate::t('Permessi'),
                         'icon' => 'pe-7s-key',
                         'toggle' => true,
-                        'permission_group_code' => 'PERMISSION',
-                        'permission_code' => 'PERMISSION_ACCESS',
                         '_children' => [
                             [
                                 'name' => Translate::t('Permessi'),
                                 'icon' => 'pe-7s-note2',
                                 'url' => '/permission',
-                                'permission_group_code' => 'PERMISSION',
-                                'permission_code' => 'PERMISSION_ACCESS',
+                                'policyClass' => PermissionPolicy::class,
                                 '_children' => [],
                             ],
                             [
                                 'name' => Translate::t('Gruppi'),
                                 'icon' => 'pe-7s-network',
                                 'url' => '/permission-group',
-                                'permission_group_code' => 'PERMISSION_GROUP',
-                                'permission_code' => 'PERMISSION_GROUP_ACCESS',
+                                'policyClass' => PermissionGroupPolicy::class,
                                 '_children' => [],
                             ],
                         ],

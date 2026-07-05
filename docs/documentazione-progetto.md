@@ -272,9 +272,10 @@ alla lista dopo il salvataggio).
   `Pagination`), `CrudActions`, `FlashMessages`, `Menu`, `Tabs`, `Modal`,
   `Breadcrumb`, `NotificationDropdown`, `EntityLogList`.
 - La navigazione laterale è definita da `NavigationProvider`
-  (`src/Navigation/`) e filtrata per permessi (`NavigationTreeVisibility`);
-  la dashboard della home è composta da componenti dichiarativi
-  (`src/Dashboard/`) anch'essi soggetti a visibilità per permesso.
+  (`src/Navigation/`) e filtrata tramite le `policyClass` dichiarate sulle
+  voci: la visibilità passa da `canAccess()`. La dashboard della home è
+  composta da componenti dichiarativi (`src/Dashboard/`) con lo stesso pattern
+  policy-based.
 - Traduzioni: sorgenti in italiano usate come message ID; catalogo inglese in
   `src/resources/messages/en/app.php`, messaggi del validator in italiano in
   `it/yii-validator.php`. Helper `Translate` per le stringhe.
@@ -744,7 +745,8 @@ Poi collegarsi con il client SQL a `127.0.0.1:3307` usando le credenziali di
    Update/Delete) e view in `src/resources/views/<modulo>/<dominio>/`;
 4. rotte in `config/common/routes.php`, eventuale DI in
    `config/common/di/`;
-5. voce di menu in `src/Navigation/NavigationProvider.php`;
+5. voce di menu in `src/Navigation/NavigationProvider.php` con la
+   `policyClass` del dominio;
 6. montare la nuova migration nei compose (`compose.yml` root e
    `docker/prod/compose.yml`) e applicarla a mano sul DB di produzione;
 7. test unit per Input/Reader e aggiornamento del CHANGELOG.

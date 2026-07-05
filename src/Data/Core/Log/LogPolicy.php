@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Data\Core\Log;
 
+use App\Data\AccessPolicyInterface;
 use App\Services\Core\AuthorizationService;
 use Yiisoft\User\CurrentUser;
 
-final readonly class LogPolicy
+final readonly class LogPolicy implements AccessPolicyInterface
 {
     public const GROUP = 'LOG';
     public const ACCESS = 'ACCESS';

@@ -7,6 +7,8 @@ use App\Data\Core\Scope\OwnershipScopeInterface;
 use App\Params\Core\ApplicationParams;
 use App\Params\Core\AuthParams;
 use App\Params\Core\LayoutParams;
+use App\Services\Core\PolicyAccessResolver;
+use Psr\Container\ContainerInterface;
 
 /** @var array $params */
 
@@ -39,6 +41,9 @@ return [
             'footerRight' => $params['layout']['footerRight'],
         ],
     ],
+    PolicyAccessResolver::class => static fn(
+        ContainerInterface $container,
+    ): PolicyAccessResolver => new PolicyAccessResolver($container),
     OwnershipScopeInterface::class => OwnershipScope::class,
     OwnershipScope::class => OwnershipScope::class,
 ];

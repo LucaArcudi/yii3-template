@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Data\Mes\Task;
 
+use App\Data\AccessPolicyInterface;
 use App\Services\Core\AuthorizationService;
 use Yiisoft\User\CurrentUser;
 
-final readonly class TaskPolicy
+final readonly class TaskPolicy implements AccessPolicyInterface
 {
     public const GROUP = 'TASK';
     public const ACCESS = 'ACCESS';

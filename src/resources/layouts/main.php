@@ -83,13 +83,7 @@ $pageModals = is_string($pageModalsParameter) && $pageModalsParameter !== ''
     ? $pageModalsParameter
     : '';
 
-// CONDIZIONI EXTRA UTENTE
 $identity = $currentUser->getIdentity();
-// $isArcudilu = $identity instanceof UserIdentity && $identity->getEmail() === 'gianni@gianni.com';
-$menuVisibility = [
-    // '/user' => $isArcudilu,
-];
-
 $currentUserName = $identity instanceof UserIdentity && $identity->getName() !== ''
     ? $identity->getName()
     : Translate::t('Utente');
@@ -332,7 +326,7 @@ $menu = $menuTreeProvider->getVisibleTree();
             <div class="scrollbar-sidebar">
                 <div class="app-sidebar__inner">
                     <ul class="vertical-nav-menu">
-                        <?= Menu::render($menu, $currentPath, $menuVisibility) ?>
+                        <?= Menu::render($menu, $currentPath) ?>
                     </ul>
                 </div>
             </div>

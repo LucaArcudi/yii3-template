@@ -2,10 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Data\Core\User\UserIdentity;
 use App\Dashboard\DashboardComponentPresenter;
 use App\Dashboard\DashboardComponentRenderer;
-use App\Dashboard\DashboardComponentVisibility;
 use App\Helpers\Translate;
 use App\Params\Core\ApplicationParams;
 use Yiisoft\Html\Html;
@@ -19,15 +17,6 @@ use Yiisoft\View\WebView;
  * @var list<App\Dashboard\DashboardComponentDefinition> $components
  * @var DashboardComponentRenderer $componentRenderer
  */
-
-// CONDIZIONI EXTRA UTENTE PER COMPONENTI
-$identity = $currentUser->getIdentity();
-// $isGianni = $identity instanceof UserIdentity && $identity->getEmail() === 'gianni@gianni.com';
-$componentVisibility = [
-    // 'code:admin-control' => $isGianni,
-];
-$components = DashboardComponentVisibility::filter($components, $componentVisibility);
-unset($identity);
 
 $this->setTitle($applicationParams->name);
 $this->setParameter('pageIcon', 'pe-7s-home');
