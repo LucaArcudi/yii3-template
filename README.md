@@ -91,4 +91,7 @@ make trivy-image  # scansione dell'immagine app
 
 Dettagli operativi: [README_DEPLOY.md](README_DEPLOY.md) e
 [docs/documentazione-progetto.md](docs/documentazione-progetto.md).
+Roadmap: [di sviluppo](docs/roadmap-sviluppo.md) e
+[AI — Codex + Claude Code](docs/roadmap-ai-codex-claude-code.md)
+(integrazione degli agenti nel workflow e nella pipeline).
 Note di release: [CHANGELOG.md](CHANGELOG.md).

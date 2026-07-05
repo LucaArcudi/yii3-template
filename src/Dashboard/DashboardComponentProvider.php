@@ -51,25 +51,14 @@ final readonly class DashboardComponentProvider
     private static function definitions(): array
     {
         return [
+            // Guida progetto, backlog e roadmap sono stati spostati in docs/
+            // (documentazione-progetto.md §3.1, roadmap-sviluppo.md,
+            // roadmap-ai-codex-claude-code.md): la dashboard rimanda al repo.
             new DashboardComponentDefinition(
-                code: 'project-guide',
-                viewName: 'guide/project-structure',
-                width: 'col-12',
-                sortOrder: 5,
-            ),
-            new DashboardComponentDefinition(
-                code: 'admin-control',
-                viewName: 'metric/admin-control',
-                width: 'col-12 col-xl-4',
+                code: 'github-references',
+                viewName: 'links/github-references',
+                width: 'col-12 col-xl-6',
                 sortOrder: 10,
-                roleCodes: ['SUPER_ADMIN', 'ADMIN'],
-            ),
-            new DashboardComponentDefinition(
-                code: 'developer-workbench',
-                viewName: 'notice/next-steps',
-                width: 'col-12 col-xl-4',
-                sortOrder: 20,
-                roleCodes: ['SUPER_ADMIN','ADMIN', 'SVILUPPATORE'],
             ),
         ];
     }

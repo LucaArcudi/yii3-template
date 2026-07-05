@@ -10,6 +10,22 @@ declare(strict_types=1);
 return [
     '1 filtro attivo' => '1 active filter',
 
+    // Componente dashboard: riferimenti GitHub
+    'Riferimenti GitHub' => 'GitHub references',
+    'Codice, documentazione e pipeline' => 'Code, documentation and pipeline',
+    'Guida, backlog e roadmap vivono nel repository: da qui raggiungi codice, documentazione e stato della pipeline.' => 'Guide, backlog and roadmap live in the repository: from here you can reach the code, the documentation and the pipeline status.',
+    'Codice sorgente, README e onboarding.' => 'Source code, README and onboarding.',
+    'Documentazione di progetto' => 'Project documentation',
+    'Architettura, database, DevOps e runbook operativi.' => 'Architecture, database, DevOps and operational runbooks.',
+    'Roadmap di sviluppo' => 'Development roadmap',
+    'Backlog funzionale: cose fatte e prossimi step.' => 'Functional backlog: what is done and next steps.',
+    'Roadmap AI (Codex + Claude Code)' => 'AI roadmap (Codex + Claude Code)',
+    'Integrazione degli agenti AI nel workflow di sviluppo.' => 'Integrating AI agents into the development workflow.',
+    'Storia delle release e delle modifiche.' => 'History of releases and changes.',
+    'Issue e pull request' => 'Issues and pull requests',
+    'Segnalazioni, proposte e revisioni in corso.' => 'Reports, proposals and ongoing reviews.',
+    'Stato di build, test e deploy.' => 'Build, test and deploy status.',
+
     // Componenti dashboard (contenuto demo/guida)
     'Action web/API e middleware: qui le richieste HTTP vengono validate, orchestrate e passate ai servizi.' => 'Web/API actions and middleware: this is where HTTP requests are validated, orchestrated and handed to services.',
     'Alias, container DI, route, parametri e configurazioni separate per web, console e ambienti.' => 'Aliases, DI container, routes, parameters and separate configurations for web, console and environments.',
