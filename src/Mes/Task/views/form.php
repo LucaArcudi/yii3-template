@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Data\Mes\Task\TaskEntity;
-use App\Data\Mes\Task\TaskInput;
+use App\Mes\Task\TaskEntity;
+use App\Mes\Task\TaskInput;
 use App\Helpers\Translate;
 use App\Widgets\BackButton;
 use App\Widgets\Forms\FormCard;

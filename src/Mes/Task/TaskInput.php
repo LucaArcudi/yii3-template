@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Data\Mes\Task;
+namespace App\Mes\Task;
 
 use App\Data\Core\InputValue;
 use Yiisoft\Validator\Result;

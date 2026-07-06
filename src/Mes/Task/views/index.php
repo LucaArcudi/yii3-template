@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Data\Mes\Task\TaskPresenter;
-use App\Data\Mes\Task\TaskEntity;
+use App\Mes\Task\TaskPresenter;
+use App\Mes\Task\TaskEntity;
 use App\Helpers\Translate;
 use App\Widgets\Crud\CrudActions;
 use App\Widgets\DataView\CardList;

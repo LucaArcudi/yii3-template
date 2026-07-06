@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Handlers\Web\Mes\Task;
+namespace App\Mes\Task\Actions;
 
-use App\Data\Mes\Task\TaskFilter;
-use App\Data\Mes\Task\TaskPolicy;
-use App\Data\Mes\Task\TaskReader;
+use App\Mes\Task\TaskFilter;
+use App\Mes\Task\TaskPolicy;
+use App\Mes\Task\TaskReader;
 use App\Services\Core\WebActionService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -24,14 +24,18 @@ final readonly class IndexAction
     private const GRID_STATE_KEY = 'task.index.grid.filters';
     private const CARD_STATE_KEY = 'task.index.cards.filters';
 
+    private WebViewRenderer $viewRenderer;
+
     public function __construct(
-        private WebViewRenderer $viewRenderer,
+        WebViewRenderer $viewRenderer,
         private TaskReader $taskReader,
         private TaskFilter $taskFilter,
         private TaskPolicy $taskPolicy,
         private UrlGeneratorInterface $urlGenerator,
         private WebActionService $webAction,
-    ) {}
+    ) {
+        $this->viewRenderer = $viewRenderer->withViewPath('@src/Mes/Task/views');
+    }
 
     public function __invoke(ServerRequestInterface $request): ResponseInterface
     {
@@ -82,7 +86,7 @@ final readonly class IndexAction
             );
         };
 
-        return $this->viewRenderer->render('mes/task/index', [
+        return $this->viewRenderer->render('index', [
             'gridReader' => $gridReader,
             'cardReader' => $cardReader,
             'gridFilters' => $gridQuery,

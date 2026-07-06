@@ -19,9 +19,30 @@ monitoring, deployment scripts, and production runbooks.
 
 ## Project Structure
 
-- Domain logic belongs under `src/Data/<Module>/<Domain>/`.
-- Web actions belong under `src/Handlers/Web/<Module>/<Domain>/`.
-- Views belong under `src/resources/views/<module>/<domain>/`.
+The codebase is migrating to self-contained feature modules (vertical
+slices). `Mes` is the reference module; `Core` still uses the legacy
+layer-first layout and will be migrated next. New domains must follow the
+module layout.
+
+Module layout (e.g. `src/Mes/`):
+
+- Domain classes belong under `src/<Module>/<Domain>/` (Entity, Input,
+  Repository, Reader, Filter, Policy, Presenter, Scope).
+- Web actions belong under `src/<Module>/<Domain>/Actions/` and set
+  `withViewPath('@src/<Module>/<Domain>/views')` on the view renderer.
+- Views belong under `src/<Module>/<Domain>/views/`.
+- Routes belong in `src/<Module>/routes.php` (array of `Route`/`Group`),
+  DI definitions in `src/<Module>/di.php`; both are auto-discovered by
+  `config/common/routes.php` and `config/common/di/modules.php`.
+
+Legacy layout (only `Core`, until migrated):
+
+- Domain logic under `src/Data/Core/<Domain>/`.
+- Web actions under `src/Handlers/Web/Core/<Domain>/`.
+- Views under `src/resources/views/core/<domain>/`.
+
+Shared infrastructure:
+
 - Reusable UI belongs under `src/Widgets/`.
 - Navigation is declared in `src/Navigation/NavigationProvider.php`.
 - Dashboard components are declared in `src/Dashboard/`.

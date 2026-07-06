@@ -98,8 +98,9 @@ componente "Guida progetto" della dashboard):
 | Percorso | Cosa contiene | File di riferimento |
 |---|---|---|
 | `config/` | Alias, container DI, route, parametri e configurazioni separate per web, console e ambienti. | `config/common/di/db.php`, `config/common/routes.php`, `config/environments/dev/params.php` |
-| `src/Data/` | Modello dati e regole di dominio: entità, input, filtri, presenter, policy, repository, reader e scope dei moduli. | `src/Data/Core/User/UserEntity.php`, `src/Data/Core/Role/RoleRepository.php`, `src/Data/Mes/Task/TaskPolicy.php` |
-| `src/Handlers/` | Ingresso delle richieste: action web/API e middleware — validazione, orchestrazione e passaggio ai servizi. | `src/Handlers/Web/Core/Home/IndexAction.php`, `src/Handlers/Middleware/Core/RedirectGuestToLoginMiddleware.php` |
+| `src/<Modulo>/` (es. `src/Mes/`) | Moduli feature autocontenuti (vertical slice): per ogni dominio entità, input, repository, policy, action e view nella stessa cartella, più `routes.php` e `di.php` del modulo, raccolti automaticamente dalla config. | `src/Mes/Task/TaskPolicy.php`, `src/Mes/Task/Actions/IndexAction.php`, `src/Mes/routes.php` |
+| `src/Data/` | (Layout legacy: resta solo il modulo `Core`, da migrare a modulo autocontenuto) Modello dati e regole di dominio: entità, input, filtri, presenter, policy, repository, reader e scope. | `src/Data/Core/User/UserEntity.php`, `src/Data/Core/Role/RoleRepository.php` |
+| `src/Handlers/` | (Layout legacy: resta solo il modulo `Core`) Ingresso delle richieste: action web/API e middleware — validazione, orchestrazione e passaggio ai servizi. | `src/Handlers/Web/Core/Home/IndexAction.php`, `src/Handlers/Middleware/Core/RedirectGuestToLoginMiddleware.php` |
 | `src/Services/` | Logica riusabile tra handler e moduli: autorizzazione, autenticazione, mail, supporto alle viste. | `src/Services/Core/AuthorizationService.php`, `src/Services/Core/Mail/Mailer.php` |
 | `src/Migrations/` | Migration del framework (`yiisoft/db-migration`) che eseguono gli snapshot SQL di release (vedi §5.2). | `src/Migrations/SqlSnapshotMigration.php` |
 | `src/Dashboard/` | Definizione, visibilità e rendering dei blocchi mostrati nella home autenticata. | `src/Dashboard/DashboardComponentProvider.php`, `src/resources/components/core/` |
@@ -193,10 +194,14 @@ Fallback per rotte inesistenti: `NotFoundHandler` (404 custom).
 
 ### 4.5 Routing e handler
 
-Le rotte sono dichiarative in `config/common/routes.php`. Gli handler sono
-**action class invocabili singole** (niente controller multi-azione) in
-`src/Handlers/Web/<Modulo>/<Dominio>/`, es.
-`App\Handlers\Web\Core\User\CreateAction`.
+Le rotte sono dichiarative: quelle del modulo `Core` (layout legacy) in
+`config/common/routes.php`, quelle dei moduli feature in
+`src/<Modulo>/routes.php` (array di `Route`/`Group` raccolti automaticamente
+da `config/common/routes.php`). Gli handler sono **action class invocabili
+singole** (niente controller multi-azione): nei moduli in
+`src/<Modulo>/<Dominio>/Actions/` (es. `App\Mes\Task\Actions\CreateAction`),
+nel layout legacy in `src/Handlers/Web/Core/<Dominio>/` (es.
+`App\Handlers\Web\Core\User\CreateAction`).
 
 Convenzione URL per i CRUD: `/{dominio}`, `/{dominio}/view/{id}`,
 `/{dominio}/create`, `/{dominio}/update/{id}`, `/{dominio}/delete/{id}`
@@ -211,8 +216,10 @@ viene ricordato (`RememberedUrlService`) e ripristinato dopo il login.
 
 ### 4.6 Livello dati: pattern per dominio
 
-Ogni dominio vive in `src/Data/<Modulo>/<Dominio>/` con un set di classi a
-responsabilità fissa (esempio completo: `src/Data/Core/User/`):
+Ogni dominio vive nella cartella del suo modulo, `src/<Modulo>/<Dominio>/`
+(esempio completo: `src/Mes/Task/`); il modulo `Core` usa ancora il layout
+legacy `src/Data/Core/<Dominio>/` (es. `src/Data/Core/User/`). Il set di
+classi a responsabilità fissa è lo stesso in entrambi i layout:
 
 | Classe | Responsabilità |
 |---|---|
@@ -230,7 +237,10 @@ La distinzione **`*_VIEW_ALL` vs `*_VIEW_OWN`** è implementata da
 record di cui è owner; lo scope viene applicato a livello di query dal Reader.
 
 I moduli attuali: `Core` (User, Role, Permission, PermissionGroup,
-Notification, Log) e `Mes` (Task). Le action CRUD seguono lo stesso schema:
+Notification, Log) e `Mes` (Task). `Mes` è il modulo di riferimento a fette
+verticali — dominio, action, view, rotte e DI autocontenuti in `src/Mes/` —
+e `Core` sarà migrato allo stesso schema. Le action CRUD seguono lo stesso
+schema:
 policy check → hydration dell'Input → validazione → Repository → flash +
 redirect, con audit log automatico; `WebActionService`
 (`src/Services/Core/`) fornisce le primitive comuni (risposte
@@ -738,13 +748,15 @@ Poi collegarsi con il client SQL a `127.0.0.1:3307` usando le credenziali di
 
 1. Migration SQL idempotente in `database/migrations/` (+ eventuale seed dei
    permessi `<DOMINIO>_VIEW_ALL/VIEW_OWN/CREATE/UPDATE/DELETE`);
-2. classi in `src/Data/<Modulo>/<Dominio>/` sul modello di
-   `src/Data/Mes/Task/` (Entity, Input, Repository, Reader, Filter, Policy,
+2. classi in `src/<Modulo>/<Dominio>/` sul modello di
+   `src/Mes/Task/` (Entity, Input, Repository, Reader, Filter, Policy,
    Presenter, Scope);
-3. action in `src/Handlers/Web/<Modulo>/<Dominio>/` (Index/View/Create/
-   Update/Delete) e view in `src/resources/views/<modulo>/<dominio>/`;
-4. rotte in `config/common/routes.php`, eventuale DI in
-   `config/common/di/`;
+3. action in `src/<Modulo>/<Dominio>/Actions/` (Index/View/Create/
+   Update/Delete, con `withViewPath('@src/<Modulo>/<Dominio>/views')` nel
+   costruttore) e view in `src/<Modulo>/<Dominio>/views/`;
+4. rotte in `src/<Modulo>/routes.php` e DI in `src/<Modulo>/di.php`,
+   raccolti automaticamente dalla config (per un modulo nuovo basta creare
+   i due file);
 5. voce di menu in `src/Navigation/NavigationProvider.php` con la
    `policyClass` del dominio;
 6. montare la nuova migration nei compose (`compose.yml` root e

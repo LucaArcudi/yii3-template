@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Handlers\Web\Mes\Task;
+namespace App\Mes\Task\Actions;
 
-use App\Data\Mes\Task\TaskInput;
-use App\Data\Mes\Task\TaskPolicy;
-use App\Data\Mes\Task\TaskRepository;
+use App\Mes\Task\TaskInput;
+use App\Mes\Task\TaskPolicy;
+use App\Mes\Task\TaskRepository;
 use App\Helpers\Translate;
 use App\Services\Core\CurrentActorProvider;
 use App\Services\Core\WebActionService;
@@ -18,14 +18,18 @@ use Yiisoft\Yii\View\Renderer\WebViewRenderer;
 
 final readonly class UpdateAction
 {
+    private WebViewRenderer $viewRenderer;
+
     public function __construct(
-        private WebViewRenderer $viewRenderer,
+        WebViewRenderer $viewRenderer,
         private TaskRepository $taskRepository,
         private TaskPolicy $taskPolicy,
         private CurrentActorProvider $currentActorProvider,
         private FlashInterface $flash,
         private WebActionService $webAction,
-    ) {}
+    ) {
+        $this->viewRenderer = $viewRenderer->withViewPath('@src/Mes/Task/views');
+    }
 
     public function __invoke(ServerRequestInterface $request, #[RouteArgument('id')] int $id, TaskInput $input): ResponseInterface
     {
@@ -53,7 +57,7 @@ final readonly class UpdateAction
                 return $this->webAction->redirectToView('task', $id);
             }
 
-            return $this->viewRenderer->render('mes/task/form', [
+            return $this->viewRenderer->render('form', [
                 'mode' => 'update',
                 'input' => $input,
                 'errors' => $result->getErrorMessagesIndexedByProperty(),
@@ -64,7 +68,7 @@ final readonly class UpdateAction
 
         $backUrl = $this->webAction->rememberUpdateBackUrl('task', $id, $request, '/task');
 
-        return $this->viewRenderer->render('mes/task/form', [
+        return $this->viewRenderer->render('form', [
             'mode' => 'update',
             'input' => $input,
             'errors' => [],

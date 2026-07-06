@@ -23,11 +23,6 @@ use App\Handlers\Web\Core\Role\DeleteAction as RoleDeleteAction;
 use App\Handlers\Web\Core\Role\IndexAction as RoleIndexAction;
 use App\Handlers\Web\Core\Role\UpdateAction as RoleUpdateAction;
 use App\Handlers\Web\Core\Role\ViewAction as RoleViewAction;
-use App\Handlers\Web\Mes\Task\CreateAction;
-use App\Handlers\Web\Mes\Task\DeleteAction;
-use App\Handlers\Web\Mes\Task\IndexAction;
-use App\Handlers\Web\Mes\Task\UpdateAction;
-use App\Handlers\Web\Mes\Task\ViewAction;
 use App\Handlers\Web\Core\User\CreateAction as UserCreateAction;
 use App\Handlers\Web\Core\User\DeleteAction as UserDeleteAction;
 use App\Handlers\Web\Core\User\DeleteProfileAction;
@@ -48,6 +43,16 @@ use Yiisoft\Http\Method;
 use Yiisoft\Router\Group;
 use Yiisoft\Router\Route;
 
+// Each module may expose its routes in src/<Module>/routes.php (Route or Group
+// instances): they are collected here and appended to the route configuration.
+$moduleRoutes = [];
+
+foreach (glob(dirname(__DIR__, 2) . '/src/*/routes.php') ?: [] as $moduleRoutesFile) {
+    foreach (require $moduleRoutesFile as $route) {
+        $moduleRoutes[] = $route;
+    }
+}
+
 return [
     Group::create()
         ->routes(
@@ -67,22 +72,6 @@ return [
             Route::get('/invalid-request')
                 ->action(InvalidRequestHandler::class)
                 ->name('error/invalid-request'),
-            Route::get('/task')
-                ->middleware(RedirectGuestToLoginMiddleware::class)
-                ->action(IndexAction::class)
-                ->name('task/index'),
-            Route::get('/task/view/{id:\d+}')
-                ->action(ViewAction::class)
-                ->name('task/view'),
-            Route::methods([Method::GET, Method::POST], '/task/create')
-                ->action(CreateAction::class)
-                ->name('task/create'),
-            Route::methods([Method::GET, Method::POST], '/task/update/{id:\d+}')
-                ->action(UpdateAction::class)
-                ->name('task/update'),
-            Route::post('/task/delete/{id:\d+}')
-                ->action(DeleteAction::class)
-                ->name('task/delete'),
             Route::get('/user')
                 ->middleware(RedirectGuestToLoginMiddleware::class)
                 ->action(UserIndexAction::class)
@@ -186,4 +175,5 @@ return [
                 ->action(LogoutAction::class)
                 ->name('auth/logout'),
         ),
+    ...$moduleRoutes,
 ];

@@ -314,13 +314,13 @@
       <code><![CDATA[$row]]></code>
     </PossiblyInvalidArgument>
   </file>
-  <file src="src/Data/Mes/Task/TaskEntity.php">
+  <file src="src/Mes/Task/TaskEntity.php">
     <MixedReturnStatement>
       <code><![CDATA[self::statusOptions()[$this->status] ?? Translate::t('Unknown')]]></code>
       <code><![CDATA[self::statusOptions()[$this->status] ?? Translate::t('Unknown')]]></code>
     </MixedReturnStatement>
   </file>
-  <file src="src/Data/Mes/Task/TaskFilter.php">
+  <file src="src/Mes/Task/TaskFilter.php">
     <InvalidArrayAccess>
       <code><![CDATA[$rules['createdAt']]]></code>
       <code><![CDATA[$rules['description']]]></code>
@@ -338,7 +338,7 @@
       <code><![CDATA[$this->stringList($data['status'] ?? null, 20)]]></code>
     </MixedPropertyTypeCoercion>
   </file>
-  <file src="src/Data/Mes/Task/TaskInput.php">
+  <file src="src/Mes/Task/TaskInput.php">
     <ArgumentTypeCoercion>
       <code><![CDATA[array_keys(TaskEntity::statusOptions())]]></code>
     </ArgumentTypeCoercion>
@@ -351,7 +351,7 @@
       <code><![CDATA[max(array_keys(TaskEntity::statusOptions()))]]></code>
     </MixedReturnTypeCoercion>
   </file>
-  <file src="src/Data/Mes/Task/TaskPresenter.php">
+  <file src="src/Mes/Task/TaskPresenter.php">
     <MixedPropertyFetch>
       <code><![CDATA[$this->data->{$key}]]></code>
     </MixedPropertyFetch>
@@ -371,7 +371,7 @@
       <code><![CDATA[is_array($this->data)]]></code>
     </RedundantCondition>
   </file>
-  <file src="src/Data/Mes/Task/TaskReader.php">
+  <file src="src/Mes/Task/TaskReader.php">
     <InvalidReturnStatement>
       <code><![CDATA[$row === null ? null : $row]]></code>
     </InvalidReturnStatement>
@@ -382,7 +382,7 @@
       <code><![CDATA[$statuses]]></code>
     </MixedArgumentTypeCoercion>
   </file>
-  <file src="src/Data/Mes/Task/TaskRepository.php">
+  <file src="src/Mes/Task/TaskRepository.php">
     <MixedArgument>
       <code><![CDATA[$row['created_at'] ?? null]]></code>
       <code><![CDATA[$row['end_date'] ?? null]]></code>
@@ -557,22 +557,22 @@
         ]]]></code>
     </MixedArgumentTypeCoercion>
   </file>
-  <file src="src/Handlers/Web/Mes/Task/CreateAction.php">
+  <file src="src/Mes/Task/Actions/CreateAction.php">
     <PossiblyInvalidArgument>
       <code><![CDATA[$request->getParsedBody()]]></code>
     </PossiblyInvalidArgument>
   </file>
-  <file src="src/Handlers/Web/Mes/Task/IndexAction.php">
+  <file src="src/Mes/Task/Actions/IndexAction.php">
     <PossiblyUndefinedArrayOffset>
       <code><![CDATA[$parts['query']]]></code>
     </PossiblyUndefinedArrayOffset>
   </file>
-  <file src="src/Handlers/Web/Mes/Task/UpdateAction.php">
+  <file src="src/Mes/Task/Actions/UpdateAction.php">
     <PossiblyInvalidArgument>
       <code><![CDATA[$request->getParsedBody()]]></code>
     </PossiblyInvalidArgument>
   </file>
-  <file src="src/Handlers/Web/Mes/Task/ViewAction.php">
+  <file src="src/Mes/Task/Actions/ViewAction.php">
     <MixedArgumentTypeCoercion>
       <code><![CDATA[[
             'task' => new TaskPresenter($row),
@@ -1111,17 +1111,17 @@
       <code><![CDATA[$this]]></code>
     </InvalidScope>
   </file>
-  <file src="src/resources/views/mes/task/form.php">
+  <file src="src/Mes/Task/views/form.php">
     <InvalidScope>
       <code><![CDATA[$this]]></code>
     </InvalidScope>
   </file>
-  <file src="src/resources/views/mes/task/index.php">
+  <file src="src/Mes/Task/views/index.php">
     <InvalidScope>
       <code><![CDATA[$this]]></code>
     </InvalidScope>
   </file>
-  <file src="src/resources/views/mes/task/view.php">
+  <file src="src/Mes/Task/views/view.php">
     <InvalidScope>
       <code><![CDATA[$this]]></code>
     </InvalidScope>
