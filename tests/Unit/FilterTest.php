@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit;
 
 use App\Data\Core\Permission\PermissionFilter;
-use App\Data\Mes\Task\TaskFilter;
+use App\Mes\Task\TaskFilter;
 use App\Data\Core\User\UserFilter;
 use Codeception\Test\Unit;
 use Yiisoft\Validator\Validator;

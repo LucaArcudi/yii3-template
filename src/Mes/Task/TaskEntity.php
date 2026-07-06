@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Data\Mes\Task;
+namespace App\Mes\Task;
 
 use App\Data\Core\BaseEntity;
 use App\Helpers\Translate;

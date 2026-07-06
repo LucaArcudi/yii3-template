@@ -8,7 +8,7 @@ use App\Data\Core\Permission\PermissionGroupPolicy;
 use App\Data\Core\Permission\PermissionPolicy;
 use App\Data\Core\Role\RolePolicy;
 use App\Data\Core\User\UserPolicy;
-use App\Data\Mes\Task\TaskPolicy;
+use App\Mes\Task\TaskPolicy;
 use App\Helpers\Translate;
 use App\Services\Core\PolicyAccessResolver;
 

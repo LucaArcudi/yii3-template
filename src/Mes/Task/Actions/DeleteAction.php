@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Handlers\Web\Mes\Task;
+namespace App\Mes\Task\Actions;
 
-use App\Data\Mes\Task\TaskPolicy;
-use App\Data\Mes\Task\TaskRepository;
+use App\Mes\Task\TaskPolicy;
+use App\Mes\Task\TaskRepository;
 use App\Helpers\Translate;
 use App\Services\Core\CurrentActorProvider;
 use App\Services\Core\WebActionService;

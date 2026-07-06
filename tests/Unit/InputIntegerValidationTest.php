@@ -6,7 +6,7 @@ namespace App\Tests\Unit;
 
 use App\Data\Core\Permission\PermissionInput;
 use App\Data\Core\Role\RoleInput;
-use App\Data\Mes\Task\TaskInput;
+use App\Mes\Task\TaskInput;
 use App\Data\Core\User\UserEntity;
 use App\Data\Core\User\UserInput;
 use App\Widgets\Inputs\DateInput;
