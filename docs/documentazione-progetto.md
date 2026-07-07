@@ -588,9 +588,11 @@ docker compose --env-file .env.prod \
   in initdb.d (solo primo avvio del volume).
 
 **Override locale** (`compose.local.yml`, esempio versionato in
-`compose.local.example.yml`): espone il DB su `127.0.0.1:3307` per il tunnel
-SSH e aggiunge la label HSTS al proxy (belt & braces: l'app lo emette già
-sulle richieste https risolte da `TrustedProxyMiddleware`).
+`compose.local.example.yml`, scritto da ansible): espone il DB su
+`127.0.0.1:3307` per il tunnel SSH. Nessun override per l'app: cookie
+Secure e HSTS sono emessi dall'app grazie a `TrustedProxyMiddleware`
+(niente label HSTS sul proxy: per RFC 6797 conta solo il primo header
+STS e la label oscurava quello completo dell'app).
 
 **Reverse proxy** (`docker/proxy/compose.yml`):
 `lucaslorentz/caddy-docker-proxy:2.13-alpine` in ascolto su 80/443, legge le
@@ -615,7 +617,7 @@ richiede root: l'utente `deploy` è nel gruppo `docker`):
 |---|---|
 | `playbooks/server_check.yml` | Diagnosi/assert: Docker presente, `/opt/yii3`, `.env.prod`, compose, backups, servizi up, health 200 |
 | `playbooks/proxy.yml` | Crea la rete `caddy_public`, installa e avvia il proxy Caddy in `/home/deploy/caddy-proxy` |
-| `playbooks/app.yml` | Imposta `PROD_HOST` in `.env.prod`, scrive `compose.local.yml`, ricrea il container app, verifica health su loopback e via HTTPS pubblico |
+| `playbooks/app.yml` | Imposta `PROD_HOST` in `.env.prod`, scrive `compose.local.yml`, ricrea il container app **senza cambiarne l'immagine** (pin a quella in esecuzione: l'`APP_IMAGE` di `.env.prod` è `latest`, spesso stantio ora che il CD deploya i tag SHA), verifica health su loopback e via HTTPS pubblico |
 
 ```bash
 cd ansible
