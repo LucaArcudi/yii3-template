@@ -1,0 +1,49 @@
+# Regola ponte: rilancia verso il contact point gli alert di Prometheus
+# (metrica ALERTS con alertstate="firing"). Le regole vere e proprie — con
+# soglie e "for" — restano versionate in prometheus/rules/alerts.yml e
+# validate da promtool in CI: qui non si duplicano, si notificano.
+# Multidimensionale: una notifica per coppia (alertname, severity).
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: prometheus-bridge
+    folder: Prometheus
+    interval: 1m
+    rules:
+      - uid: prometheus-alerts-firing
+        title: Alert Prometheus attivo
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              refId: A
+              instant: true
+              expr: max by (alertname, severity) (ALERTS{alertstate="firing"})
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator:
+                    type: gt
+                    params:
+                      - 0
+        # Il "for" vive già nelle regole Prometheus: qui si notifica subito.
+        for: 0m
+        # Nessun alert firing = query senza serie: è lo stato sano.
+        noDataState: OK
+        execErrState: Error
+        labels:
+          source: prometheus
+        annotations:
+          summary: >-
+            {{ $labels.alertname }} (severity {{ $labels.severity }})
+            è attivo in Prometheus.
+        isPaused: false

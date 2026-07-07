@@ -1,0 +1,15 @@
+# Contact point per le notifiche degli alert: bot Telegram.
+# Token e chat ID arrivano dall'ambiente del container Grafana
+# (docker/monitoring/.env, vedi .env.example): il provisioning di
+# Grafana espande $VAR dai valori d'ambiente.
+apiVersion: 1
+
+contactPoints:
+  - orgId: 1
+    name: telegram
+    receivers:
+      - uid: telegram-ops
+        type: telegram
+        settings:
+          bottoken: $TELEGRAM_BOT_TOKEN
+          chatid: "$TELEGRAM_CHAT_ID"

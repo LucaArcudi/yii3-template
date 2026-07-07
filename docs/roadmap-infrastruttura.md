@@ -50,22 +50,24 @@ Promtail scartato perché in maintenance mode (Alloy è il successore).
 
 ---
 
-## 2. Notifiche degli alert
+## 2. Notifiche degli alert — ✔ FATTO (2026-07-07)
 
-Stato attuale: 6 regole di alert Prometheus versionate e validate, ma
-senza canale di notifica — gli alert si vedono solo nelle UI.
-
-Primo passo, notifiche umane:
+Implementato con il provisioning alerting di Grafana
+(`docker/monitoring/grafana/provisioning/alerting/`, vedi
+[documentazione-progetto.md](documentazione-progetto.md) §8.9):
 
 ```text
-Grafana contact point (Telegram o email)
-+ alert rule Grafana che rilancia ALERTS di Prometheus,
-oppure Alertmanager dedicato nello stack monitoring.
+✔ contact point Telegram (token e chat ID da docker/monitoring/.env)
+✔ alert rule ponte che rilancia ALERTS{alertstate="firing"} di
+  Prometheus: una notifica per (alertname, severity), repeat 4h
+✔ notification policy versionata; le soglie restano SOLO nelle regole
+  Prometheus validate da promtool
 ```
 
-Il passo successivo (webhook → issue incident GitHub per la diagnosi
-assistita) è descritto nella
-[roadmap AI](roadmap-ai-codex-claude-code.md) e presuppone questo.
+Alertmanager dedicato scartato in questa fase: un servizio in più senza
+benefici finché il fan-out è un solo canale. Il passo successivo
+(webhook → issue incident GitHub per la diagnosi assistita) è descritto
+nella [roadmap AI](roadmap-ai-codex-claude-code.md) e presuppone questo.
 
 ---
 

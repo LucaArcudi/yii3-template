@@ -650,8 +650,14 @@ cAdvisor (metriche container), mysqld-exporter (utente MySQL dedicato
 - Alert in `prometheus/rules/alerts.yml` (CPU, memoria, disco, target
   down, MySQL down, upstream del proxy non sano), validati in CI con
   `promtool check config`; visibili in Prometheus `/alerts` e in Grafana
-  (metrica `ALERTS`). Le notifiche push si aggiungono collegando un
-  contact point Grafana o un Alertmanager.
+  (metrica `ALERTS`).
+- **Notifiche degli alert su Telegram**, provisionate in
+  `grafana/provisioning/alerting/`: una regola ponte in Grafana rilancia
+  gli alert `firing` di Prometheus (una notifica per coppia
+  alertname/severity, rinotifica ogni 4 ore finché attivo) verso il
+  contact point Telegram. Bot token e chat ID vanno in
+  `docker/monitoring/.env` (obbligatori, vedi `.env.example`); le soglie
+  restano solo in `prometheus/rules/alerts.yml`, qui non si duplicano.
 - **Log centralizzati (Loki + Alloy)**: Alloy raccoglie stdout/stderr di
   tutti i container via Docker service discovery (etichette `container`,
   `compose_service`, `compose_project`) più il log applicativo
