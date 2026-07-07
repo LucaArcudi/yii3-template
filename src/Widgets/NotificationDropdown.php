@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Widgets;
 
-use App\Data\Core\Notification\NotificationPresenter;
-use App\Data\Core\Notification\NotificationReader;
+use App\Core\Notification\NotificationPresenter;
+use App\Core\Notification\NotificationReader;
 use App\Helpers\Translate;
 use Yiisoft\Html\Html;
 use Yiisoft\Yii\View\Renderer\Csrf;

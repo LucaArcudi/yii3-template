@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Handlers\Middleware\Core;
 
-use App\Data\Core\User\UserRepository;
+use App\Core\User\UserRepository;
 use App\Helpers\Translate;
 use App\Services\Core\RememberedUrlService;
 use HttpSoft\Response\RedirectResponse;

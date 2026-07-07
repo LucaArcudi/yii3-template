@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit;
 
-use App\Data\Core\User\UserEntity;
-use App\Data\Core\User\UserInput;
+use App\Core\User\UserEntity;
+use App\Core\User\UserInput;
 use Codeception\Test\Unit;
 use Yiisoft\Validator\Validator;
 

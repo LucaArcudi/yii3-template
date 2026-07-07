@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Data\Core\Notification\NotificationPolicy;
-use App\Data\Core\Notification\NotificationReader;
+use App\Core\Notification\NotificationPolicy;
+use App\Core\Notification\NotificationReader;
 use App\Helpers\AppLocales;
 use App\Navigation\NavigationProvider;
 use App\Params\Core\ApplicationParams;

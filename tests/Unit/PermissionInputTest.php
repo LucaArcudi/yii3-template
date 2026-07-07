@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit;
 
-use App\Data\Core\Permission\PermissionInput;
-use App\Data\Core\Permission\PermissionGroupEntity;
+use App\Core\Permission\PermissionInput;
+use App\Core\PermissionGroup\PermissionGroupEntity;
 use Codeception\Test\Unit;
 use Yiisoft\Validator\Validator;
 

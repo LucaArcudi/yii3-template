@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit;
 
-use App\Data\Core\Permission\PermissionInput;
-use App\Data\Core\Role\RoleInput;
+use App\Core\Permission\PermissionInput;
+use App\Core\Role\RoleInput;
 use App\Mes\Task\TaskInput;
-use App\Data\Core\User\UserEntity;
-use App\Data\Core\User\UserInput;
+use App\Core\User\UserEntity;
+use App\Core\User\UserInput;
 use App\Widgets\Inputs\DateInput;
 use App\Widgets\Inputs\TextInput;
 use Codeception\Test\Unit;

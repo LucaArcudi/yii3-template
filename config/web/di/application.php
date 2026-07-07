@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Handlers\Web\Core\NotFound\NotFoundHandler;
+use App\Core\NotFound\Actions\NotFoundHandler;
 use App\Handlers\Middleware\Core\LocaleMiddleware;
 use App\Handlers\Middleware\Core\PasswordExpiredMiddleware;
 use App\Handlers\Middleware\Core\SameOriginRequestMiddleware;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit;
 
-use App\Data\Core\Permission\PermissionGroupInput;
+use App\Core\PermissionGroup\PermissionGroupInput;
 use Codeception\Test\Unit;
 use Yiisoft\Validator\Validator;
 

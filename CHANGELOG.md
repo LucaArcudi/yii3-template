@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Avviata la migrazione a moduli feature autocontenuti (vertical slice): il modulo `Mes` (dominio Task) vive ora tutto in `src/Mes/` — classi di dominio, action, view, `routes.php` e `di.php` nella stessa cartella — con rotte e definizioni DI dei moduli raccolte automaticamente da `config/common/routes.php` e `config/common/di/modules.php`. Il binding globale `ValidatorInterface` è stato spostato da `di/task.php` a `config/common/di/validator.php`. Il modulo `Core` resta sul layout legacy e sarà migrato in seguito.
+- Ristrutturato `src/` in moduli feature autocontenuti (vertical slice): `Core` (User, Role, Permission, PermissionGroup, Notification, Log, Home, Error, NotFound, Language — con `PermissionGroup` separato da `Permission` e `UserCreateCommand` nel dominio User) e `Mes` (Task) vivono in `src/<Modulo>/` con classi di dominio, `Actions/`, `views/`, `routes.php` e `di.php` per modulo, raccolti automaticamente da `config/common/routes.php` (ora puro aggregatore) e `config/common/di/modules.php`. I binding DI di dominio escono da `config/common/di/` (restano infrastruttura e il binding globale `ValidatorInterface` in `di/validator.php`). L'infrastruttura condivisa (Data primitives, Services, Middleware, Params, Widgets, resources) resta in attesa del consolidamento in `Shared/`.
 - Adottato `yiisoft/db-migration`: gli snapshot SQL di release sono eseguiti da una catena di migration (`App\Migrations`) validata in CI sia per idempotenza su DB esistente sia per bootstrap da database vuoto.
 - Aggiunto comando console `user:create` per il primo utente admin (password generata stampata una sola volta, ruolo di default `ADMIN`).
 - CD: step `migrate:up` tra backup e avvio della nuova versione dell'app.

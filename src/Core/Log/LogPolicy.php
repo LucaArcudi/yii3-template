@@ -1,0 +1,31 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Core\Log;
+
+use App\Data\AccessPolicyInterface;
+use App\Services\Core\AuthorizationService;
+use Yiisoft\User\CurrentUser;
+
+final readonly class LogPolicy implements AccessPolicyInterface
+{
+    public const GROUP = 'LOG';
+    public const ACCESS = 'ACCESS';
+
+    public function __construct(
+        private CurrentUser $currentUser,
+        private AuthorizationService $authorizationService,
+    ) {}
+
+    public function canAccess(): bool
+    {
+        if ($this->currentUser->isGuest()) {
+            return false;
+        }
+
+        $userId = $this->currentUser->getId();
+
+        return $this->authorizationService->userHasPermission($userId, self::GROUP, self::GROUP . '_' . self::ACCESS);
+    }
+}

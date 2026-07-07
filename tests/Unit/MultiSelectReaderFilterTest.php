@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Tests\Unit;
 
 use App\Data\Core\Scope\OwnershipScopeInterface;
-use App\Data\Core\User\UserFilter;
-use App\Data\Core\User\UserReader;
-use App\Data\Core\User\UserScope;
+use App\Core\User\UserFilter;
+use App\Core\User\UserReader;
+use App\Core\User\UserScope;
 use App\Mes\Task\TaskFilter;
 use App\Mes\Task\TaskReader;
 use App\Mes\Task\TaskScope;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit;
 
-use App\Data\Core\Permission\PermissionFilter;
+use App\Core\Permission\PermissionFilter;
 use App\Widgets\Filters\DateFilter;
 use App\Widgets\Filters\FilterField;
 use App\Widgets\Filters\FilterModal;

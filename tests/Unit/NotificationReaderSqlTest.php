@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit;
 
-use App\Data\Core\Notification\NotificationReader;
-use App\Data\Core\User\UserIdentity;
+use App\Core\Notification\NotificationReader;
+use App\Core\User\UserIdentity;
 use Codeception\Test\Unit;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Yiisoft\Auth\IdentityInterface;
