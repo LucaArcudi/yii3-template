@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Helpers\Translate;
+use App\Shared\Helpers\Translate;
 use Yiisoft\Html\Html;
 use Yiisoft\View\WebView;
 

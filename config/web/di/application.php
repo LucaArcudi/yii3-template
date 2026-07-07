@@ -3,11 +3,11 @@
 declare(strict_types=1);
 
 use App\Core\NotFound\Actions\NotFoundHandler;
-use App\Handlers\Middleware\Core\LocaleMiddleware;
-use App\Handlers\Middleware\Core\PasswordExpiredMiddleware;
-use App\Handlers\Middleware\Core\SameOriginRequestMiddleware;
-use App\Handlers\Middleware\Core\SecurityHeadersMiddleware;
-use App\Handlers\Middleware\Core\StatusPageMiddleware;
+use App\Shared\Middleware\LocaleMiddleware;
+use App\Shared\Middleware\PasswordExpiredMiddleware;
+use App\Shared\Middleware\SameOriginRequestMiddleware;
+use App\Shared\Middleware\SecurityHeadersMiddleware;
+use App\Shared\Middleware\StatusPageMiddleware;
 use Yiisoft\Cookies\CookieMiddleware;
 use Yiisoft\Csrf\CsrfTokenMiddleware;
 use Yiisoft\DataResponse\Middleware\FormatDataResponse;

@@ -7,7 +7,7 @@ namespace App\Mes\Task\Actions;
 use App\Mes\Task\TaskFilter;
 use App\Mes\Task\TaskPolicy;
 use App\Mes\Task\TaskReader;
-use App\Services\Core\WebActionService;
+use App\Shared\Services\WebActionService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Yiisoft\Router\UrlGeneratorInterface;

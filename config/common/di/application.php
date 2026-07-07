@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use App\Data\Core\Scope\OwnershipScope;
-use App\Data\Core\Scope\OwnershipScopeInterface;
-use App\Params\Core\ApplicationParams;
-use App\Params\Core\AuthParams;
-use App\Params\Core\LayoutParams;
-use App\Services\Core\PolicyAccessResolver;
+use App\Shared\Data\Scope\OwnershipScope;
+use App\Shared\Data\Scope\OwnershipScopeInterface;
+use App\Shared\Params\ApplicationParams;
+use App\Shared\Params\AuthParams;
+use App\Shared\Params\LayoutParams;
+use App\Shared\Services\PolicyAccessResolver;
 use Psr\Container\ContainerInterface;
 
 /** @var array $params */

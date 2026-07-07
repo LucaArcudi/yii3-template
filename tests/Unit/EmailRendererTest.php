@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit;
 
-use App\Params\Core\ApplicationParams;
-use App\Services\Core\Mail\EmailRenderer;
+use App\Shared\Params\ApplicationParams;
+use App\Shared\Services\Mail\EmailRenderer;
 use Codeception\Test\Unit;
 use Yiisoft\Aliases\Aliases;
 
@@ -36,7 +36,7 @@ final class EmailRendererTest extends Unit
         return new Aliases([
             '@root' => $root,
             '@src' => $root . '/src',
-            '@resources' => $root . '/src/resources',
+            '@resources' => $root . '/src/Shared/resources',
         ]);
     }
 }

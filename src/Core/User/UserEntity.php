@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core\User;
 
-use App\Data\Core\BaseEntity;
-use App\Helpers\Translate;
+use App\Shared\Data\BaseEntity;
+use App\Shared\Helpers\Translate;
 
 use function date;
 use function strtotime;

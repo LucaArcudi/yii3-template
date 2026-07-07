@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\User;
 
-use App\Helpers\Translate;
+use App\Shared\Helpers\Translate;
 use Yiisoft\Validator\Result;
 use Yiisoft\Validator\RulesProviderInterface;
 use Yiisoft\Validator\Rule\Email;

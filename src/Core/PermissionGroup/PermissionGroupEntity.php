@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\PermissionGroup;
 
-use App\Data\Core\BaseEntity;
+use App\Shared\Data\BaseEntity;
 
 final class PermissionGroupEntity extends BaseEntity
 {

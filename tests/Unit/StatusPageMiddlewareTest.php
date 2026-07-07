@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit;
 
-use App\Handlers\Middleware\Core\StatusPageMiddleware;
+use App\Shared\Middleware\StatusPageMiddleware;
 use Codeception\Test\Unit;
 use HttpSoft\Message\Response;
 use HttpSoft\Message\ServerRequest;

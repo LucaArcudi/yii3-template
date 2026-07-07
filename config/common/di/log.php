@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Params\Core\EntityLogParams;
+use App\Shared\Params\EntityLogParams;
 
 /** @var array $params */
 

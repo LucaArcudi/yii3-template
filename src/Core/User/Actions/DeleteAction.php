@@ -6,8 +6,8 @@ namespace App\Core\User\Actions;
 
 use App\Core\User\UserPolicy;
 use App\Core\User\UserRepository;
-use App\Helpers\Translate;
-use App\Services\Core\WebActionService;
+use App\Shared\Helpers\Translate;
+use App\Shared\Services\WebActionService;
 use Psr\Http\Message\ResponseInterface;
 use Yiisoft\Router\HydratorAttribute\RouteArgument;
 use Yiisoft\Session\Flash\FlashInterface;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Mes\Task;
 
-use App\Data\Core\InputValue;
+use App\Shared\Data\InputValue;
 use Yiisoft\Validator\Result;
 use Yiisoft\Validator\RulesProviderInterface;
 use Yiisoft\Validator\Rule\Date\Date;

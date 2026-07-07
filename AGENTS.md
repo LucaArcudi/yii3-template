@@ -8,8 +8,8 @@ monitoring, deployment scripts, and production runbooks.
 - Work on a dedicated branch. Never push directly to `main`.
 - Keep changes small, focused, and reviewable.
 - Read the existing code before editing and follow local patterns.
-- Prefer existing Yii3 services, widgets, handlers, `Data/` classes, and DI
-  conventions over new architecture.
+- Prefer existing Yii3 services, shared widgets, module domain classes, and
+  DI conventions over new architecture.
 - Do not modify production secrets, deploy credentials, or environment files
   containing real values.
 - Do not run destructive database, filesystem, or Git commands without explicit
@@ -22,8 +22,7 @@ monitoring, deployment scripts, and production runbooks.
 The codebase is organized in self-contained feature modules (vertical
 slices): `Core` (users, RBAC, notifications, audit log, error pages) and
 `Mes` (the reference business module). New domains must follow the module
-layout. Shared infrastructure still lives in layer folders and will be
-consolidated under a `Shared/` area in a future step.
+layout. Shared infrastructure lives under `src/Shared/`.
 
 Module layout (e.g. `src/Core/`, `src/Mes/`):
 
@@ -36,18 +35,18 @@ Module layout (e.g. `src/Core/`, `src/Mes/`):
   DI definitions in `src/<Module>/di.php`; both are auto-discovered by
   `config/common/routes.php` and `config/common/di/modules.php`.
 
-Shared infrastructure (pending consolidation under `Shared/`):
+Shared infrastructure (`src/Shared/`):
 
-- Data primitives under `src/Data/` (`BaseEntity`, `InputValue`,
+- Data primitives under `src/Shared/Data/` (`BaseEntity`, `InputValue`,
   `AccessPolicyInterface`, ownership scopes).
-- Cross-module services under `src/Services/Core/` (authorization, mail,
+- Cross-module services under `src/Shared/Services/` (authorization, mail,
   web action support).
-- HTTP middleware under `src/Handlers/Middleware/Core/`.
-- Params objects under `src/Params/Core/`, console command skeletons under
-  `src/Commands/Core/`, layouts/translations/emails under `src/resources/`.
-- Reusable UI belongs under `src/Widgets/`.
-- Navigation is declared in `src/Navigation/NavigationProvider.php`.
-- Dashboard components are declared in `src/Dashboard/`.
+- HTTP middleware under `src/Shared/Middleware/`.
+- Params objects under `src/Shared/Params/`, console command skeletons under
+  `src/Shared/Commands/`, layouts/translations/emails under `src/Shared/resources/`.
+- Reusable UI belongs under `src/Shared/Widgets/`.
+- Navigation is declared in `src/Shared/Navigation/NavigationProvider.php`.
+- Dashboard components are declared in `src/Shared/Dashboard/`.
 - Runtime visibility for menu items and dashboard components must go through a
   `policyClass` whose `canAccess()` method is the single source of truth.
 

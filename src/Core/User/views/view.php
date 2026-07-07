@@ -3,12 +3,12 @@
 declare(strict_types=1);
 
 use App\Core\User\UserPresenter;
-use App\Helpers\Translate;
-use App\Widgets\BackButton;
-use App\Widgets\Card;
-use App\Widgets\Crud\CrudActions;
-use App\Widgets\DataView\Detail;
-use App\Widgets\EntityLogList;
+use App\Shared\Helpers\Translate;
+use App\Shared\Widgets\BackButton;
+use App\Shared\Widgets\Card;
+use App\Shared\Widgets\Crud\CrudActions;
+use App\Shared\Widgets\DataView\Detail;
+use App\Shared\Widgets\EntityLogList;
 use Yiisoft\Html\Html;
 use Yiisoft\Yii\DataView\DetailView\DataField;
 use Yiisoft\Yii\View\Renderer\Csrf;

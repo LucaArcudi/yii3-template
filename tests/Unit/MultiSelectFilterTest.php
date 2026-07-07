@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit;
 
-use App\Widgets\Filters\FilterField;
-use App\Widgets\Filters\MultiSelectFilter;
+use App\Shared\Widgets\Filters\FilterField;
+use App\Shared\Widgets\Filters\MultiSelectFilter;
 use Codeception\Test\Unit;
 
 final class MultiSelectFilterTest extends Unit

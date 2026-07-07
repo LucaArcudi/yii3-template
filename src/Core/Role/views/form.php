@@ -3,12 +3,12 @@
 declare(strict_types=1);
 
 use App\Core\Role\RoleInput;
-use App\Helpers\Translate;
-use App\Widgets\BackButton;
-use App\Widgets\Forms\FormCard;
-use App\Widgets\Forms\FormTheme;
-use App\Widgets\Inputs\CheckboxGroupInput;
-use App\Widgets\Inputs\TextInput;
+use App\Shared\Helpers\Translate;
+use App\Shared\Widgets\BackButton;
+use App\Shared\Widgets\Forms\FormCard;
+use App\Shared\Widgets\Forms\FormTheme;
+use App\Shared\Widgets\Inputs\CheckboxGroupInput;
+use App\Shared\Widgets\Inputs\TextInput;
 use Yiisoft\Form\PureField\Field;
 use Yiisoft\Router\UrlGeneratorInterface;
 use Yiisoft\Yii\View\Renderer\Csrf;

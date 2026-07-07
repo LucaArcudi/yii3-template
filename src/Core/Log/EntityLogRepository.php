@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core\Log;
 
-use App\Data\Core\BaseEntity;
-use App\Params\Core\EntityLogParams;
+use App\Shared\Data\BaseEntity;
+use App\Shared\Params\EntityLogParams;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 use Yiisoft\Db\Connection\ConnectionInterface;

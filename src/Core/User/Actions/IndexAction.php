@@ -8,7 +8,7 @@ use App\Core\Role\RoleRepository;
 use App\Core\User\UserFilter;
 use App\Core\User\UserPolicy;
 use App\Core\User\UserReader;
-use App\Services\Core\WebActionService;
+use App\Shared\Services\WebActionService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Yiisoft\Yii\View\Renderer\WebViewRenderer;

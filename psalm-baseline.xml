@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="6.16.1@f1f5de594dc76faf8784e02d3dc4716c91c6f6ac">
-  <file src="src/Dashboard/DashboardComponentRenderer.php">
+  <file src="src/Shared/Dashboard/DashboardComponentRenderer.php">
     <UnresolvableInclude>
       <code><![CDATA[require $viewFile]]></code>
     </UnresolvableInclude>
@@ -394,7 +394,7 @@
       <code><![CDATA[fn(array $row) => $this->mapRow($row)]]></code>
     </PossiblyInvalidArgument>
   </file>
-  <file src="src/Handlers/Middleware/Core/StatusPageMiddleware.php">
+  <file src="src/Shared/Middleware/StatusPageMiddleware.php">
     <MixedArgumentTypeCoercion>
       <code><![CDATA[$name]]></code>
       <code><![CDATA[$name]]></code>
@@ -584,19 +584,19 @@
         ]]]></code>
     </MixedArgumentTypeCoercion>
   </file>
-  <file src="src/Navigation/NavigationTreeVisibility.php">
+  <file src="src/Shared/Navigation/NavigationTreeVisibility.php">
     <MixedArgument>
       <code><![CDATA[$item]]></code>
       <code><![CDATA[$item['_children'] ?? []]]></code>
       <code><![CDATA[$item['_children'] ?? []]]></code>
     </MixedArgument>
   </file>
-  <file src="src/Services/Core/AuthTokenService.php">
+  <file src="src/Shared/Services/AuthTokenService.php">
     <TypeDoesNotContainType>
       <code><![CDATA[$hash === false]]></code>
     </TypeDoesNotContainType>
   </file>
-  <file src="src/Services/Core/AuthorizationService.php">
+  <file src="src/Shared/Services/AuthorizationService.php">
     <LessSpecificReturnStatement>
       <code><![CDATA[array_map(static fn(mixed $code): string => strtoupper((string) $code), $codes)]]></code>
     </LessSpecificReturnStatement>
@@ -604,17 +604,17 @@
       <code><![CDATA[list<string>]]></code>
     </MoreSpecificReturnType>
   </file>
-  <file src="src/Services/Core/Mail/EmailRenderer.php">
+  <file src="src/Shared/Services/Mail/EmailRenderer.php">
     <UnresolvableInclude>
       <code><![CDATA[require $file]]></code>
     </UnresolvableInclude>
   </file>
-  <file src="src/Services/Core/PasswordHasher.php">
+  <file src="src/Shared/Services/PasswordHasher.php">
     <TypeDoesNotContainType>
       <code><![CDATA[$hash === false]]></code>
     </TypeDoesNotContainType>
   </file>
-  <file src="src/Services/Core/RememberedUrlService.php">
+  <file src="src/Shared/Services/RememberedUrlService.php">
     <MixedOperand>
       <code><![CDATA[$parts['fragment']]]></code>
       <code><![CDATA[$parts['query']]]></code>
@@ -625,39 +625,39 @@
       <code><![CDATA[(string) ($parts['path'] ?? '')]]></code>
     </RedundantCast>
   </file>
-  <file src="src/Services/Core/WebActionService.php">
+  <file src="src/Shared/Services/WebActionService.php">
     <MixedArgumentTypeCoercion>
       <code><![CDATA[$arguments]]></code>
     </MixedArgumentTypeCoercion>
   </file>
-  <file src="src/Widgets/Badge.php">
+  <file src="src/Shared/Widgets/Badge.php">
     <ClassMustBeFinal>
       <code><![CDATA[Badge]]></code>
     </ClassMustBeFinal>
   </file>
-  <file src="src/Widgets/Breadcrumb.php">
+  <file src="src/Shared/Widgets/Breadcrumb.php">
     <RedundantCastGivenDocblockType>
       <code><![CDATA[(string) $item['url']]]></code>
       <code><![CDATA[(string) ($item['icon'] ?? '')]]></code>
       <code><![CDATA[(string) ($item['label'] ?? '')]]></code>
     </RedundantCastGivenDocblockType>
   </file>
-  <file src="src/Widgets/Card.php">
+  <file src="src/Shared/Widgets/Card.php">
     <ClassMustBeFinal>
       <code><![CDATA[Card]]></code>
     </ClassMustBeFinal>
   </file>
-  <file src="src/Widgets/Crud/CrudActions.php">
+  <file src="src/Shared/Widgets/Crud/CrudActions.php">
     <MixedArgumentTypeCoercion>
       <code><![CDATA[$meta]]></code>
     </MixedArgumentTypeCoercion>
   </file>
-  <file src="src/Widgets/DataView/CardList.php">
+  <file src="src/Shared/Widgets/DataView/CardList.php">
     <ArgumentTypeCoercion>
       <code><![CDATA[$pageSize]]></code>
     </ArgumentTypeCoercion>
   </file>
-  <file src="src/Widgets/DataView/Detail.php">
+  <file src="src/Shared/Widgets/DataView/Detail.php">
     <ClassMustBeFinal>
       <code><![CDATA[Detail]]></code>
     </ClassMustBeFinal>
@@ -672,7 +672,7 @@
       <code><![CDATA[$fields]]></code>
     </NamedArgumentNotAllowed>
   </file>
-  <file src="src/Widgets/DataView/Grid.php">
+  <file src="src/Shared/Widgets/DataView/Grid.php">
     <ClassMustBeFinal>
       <code><![CDATA[Grid]]></code>
     </ClassMustBeFinal>
@@ -696,7 +696,7 @@
       <code><![CDATA[$urlCreator]]></code>
     </MixedArgumentTypeCoercion>
   </file>
-  <file src="src/Widgets/Filters/DateFilter.php">
+  <file src="src/Shared/Widgets/Filters/DateFilter.php">
     <ClassMustBeFinal>
       <code><![CDATA[DateFilter]]></code>
     </ClassMustBeFinal>
@@ -704,7 +704,7 @@
       <code><![CDATA[(string) ($context->value ?? '')]]></code>
     </RedundantCast>
   </file>
-  <file src="src/Widgets/Filters/FilterBar.php">
+  <file src="src/Shared/Widgets/Filters/FilterBar.php">
     <ClassMustBeFinal>
       <code><![CDATA[FilterBar]]></code>
     </ClassMustBeFinal>
@@ -729,7 +729,7 @@
       <code><![CDATA[$fieldNames[$name]]]></code>
     </MixedArrayTypeCoercion>
   </file>
-  <file src="src/Widgets/Filters/FilterField.php">
+  <file src="src/Shared/Widgets/Filters/FilterField.php">
     <ClassMustBeFinal>
       <code><![CDATA[FilterField]]></code>
     </ClassMustBeFinal>
@@ -759,7 +759,7 @@
       <code><![CDATA[array_values]]></code>
     </RedundantFunctionCall>
   </file>
-  <file src="src/Widgets/Filters/FilterModal.php">
+  <file src="src/Shared/Widgets/Filters/FilterModal.php">
     <MixedArgument>
       <code><![CDATA[$field]]></code>
     </MixedArgument>
@@ -774,7 +774,7 @@
       <code><![CDATA[$fieldNames[$name]]]></code>
     </MixedArrayTypeCoercion>
   </file>
-  <file src="src/Widgets/Filters/MultiSelectFilter.php">
+  <file src="src/Shared/Widgets/Filters/MultiSelectFilter.php">
     <InvalidArgument>
       <code><![CDATA[$options]]></code>
     </InvalidArgument>
@@ -782,7 +782,7 @@
       <code><![CDATA[$values]]></code>
     </PossiblyInvalidArgument>
   </file>
-  <file src="src/Widgets/Filters/SelectFilter.php">
+  <file src="src/Shared/Widgets/Filters/SelectFilter.php">
     <InvalidArgument>
       <code><![CDATA[$options]]></code>
     </InvalidArgument>
@@ -790,7 +790,7 @@
       <code><![CDATA[(string) ($context->value ?? '')]]></code>
     </RedundantCast>
   </file>
-  <file src="src/Widgets/Filters/TextFilter.php">
+  <file src="src/Shared/Widgets/Filters/TextFilter.php">
     <ClassMustBeFinal>
       <code><![CDATA[TextFilter]]></code>
     </ClassMustBeFinal>
@@ -798,19 +798,19 @@
       <code><![CDATA[(string) ($context->value ?? '')]]></code>
     </RedundantCast>
   </file>
-  <file src="src/Widgets/FlashMessages.php">
+  <file src="src/Shared/Widgets/FlashMessages.php">
     <MixedArgumentTypeCoercion>
       <code><![CDATA[$type]]></code>
       <code><![CDATA[$type]]></code>
       <code><![CDATA[$type]]></code>
     </MixedArgumentTypeCoercion>
   </file>
-  <file src="src/Widgets/Forms/FormCard.php">
+  <file src="src/Shared/Widgets/Forms/FormCard.php">
     <ClassMustBeFinal>
       <code><![CDATA[FormCard]]></code>
     </ClassMustBeFinal>
   </file>
-  <file src="src/Widgets/Forms/FormTheme.php">
+  <file src="src/Shared/Widgets/Forms/FormTheme.php">
     <ClassMustBeFinal>
       <code><![CDATA[FormTheme]]></code>
     </ClassMustBeFinal>
@@ -825,7 +825,7 @@
       <code><![CDATA[require ThemePath::BOOTSTRAP5_VERTICAL]]></code>
     </UnresolvableInclude>
   </file>
-  <file src="src/Widgets/Inputs/CheckboxGroupInput.php">
+  <file src="src/Shared/Widgets/Inputs/CheckboxGroupInput.php">
     <MixedArgument>
       <code><![CDATA[$items]]></code>
     </MixedArgument>
@@ -838,12 +838,12 @@
       <code><![CDATA[$item['weight']]]></code>
     </MixedArrayAccess>
   </file>
-  <file src="src/Widgets/Inputs/InputValidation.php">
+  <file src="src/Shared/Widgets/Inputs/InputValidation.php">
     <ArgumentTypeCoercion>
       <code><![CDATA[self::resolveValidationErrors($value, $validationErrors, $validated)]]></code>
     </ArgumentTypeCoercion>
   </file>
-  <file src="src/Widgets/Inputs/MultiSelectInput.php">
+  <file src="src/Shared/Widgets/Inputs/MultiSelectInput.php">
     <InvalidArgument>
       <code><![CDATA[$options]]></code>
     </InvalidArgument>
@@ -851,7 +851,7 @@
       <code><![CDATA[$values]]></code>
     </PossiblyInvalidArgument>
   </file>
-  <file src="src/Widgets/Inputs/SelectInput.php">
+  <file src="src/Shared/Widgets/Inputs/SelectInput.php">
     <InvalidArgument>
       <code><![CDATA[$options]]></code>
     </InvalidArgument>
@@ -859,7 +859,7 @@
       <code><![CDATA[$value]]></code>
     </MixedArgument>
   </file>
-  <file src="src/Widgets/Menu.php">
+  <file src="src/Shared/Widgets/Menu.php">
     <MixedArgument>
       <code><![CDATA[$children]]></code>
       <code><![CDATA[$children]]></code>
@@ -879,7 +879,7 @@
       <code><![CDATA[(string) Html::openTag('li', $liAttributes)]]></code>
     </RedundantCast>
   </file>
-  <file src="src/Widgets/Tabs.php">
+  <file src="src/Shared/Widgets/Tabs.php">
     <PossiblyUndefinedArrayOffset>
       <code><![CDATA[$item['icon']]]></code>
       <code><![CDATA[$item['url']]]></code>
@@ -889,18 +889,18 @@
       <code><![CDATA[(string) $item['url']]]></code>
     </RedundantCastGivenDocblockType>
   </file>
-  <file src="src/resources/emails/core/user/password-reset.php">
+  <file src="src/Shared/resources/emails/core/user/password-reset.php">
     <RedundantCastGivenDocblockType>
       <code><![CDATA[(int) $expiresMinutes]]></code>
     </RedundantCastGivenDocblockType>
   </file>
-  <file src="src/resources/emails/layout.php">
+  <file src="src/Shared/resources/emails/layout.php">
     <RedundantCastGivenDocblockType>
       <code><![CDATA[(string) ($preheader ?? '')]]></code>
       <code><![CDATA[(string) ($subject ?? $applicationName)]]></code>
     </RedundantCastGivenDocblockType>
   </file>
-  <file src="src/resources/layouts/main.php">
+  <file src="src/Shared/resources/layouts/main.php">
     <MixedArgumentTypeCoercion>
       <code><![CDATA[$breadcrumbs]]></code>
     </MixedArgumentTypeCoercion>

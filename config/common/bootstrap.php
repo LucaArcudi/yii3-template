@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Helpers\Translate;
+use App\Shared\Helpers\Translate;
 use Psr\Container\ContainerInterface;
 use Yiisoft\Translator\TranslatorInterface;
 

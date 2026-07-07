@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Core\Home\Actions;
 
-use App\Dashboard\DashboardComponentProvider;
-use App\Dashboard\DashboardComponentRenderer;
-use App\Services\Core\WebActionService;
+use App\Shared\Dashboard\DashboardComponentProvider;
+use App\Shared\Dashboard\DashboardComponentRenderer;
+use App\Shared\Services\WebActionService;
 use Psr\Http\Message\ResponseInterface;
 use Yiisoft\User\CurrentUser;
 use Yiisoft\Yii\View\Renderer\WebViewRenderer;

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit;
 
-use App\Params\Core\MailParams;
-use App\Services\Core\Mail\EmailMessage;
-use App\Services\Core\Mail\Transport\FileEmailTransport;
+use App\Shared\Params\MailParams;
+use App\Shared\Services\Mail\EmailMessage;
+use App\Shared\Services\Mail\Transport\FileEmailTransport;
 use Codeception\Test\Unit;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;

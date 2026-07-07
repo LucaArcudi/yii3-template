@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Error\Actions;
 
-use App\Handlers\Middleware\Core\StatusPageMiddleware;
+use App\Shared\Middleware\StatusPageMiddleware;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;

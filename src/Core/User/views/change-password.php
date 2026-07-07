@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use App\Helpers\Translate;
-use App\Widgets\BackButton;
-use App\Widgets\Forms\FormCard;
-use App\Widgets\Forms\FormTheme;
-use App\Widgets\Inputs\PasswordInput;
+use App\Shared\Helpers\Translate;
+use App\Shared\Widgets\BackButton;
+use App\Shared\Widgets\Forms\FormCard;
+use App\Shared\Widgets\Forms\FormTheme;
+use App\Shared\Widgets\Inputs\PasswordInput;
 use Yiisoft\Form\PureField\Field;
 use Yiisoft\Html\Html;
 use Yiisoft\View\WebView;

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Core\Language\Actions;
 
-use App\Handlers\Middleware\Core\LocaleMiddleware;
-use App\Helpers\AppLocales;
-use App\Services\Core\RememberedUrlService;
+use App\Shared\Middleware\LocaleMiddleware;
+use App\Shared\Helpers\AppLocales;
+use App\Shared\Services\RememberedUrlService;
 use DateInterval;
 use DateTimeImmutable;
 use HttpSoft\Message\Response;

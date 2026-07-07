@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit;
 
-use App\Services\Core\RememberedUrlService;
-use App\Services\Core\WebActionService;
+use App\Shared\Services\RememberedUrlService;
+use App\Shared\Services\WebActionService;
 use Codeception\Test\Unit;
 use HttpSoft\Message\ServerRequest;
 use Stringable;

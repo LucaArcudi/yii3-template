@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit;
 
-use App\Data\Core\Scope\OwnershipScopeInterface;
+use App\Shared\Data\Scope\OwnershipScopeInterface;
 use App\Core\User\UserFilter;
 use App\Core\User\UserReader;
 use App\Core\User\UserScope;

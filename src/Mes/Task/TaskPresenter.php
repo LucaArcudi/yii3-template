@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Mes\Task;
 
-use App\Helpers\Translate;
-use App\Widgets\Badge;
+use App\Shared\Helpers\Translate;
+use App\Shared\Widgets\Badge;
 
 final readonly class TaskPresenter
 {

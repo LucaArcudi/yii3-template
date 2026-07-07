@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use App\Helpers\Translate;
-use App\Widgets\Forms\FormTheme;
-use App\Widgets\Inputs\EmailInput;
-use App\Widgets\Inputs\PasswordInput;
-use App\Widgets\Inputs\TextInput;
+use App\Shared\Helpers\Translate;
+use App\Shared\Widgets\Forms\FormTheme;
+use App\Shared\Widgets\Inputs\EmailInput;
+use App\Shared\Widgets\Inputs\PasswordInput;
+use App\Shared\Widgets\Inputs\TextInput;
 use Yiisoft\Form\PureField\Field;
 use Yiisoft\View\WebView;
 

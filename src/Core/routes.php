@@ -38,7 +38,7 @@ use App\Core\User\Actions\UpdateAction as UserUpdateAction;
 use App\Core\User\Actions\ViewAction as UserViewAction;
 use App\Core\Home\Actions\IndexAction as HomeIndexAction;
 use App\Core\Language\Actions\SwitchAction as LanguageSwitchAction;
-use App\Handlers\Middleware\Core\RedirectGuestToLoginMiddleware;
+use App\Shared\Middleware\RedirectGuestToLoginMiddleware;
 use Yiisoft\Http\Method;
 use Yiisoft\Router\Route;
 

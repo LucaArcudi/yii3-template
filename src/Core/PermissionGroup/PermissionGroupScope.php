@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\PermissionGroup;
 
-use App\Data\Core\Scope\OwnershipScopeInterface;
+use App\Shared\Data\Scope\OwnershipScopeInterface;
 use Yiisoft\Db\Query\Query;
 
 final readonly class PermissionGroupScope

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use App\Helpers\Translate;
+use App\Shared\Helpers\Translate;
 use Yiisoft\Yii\View\WebView;
 
 /** @var WebView $this */

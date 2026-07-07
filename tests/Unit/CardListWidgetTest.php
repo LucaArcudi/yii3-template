@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit;
 
-use App\Widgets\DataView\CardList;
+use App\Shared\Widgets\DataView\CardList;
 use Codeception\Test\Unit;
 use Yiisoft\Data\Reader\Iterable\IterableDataReader;
 

@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Tests\Unit;
 
 use App\Core\Permission\PermissionFilter;
-use App\Widgets\Filters\DateFilter;
-use App\Widgets\Filters\FilterField;
-use App\Widgets\Filters\FilterModal;
-use App\Widgets\Filters\MultiSelectFilter;
-use App\Widgets\Filters\SelectFilter;
-use App\Widgets\Filters\TextFilter;
+use App\Shared\Widgets\Filters\DateFilter;
+use App\Shared\Widgets\Filters\FilterField;
+use App\Shared\Widgets\Filters\FilterModal;
+use App\Shared\Widgets\Filters\MultiSelectFilter;
+use App\Shared\Widgets\Filters\SelectFilter;
+use App\Shared\Widgets\Filters\TextFilter;
 use Codeception\Test\Unit;
 use Yiisoft\Validator\Rule\Integer;
 use Yiisoft\Validator\Validator;

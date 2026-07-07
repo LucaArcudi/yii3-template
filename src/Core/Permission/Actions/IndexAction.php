@@ -7,7 +7,7 @@ namespace App\Core\Permission\Actions;
 use App\Core\Permission\PermissionFilter;
 use App\Core\Permission\PermissionPolicy;
 use App\Core\Permission\PermissionReader;
-use App\Services\Core\WebActionService;
+use App\Shared\Services\WebActionService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Yiisoft\Yii\View\Renderer\WebViewRenderer;

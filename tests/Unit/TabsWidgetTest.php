@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit;
 
-use App\Widgets\Tabs;
+use App\Shared\Widgets\Tabs;
 use Codeception\Test\Unit;
 
 final class TabsWidgetTest extends Unit

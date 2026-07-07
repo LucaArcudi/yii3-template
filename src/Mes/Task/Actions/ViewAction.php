@@ -9,7 +9,7 @@ use App\Mes\Task\TaskPolicy;
 use App\Mes\Task\TaskReader;
 use App\Core\Log\LogPolicy;
 use App\Core\Log\LogReader;
-use App\Services\Core\WebActionService;
+use App\Shared\Services\WebActionService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Yiisoft\Router\HydratorAttribute\RouteArgument;

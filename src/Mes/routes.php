@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Handlers\Middleware\Core\RedirectGuestToLoginMiddleware;
+use App\Shared\Middleware\RedirectGuestToLoginMiddleware;
 use App\Mes\Task\Actions\CreateAction;
 use App\Mes\Task\Actions\DeleteAction;
 use App\Mes\Task\Actions\IndexAction;

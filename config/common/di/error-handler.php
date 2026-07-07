@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Environment;
-use App\Handlers\Middleware\Core\StatusPageMiddleware;
+use App\Shared\Middleware\StatusPageMiddleware;
 use App\Core\Error\Actions\AccessDeniedHandler;
 use App\Core\Error\Actions\InvalidRequestHandler;
 use App\Core\Error\Actions\TooManyRequestsHandler;

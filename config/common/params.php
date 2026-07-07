@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 use App\Core\Notification\NotificationPolicy;
 use App\Core\Notification\NotificationReader;
-use App\Helpers\AppLocales;
-use App\Navigation\NavigationProvider;
-use App\Params\Core\ApplicationParams;
-use App\Params\Core\LayoutParams;
+use App\Shared\Helpers\AppLocales;
+use App\Shared\Navigation\NavigationProvider;
+use App\Shared\Params\ApplicationParams;
+use App\Shared\Params\LayoutParams;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\AssetManager;
 use Yiisoft\Definitions\Reference;

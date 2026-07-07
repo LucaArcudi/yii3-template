@@ -18,7 +18,7 @@ use App\Core\Role\RoleScope;
 use App\Core\User\UserIdentityRepository;
 use App\Core\User\UserReader;
 use App\Core\User\UserScope;
-use App\Params\Core\EntityLogParams;
+use App\Shared\Params\EntityLogParams;
 use Psr\Container\ContainerInterface;
 use Yiisoft\Auth\IdentityRepositoryInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;

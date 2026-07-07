@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Notification;
 
-use App\Helpers\Translate;
+use App\Shared\Helpers\Translate;
 use Yiisoft\Html\Html;
 
 final readonly class NotificationPresenter

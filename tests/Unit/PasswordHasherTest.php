@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit;
 
-use App\Services\Core\PasswordHasher;
+use App\Shared\Services\PasswordHasher;
 use Codeception\Test\Unit;
 
 final class PasswordHasherTest extends Unit
