@@ -85,6 +85,34 @@ services:
       - monitoring
     restart: unless-stopped
 
+  loki:
+    image: grafana/loki:3.5.0
+    command:
+      - -config.file=/etc/loki/loki-config.yml
+    volumes:
+      - ./loki/loki-config.yml:/etc/loki/loki-config.yml:ro
+      - loki_data:/loki
+    networks:
+      - monitoring
+    restart: unless-stopped
+
+  alloy:
+    image: grafana/alloy:v1.8.1
+    command:
+      - run
+      - --storage.path=/var/lib/alloy/data
+      - /etc/alloy/config.alloy
+    volumes:
+      - ./alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - alloy_data:/var/lib/alloy/data
+      # Socket in sola lettura: service discovery + tail dei log container.
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Volume runtime dell'app (external): raccoglie runtime/logs/app.log.
+      - app_runtime:/app-runtime:ro
+    networks:
+      - monitoring
+    restart: unless-stopped
+
   mysqld-exporter:
     image: prom/mysqld-exporter:v0.16.0
     # Si collega al MySQL dello stack app attraverso la sua network
@@ -103,6 +131,11 @@ services:
 volumes:
   prom_data:
   grafana_data:
+  loki_data:
+  alloy_data:
+  app_runtime:
+    name: ${APP_RUNTIME_VOLUME:-yii3-template-prod_runtime}
+    external: true
 
 networks:
   monitoring:

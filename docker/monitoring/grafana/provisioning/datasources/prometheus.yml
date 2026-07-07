@@ -1,7 +1,11 @@
 apiVersion: 1
 
 datasources:
+  # uid esplicito: le alert rule provisionate lo referenziano; se le
+  # dashboard importate a mano perdono il datasource dopo il primo
+  # riavvio, basta ri-selezionare "Prometheus" dal loro selettore.
   - name: Prometheus
+    uid: prometheus
     type: prometheus
     access: proxy
     url: http://prometheus:9090

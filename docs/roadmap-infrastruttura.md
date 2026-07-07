@@ -25,40 +25,28 @@ I tre cantieri aperti, in ordine di priorità:
 
 ---
 
-## 1. Centralizzazione dei log
+## 1. Centralizzazione dei log — ✔ FATTO (2026-07-07)
 
-Stato attuale dei log, sparsi su tre livelli:
-
-```text
-- docker logs <container>          (stdout/stderr, si perdono al ricreate
-                                    se non si usa un driver persistente)
-- runtime/logs/app.log             (errori applicativi, volume runtime)
-- core_log                         (audit di dominio, tabella MySQL)
-```
-
-Target consigliato, coerente con lo stack esistente (Grafana già in piedi):
+Implementato con Loki + Alloy nello stack `docker/monitoring/`
+(documentazione in [documentazione-progetto.md](documentazione-progetto.md)
+§8.9):
 
 ```text
-Loki (storage log) + Alloy o Promtail (agente di raccolta)
-    → nuovo servizio nello stack docker/monitoring/
-    → raccoglie stdout/stderr di TUTTI i container via Docker service discovery
-    → bind del file runtime/logs/app.log per i log applicativi
-    → datasource Loki provisionato in Grafana accanto a Prometheus
-    → retention 14-30 giorni (allineata ai backup)
+✔ Alloy raccoglie stdout/stderr di TUTTI i container (Docker service
+  discovery, socket read-only) + runtime/logs/app.log (volume app ro)
+✔ Loki su filesystem (volume loki_data), retention 14 giorni allineata
+  ai backup, solo rete interna
+✔ datasource Loki provisionato in Grafana accanto a Prometheus
+✔ config validate in CI (loki -verify-config, alloy fmt)
 ```
 
-Benefici immediati:
-
-```text
-- i log sopravvivono alla ricreazione dei container (oggi ogni deploy
-  ricrea l'app e azzera docker logs)
-- query LogQL da Grafana: una sola UI per metriche e log
-- diagnosi senza SSH: un estratto di log è un link a una query Loki,
-  non un dump incollato a mano
-```
+Benefici ottenuti: i log sopravvivono alla ricreazione dei container a
+ogni deploy, query LogQL da Grafana (una sola UI per metriche e log),
+diagnosi senza SSH (un estratto di log è un link a una query Loki).
 
 Alternative valutate e scartate per un singolo VPS: ELK/OpenSearch
-(troppo pesante), servizi SaaS (costo e dati fuori dal server).
+(troppo pesante), servizi SaaS (costo e dati fuori dal server);
+Promtail scartato perché in maintenance mode (Alloy è il successore).
 
 ---
 

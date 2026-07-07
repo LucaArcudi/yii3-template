@@ -652,6 +652,15 @@ cAdvisor (metriche container), mysqld-exporter (utente MySQL dedicato
   `promtool check config`; visibili in Prometheus `/alerts` e in Grafana
   (metrica `ALERTS`). Le notifiche push si aggiungono collegando un
   contact point Grafana o un Alertmanager.
+- **Log centralizzati (Loki + Alloy)**: Alloy raccoglie stdout/stderr di
+  tutti i container via Docker service discovery (etichette `container`,
+  `compose_service`, `compose_project`) più il log applicativo
+  `runtime/logs/app.log` (volume dell'app montato read-only) e li spedisce
+  a Loki (storage filesystem nel volume `loki_data`, retention 14 giorni
+  come i backup). Solo rete interna. Datasource Loki provisionato in
+  Grafana: query LogQL da *Explore*, un'unica UI per metriche e log; i log
+  dei container sopravvivono ai ricreate dei deploy. Config validate in CI
+  (`loki -verify-config`, `alloy fmt`).
 - Limite noto: con Docker che usa lo snapshotter containerd (storage
   driver `overlayfs`, com'è sul VPS attuale) cAdvisor esporta solo il
   cgroup root e niente serie per-container (anche in v0.52): la dashboard

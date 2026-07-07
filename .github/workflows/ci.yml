@@ -79,6 +79,20 @@ jobs:
             --entrypoint promtool prom/prometheus:v3.1.0 \
             check config /etc/prometheus/prometheus.yml
 
+      - name: Validate Loki config
+        run: |
+          docker run --rm \
+            -v "$PWD/docker/monitoring/loki:/etc/loki:ro" \
+            grafana/loki:3.5.0 \
+            -config.file=/etc/loki/loki-config.yml -verify-config
+
+      - name: Validate Alloy config
+        run: |
+          docker run --rm \
+            -v "$PWD/docker/monitoring/alloy:/etc/alloy:ro" \
+            grafana/alloy:v1.8.1 \
+            fmt /etc/alloy/config.alloy > /dev/null
+
       - name: Validate framework migrations
         run: |
           docker compose -f compose.yml up -d --wait db

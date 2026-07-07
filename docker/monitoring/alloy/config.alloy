@@ -1,0 +1,57 @@
+// Raccolta log per Loki, due sorgenti:
+//  1. stdout/stderr di TUTTI i container (Docker service discovery):
+//     oggi ogni deploy ricrea l'app e azzera `docker logs`; in Loki
+//     i log sopravvivono al ricreate.
+//  2. il log applicativo runtime/logs/app.log (volume runtime dell'app,
+//     montato read-only in /app-runtime).
+// Sintassi validata in CI con `alloy fmt`.
+
+discovery.docker "containers" {
+	host = "unix:///var/run/docker.sock"
+}
+
+// Etichette leggibili: nome container e, dove presenti, service/project
+// di docker compose.
+discovery.relabel "containers" {
+	targets = discovery.docker.containers.targets
+
+	rule {
+		source_labels = ["__meta_docker_container_name"]
+		regex         = "/(.*)"
+		target_label  = "container"
+	}
+
+	rule {
+		source_labels = ["__meta_docker_container_label_com_docker_compose_service"]
+		target_label  = "compose_service"
+	}
+
+	rule {
+		source_labels = ["__meta_docker_container_label_com_docker_compose_project"]
+		target_label  = "compose_project"
+	}
+}
+
+loki.source.docker "containers" {
+	host          = "unix:///var/run/docker.sock"
+	targets       = discovery.docker.containers.targets
+	relabel_rules = discovery.relabel.containers.rules
+	labels        = {"job" = "docker"}
+	forward_to    = [loki.write.loki.receiver]
+}
+
+// Log applicativo dell'app Yii3 (error handler e logger su file).
+local.file_match "app_log" {
+	path_targets = [{"__path__" = "/app-runtime/logs/*.log", "job" = "yii3-app"}]
+}
+
+loki.source.file "app_log" {
+	targets    = local.file_match.app_log.targets
+	forward_to = [loki.write.loki.receiver]
+}
+
+loki.write "loki" {
+	endpoint {
+		url = "http://loki:3100/loki/api/v1/push"
+	}
+}
