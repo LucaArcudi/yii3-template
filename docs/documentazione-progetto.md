@@ -511,10 +511,15 @@ dello script — il deploy risulterebbe verde ma interrotto a metà:
    live e un dump vuoto fa fallire lo step. Retention automatica: i dump
    più vecchi di 14 giorni vengono eliminati (glob stretto sul timestamp:
    i backup rinominati a mano si salvano);
-4. **Deploy** — `docker compose pull`, poi le migration del framework con
-   l'immagine nuova (`run --rm app ./yii migrate:up -y`, idempotenti: lo
-   schema è pronto prima che parta il nuovo codice), quindi
-   `up -d --wait --wait-timeout 120` e health check:
+4. **Deploy** — il CD risolve l'immagine sul **tag SHA del commit** del run
+   (`workflow_run.head_sha`; su run manuale l'input `image_tag` o lo SHA
+   corrente) e la passa a `deploy.sh` via `APP_IMAGE`: non si deploya più
+   `latest`, ogni run è riproducibile. Lo script registra l'immagine in
+   esecuzione (digest, per l'eventuale rollback), poi `docker compose
+   pull`, le migration del framework con l'immagine nuova (`run --rm app
+   ./yii migrate:up -y`, idempotenti: lo schema è pronto prima che parta
+   il nuovo codice), quindi `up -d --wait --wait-timeout 120` con
+   ricreazione esplicita dell'app, invariante immagine e health check:
 
    ```bash
    curl -fsS -m 10 --retry 12 --retry-delay 5 --retry-all-errors \
@@ -524,6 +529,10 @@ dello script — il deploy risulterebbe verde ma interrotto a metà:
 
    L'header `X-Forwarded-Proto: https` è **necessario**: simula il proxy TLS;
    senza, il cookie di sessione `Secure` fa rispondere 500 (vedi §9.5).
+   Se avvio, invariante o health check falliscono, lo script **ripristina
+   automaticamente l'immagine precedente** (con health check di conferma;
+   le migration non vengono annullate, vedi §9.4) e il run fallisce
+   comunque, perché il deploy non è avvenuto.
 
 **Secrets richiesti** (repository secrets): `VPS_HOST`, `VPS_USER`,
 `VPS_SSH_KEY` (chiave dedicata `yii3_github_actions_cd`; la pubblica sta in
@@ -693,18 +702,26 @@ $DC logs db --tail=100      # log MySQL
 
 ### 9.2 Deploy manuale dal VPS
 
+Il percorso canonico è lo stesso script usato dal CD (migration, ricreazione
+esplicita, invariante, health check e rollback automatico inclusi):
+
 ```bash
-cd /opt/yii3
-$DC pull
-$DC up -d
-curl -fsS -H 'X-Forwarded-Proto: https' http://127.0.0.1:8080/login >/dev/null && echo OK
+# senza APP_IMAGE vale quello di .env.prod; per una versione precisa:
+APP_IMAGE=ghcr.io/lucaarcudi/yii3-template:<sha> bash /opt/yii3/scripts/deploy.sh
 ```
 
-(In alternativa: GitHub → Actions → CD → *Run workflow*.)
+(In alternativa: GitHub → Actions → CD → *Run workflow*, con l'input
+`image_tag` facoltativo.)
 
 ### 9.3 Rollback
 
-Il deploy usa `latest`, ma ogni build è taggata anche con lo SHA del commit:
+Se il deploy fallisce (avvio, invariante immagine o health check),
+`deploy.sh` **ripristina da solo** l'immagine che girava prima: il run del
+CD risulta rosso, ma l'app resta sulla versione precedente. Le migration
+non vengono annullate (vedi §9.4 per il restore del backup pre-deploy).
+
+Rollback manuale di una release sana ma da ritirare — ogni build è taggata
+con lo SHA del commit e il CD deploya proprio quel tag:
 
 ```bash
 cd /opt/yii3
@@ -712,8 +729,8 @@ APP_IMAGE=ghcr.io/lucaarcudi/yii3-template:<sha-precedente> $DC pull app
 APP_IMAGE=ghcr.io/lucaarcudi/yii3-template:<sha-precedente> $DC up -d app
 ```
 
-Per renderlo persistente, fissare `APP_IMAGE` in `.env.prod`. Se la release
-conteneva una migration, valutare il restore del backup pre-deploy (§9.4).
+Attenzione: il prossimo run del CD rideploya lo SHA del commit corrente di
+`main`; il rollback definitivo è il revert del commit su `main` via PR.
 
 ### 9.4 Backup, restore e patch DB
 
@@ -791,7 +808,5 @@ Dall'audit del 2 luglio 2026 e dallo stato attuale dell'infrastruttura:
   fase); `composer audit` è invece bloccante e senza advisory aperte.
 - **Provisioning server non automatizzato**: Ansible copre proxy, app config
   e check; install Docker/utenti/firewall/hardening sono ancora manuali.
-- **Deploy su `latest`**: il rollback è manuale via tag SHA; un possibile
-  passo successivo è deployare direttamente il tag SHA dal CD.
 - **Target Makefile ereditati dal template upstream** parzialmente non
   funzionanti (vedi §6.4).
