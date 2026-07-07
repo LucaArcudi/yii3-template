@@ -29,15 +29,13 @@
           services:
             app:
               # Dietro il proxy Caddy (TLS su {{ prod_host }}), bind loopback
-              # dal compose base. FrankenPHP non traduce X-Forwarded-Proto in
-              # HTTPS per PHP: finché l'app non risolve gli header forwarded
-              # (yiisoft/proxy-middleware) la sessione non può esigere il
-              # flag Secure. Mitigazione: HSTS iniettato dal proxy.
-              environment:
-                SESSION_COOKIE_SECURE: "false"
+              # dal compose base. TrustedProxyMiddleware risolve gli header
+              # X-Forwarded-* dal proxy fidato: il cookie di sessione può
+              # esigere il flag Secure (default in prod, nessun override).
               labels:
-                # Valore a token singolo: con spazi caddy-docker-proxy lo
-                # interpreterebbe come find/replace del header.
+                # HSTS anche dal proxy (belt & braces: l'app lo emette già
+                # sulle richieste https). Valore a token singolo: con spazi
+                # caddy-docker-proxy lo interpreterebbe come find/replace.
                 caddy.header.Strict-Transport-Security: "max-age=31536000"
 
             db:

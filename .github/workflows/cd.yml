@@ -2,6 +2,11 @@ name: CD
 
 on:
   workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Tag dell'immagine da deployare (vuoto = SHA del commit corrente)"
+        required: false
+        default: ""
   workflow_run:
     workflows: ["CI"]
     types:
@@ -23,6 +28,21 @@ jobs:
        github.event.workflow_run.event == 'push')
 
     steps:
+      # Si deploya il tag SHA pubblicato dalla CI per il commit del run,
+      # non latest: ogni deploy è riproducibile e il rollback deterministico.
+      - name: Resolve image to deploy
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            TAG="${{ github.event.workflow_run.head_sha }}"
+          elif [ -n "${{ github.event.inputs.image_tag }}" ]; then
+            TAG="${{ github.event.inputs.image_tag }}"
+          else
+            TAG="${{ github.sha }}"
+          fi
+          echo "APP_IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}:${TAG}" >> "$GITHUB_ENV"
+          echo "Immagine da deployare: ghcr.io/${GITHUB_REPOSITORY,,}:${TAG}"
+
       - name: Setup SSH
         run: |
           set -euo pipefail
@@ -69,4 +89,4 @@ jobs:
         run: >
           ssh -i ~/.ssh/vps_key -o IdentitiesOnly=yes -o BatchMode=yes
           "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}"
-          'bash /opt/yii3/scripts/deploy.sh'
+          "APP_IMAGE='${{ env.APP_IMAGE }}' bash /opt/yii3/scripts/deploy.sh"
