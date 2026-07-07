@@ -6,8 +6,7 @@ base (incident automation, fix CI assistiti, ecc.) vive in
 [roadmap-ai-codex-claude-code.md](roadmap-ai-codex-claude-code.md).
 Lo stato attuale di CI/CD e monitoring è documentato in
 [documentazione-progetto.md](documentazione-progetto.md) §8; i limiti noti
-minori (fingerprint SSH, retention backup schedulata, provisioning Ansible,
-deploy su tag SHA) in §10.
+minori (provisioning Ansible, deploy su tag SHA) in §10.
 
 ## Stato attuale (2026-07-05)
 

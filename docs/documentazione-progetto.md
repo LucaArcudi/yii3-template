@@ -1,6 +1,6 @@
 # Yii3 Template — Documentazione di progetto
 
-> Ultimo aggiornamento: 3 luglio 2026 (branch `main`, commit `45bdc77`).
+> Ultimo aggiornamento: 7 luglio 2026.
 >
 > Documenti correlati: [README.md](../README.md) (quick start e release),
 > [README_DEPLOY.md](../README_DEPLOY.md) (runbook deploy passo-passo),
@@ -772,15 +772,11 @@ Dall'audit del 2 luglio 2026 e dallo stato attuale dell'infrastruttura:
   fidato.
 - **Rate limiter dietro proxy**: usa `REMOTE_ADDR`, che dietro Caddy è l'IP
   del proxy → bucket unico condiviso. Stessa soluzione del punto precedente.
-- **`ssh-keyscan` ad ogni deploy** (trust-on-first-use ripetuto): consigliato
-  un secret `VPS_KNOWN_HOSTS` con fingerprint pinnata.
-- **Trivy e `composer audit` non bloccanti** in CI (scelta esplicita in
-  questa fase); advisory aperte solo su pacchetti dev.
+- **Trivy non bloccante** in CI (report-only, scelta esplicita in questa
+  fase); `composer audit` è invece bloccante e senza advisory aperte.
 - **Provisioning server non automatizzato**: Ansible copre proxy, app config
   e check; install Docker/utenti/firewall/hardening sono ancora manuali.
 - **Deploy su `latest`**: il rollback è manuale via tag SHA; un possibile
   passo successivo è deployare direttamente il tag SHA dal CD.
-- **Retention backup manuale**: il `find -mtime +7 -delete` non è
-  schedulato (candidato a cron/systemd timer sul VPS).
 - **Target Makefile ereditati dal template upstream** parzialmente non
   funzionanti (vedi §6.4).
