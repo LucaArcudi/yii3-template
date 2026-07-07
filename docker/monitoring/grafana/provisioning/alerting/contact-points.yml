@@ -12,4 +12,8 @@ contactPoints:
         type: telegram
         settings:
           bottoken: $TELEGRAM_BOT_TOKEN
-          chatid: "$TELEGRAM_CHAT_ID"
+          # Quote escapate NECESSARIE: dopo l'espansione Grafana ri-tipizza
+          # il valore, e un chat ID numerico diventerebbe un numero JSON —
+          # la validazione del receiver esige una stringa e l'errore è
+          # FATALE al boot (crash-loop osservato il 2026-07-08).
+          chatid: "\"$TELEGRAM_CHAT_ID\""
