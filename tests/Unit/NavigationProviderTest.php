@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit;
 
-use App\Data\Core\Permission\PermissionGroupPolicy;
-use App\Data\Core\Permission\PermissionPolicy;
-use App\Data\Core\Role\RolePolicy;
-use App\Data\Core\User\UserPolicy;
+use App\Core\PermissionGroup\PermissionGroupPolicy;
+use App\Core\Permission\PermissionPolicy;
+use App\Core\Role\RolePolicy;
+use App\Core\User\UserPolicy;
 use App\Mes\Task\TaskPolicy;
 use App\Navigation\NavigationProvider;
 use App\Services\Core\PolicyAccessResolver;

@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use App\Assets\ArchitectUi\ArchitectUiAsset;
-use App\Data\Core\Notification\NotificationPolicy;
-use App\Data\Core\Notification\NotificationReader;
-use App\Data\Core\User\UserIdentity;
+use App\Core\Notification\NotificationPolicy;
+use App\Core\Notification\NotificationReader;
+use App\Core\User\UserIdentity;
 use App\Helpers\AppLocales;
 use App\Helpers\PublicAssetResolver;
 use App\Helpers\Translate;

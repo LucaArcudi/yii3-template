@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Widgets;
 
-use App\Data\Core\Log\LogPresenter;
+use App\Core\Log\LogPresenter;
 use App\Helpers\Translate;
 use Yiisoft\Html\Html;
 

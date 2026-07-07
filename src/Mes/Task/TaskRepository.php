@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Mes\Task;
 
-use App\Data\Core\Log\EntityLogRepository;
+use App\Core\Log\EntityLogRepository;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Query\Query;
 

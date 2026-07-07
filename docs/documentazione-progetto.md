@@ -99,12 +99,12 @@ componente "Guida progetto" della dashboard):
 |---|---|---|
 | `config/` | Alias, container DI, route, parametri e configurazioni separate per web, console e ambienti. | `config/common/di/db.php`, `config/common/routes.php`, `config/environments/dev/params.php` |
 | `src/<Modulo>/` (es. `src/Mes/`) | Moduli feature autocontenuti (vertical slice): per ogni dominio entità, input, repository, policy, action e view nella stessa cartella, più `routes.php` e `di.php` del modulo, raccolti automaticamente dalla config. | `src/Mes/Task/TaskPolicy.php`, `src/Mes/Task/Actions/IndexAction.php`, `src/Mes/routes.php` |
-| `src/Data/` | (Layout legacy: resta solo il modulo `Core`, da migrare a modulo autocontenuto) Modello dati e regole di dominio: entità, input, filtri, presenter, policy, repository, reader e scope. | `src/Data/Core/User/UserEntity.php`, `src/Data/Core/Role/RoleRepository.php` |
-| `src/Handlers/` | (Layout legacy: resta solo il modulo `Core`) Ingresso delle richieste: action web/API e middleware — validazione, orchestrazione e passaggio ai servizi. | `src/Handlers/Web/Core/Home/IndexAction.php`, `src/Handlers/Middleware/Core/RedirectGuestToLoginMiddleware.php` |
+| `src/Data/` | Primitive dati condivise tra i moduli (in attesa di consolidamento in `Shared/`): entità base, wrapper input, interfaccia policy, scope di ownership. | `src/Data/Core/BaseEntity.php`, `src/Data/Core/Scope/OwnershipScope.php`, `src/Data/AccessPolicyInterface.php` |
+| `src/Handlers/` | Middleware HTTP condivisi della pipeline applicativa (in attesa di consolidamento in `Shared/`). | `src/Handlers/Middleware/Core/RedirectGuestToLoginMiddleware.php`, `src/Handlers/Middleware/Core/LocaleMiddleware.php` |
 | `src/Services/` | Logica riusabile tra handler e moduli: autorizzazione, autenticazione, mail, supporto alle viste. | `src/Services/Core/AuthorizationService.php`, `src/Services/Core/Mail/Mailer.php` |
 | `src/Migrations/` | Migration del framework (`yiisoft/db-migration`) che eseguono gli snapshot SQL di release (vedi §5.2). | `src/Migrations/SqlSnapshotMigration.php` |
 | `src/Dashboard/` | Definizione, visibilità e rendering dei blocchi mostrati nella home autenticata. | `src/Dashboard/DashboardComponentProvider.php`, `src/resources/components/core/` |
-| `src/resources/` | View, layout, componenti dashboard, template email, cataloghi traduzioni e risorse ArchitectUI. | `src/resources/layouts/main.php`, `src/resources/views/core/user`, `src/resources/messages/en/app.php` |
+| `src/resources/` | Layout, componenti dashboard, template email, cataloghi traduzioni e risorse ArchitectUI (le view dei domini vivono nei moduli). | `src/resources/layouts/main.php`, `src/resources/messages/en/app.php` |
 | `src/Widgets/` | Widget UI riusabili: form, input, CRUD, liste, badge, menu, modali, viste dettaglio. | `src/Widgets/Card.php`, `src/Widgets/Crud/CrudActions.php`, `src/Widgets/Forms` |
 | `src/Assets/` e `assets/` | Bundle PHP che pubblicano gli asset e file statici sorgente (CSS custom). | `src/Assets/ArchitectUi/ArchitectUiAsset.php`, `assets/main/site.css` |
 | `database/` | Snapshot SQL idempotenti di release e seed, eseguiti da initdb.d e dalle migration del framework. | `database/migrations/release_1_0_2.sql`, `database/seeders/release_1_0_0.sql` |
@@ -194,14 +194,12 @@ Fallback per rotte inesistenti: `NotFoundHandler` (404 custom).
 
 ### 4.5 Routing e handler
 
-Le rotte sono dichiarative: quelle del modulo `Core` (layout legacy) in
-`config/common/routes.php`, quelle dei moduli feature in
-`src/<Modulo>/routes.php` (array di `Route`/`Group` raccolti automaticamente
-da `config/common/routes.php`). Gli handler sono **action class invocabili
-singole** (niente controller multi-azione): nei moduli in
-`src/<Modulo>/<Dominio>/Actions/` (es. `App\Mes\Task\Actions\CreateAction`),
-nel layout legacy in `src/Handlers/Web/Core/<Dominio>/` (es.
-`App\Handlers\Web\Core\User\CreateAction`).
+Le rotte sono dichiarative in `src/<Modulo>/routes.php` (array di
+`Route`/`Group`); `config/common/routes.php` è il solo aggregatore che le
+raccoglie automaticamente da tutti i moduli. Gli handler sono **action class
+invocabili singole** (niente controller multi-azione) in
+`src/<Modulo>/<Dominio>/Actions/`, es. `App\Core\User\Actions\CreateAction`,
+`App\Mes\Task\Actions\CreateAction`.
 
 Convenzione URL per i CRUD: `/{dominio}`, `/{dominio}/view/{id}`,
 `/{dominio}/create`, `/{dominio}/update/{id}`, `/{dominio}/delete/{id}`
@@ -217,9 +215,8 @@ viene ricordato (`RememberedUrlService`) e ripristinato dopo il login.
 ### 4.6 Livello dati: pattern per dominio
 
 Ogni dominio vive nella cartella del suo modulo, `src/<Modulo>/<Dominio>/`
-(esempio completo: `src/Mes/Task/`); il modulo `Core` usa ancora il layout
-legacy `src/Data/Core/<Dominio>/` (es. `src/Data/Core/User/`). Il set di
-classi a responsabilità fissa è lo stesso in entrambi i layout:
+(esempi completi: `src/Core/User/`, `src/Mes/Task/`), con un set di classi a
+responsabilità fissa:
 
 | Classe | Responsabilità |
 |---|---|
@@ -237,10 +234,9 @@ La distinzione **`*_VIEW_ALL` vs `*_VIEW_OWN`** è implementata da
 record di cui è owner; lo scope viene applicato a livello di query dal Reader.
 
 I moduli attuali: `Core` (User, Role, Permission, PermissionGroup,
-Notification, Log) e `Mes` (Task). `Mes` è il modulo di riferimento a fette
-verticali — dominio, action, view, rotte e DI autocontenuti in `src/Mes/` —
-e `Core` sarà migrato allo stesso schema. Le action CRUD seguono lo stesso
-schema:
+Notification, Log, più i domini web Home/Error/NotFound/Language) e `Mes`
+(Task), entrambi a fette verticali autocontenute in `src/<Modulo>/`. Le
+action CRUD seguono lo stesso schema:
 policy check → hydration dell'Input → validazione → Repository → flash +
 redirect, con audit log automatico; `WebActionService`
 (`src/Services/Core/`) fornisce le primitive comuni (risposte

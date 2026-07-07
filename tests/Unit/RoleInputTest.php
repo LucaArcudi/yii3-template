@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit;
 
-use App\Data\Core\Role\RoleInput;
+use App\Core\Role\RoleInput;
 use Codeception\Test\Unit;
 use Yiisoft\Validator\Validator;
 
