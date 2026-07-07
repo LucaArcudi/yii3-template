@@ -21,31 +21,45 @@
         regexp: '^PROD_HOST='
         line: "PROD_HOST={{ prod_host }}"
 
-    - name: Write compose.local.yml (loopback + trusted proxy headers)
+    - name: Write compose.local.yml (loopback DB forward)
       ansible.builtin.copy:
         dest: "{{ project_dir }}/docker/prod/compose.local.yml"
         mode: "0644"
         content: |
+          # Override locale del VPS, scritto da ansible (playbooks/app.yml).
+          # L'app non ha più override: TrustedProxyMiddleware risolve gli
+          # header X-Forwarded-* dal proxy fidato, quindi cookie di sessione
+          # Secure e HSTS (con includeSubDomains) sono emessi dall'app.
+          # Niente label HSTS sul proxy: per RFC 6797 conta solo il PRIMO
+          # header STS e la label (senza includeSubDomains) oscurava quello
+          # completo dell'app.
           services:
-            app:
-              # Dietro il proxy Caddy (TLS su {{ prod_host }}), bind loopback
-              # dal compose base. TrustedProxyMiddleware risolve gli header
-              # X-Forwarded-* dal proxy fidato: il cookie di sessione può
-              # esigere il flag Secure (default in prod, nessun override).
-              labels:
-                # HSTS anche dal proxy (belt & braces: l'app lo emette già
-                # sulle richieste https). Valore a token singolo: con spazi
-                # caddy-docker-proxy lo interpreterebbe come find/replace.
-                caddy.header.Strict-Transport-Security: "max-age=31536000"
-
             db:
               ports:
                 - "127.0.0.1:3307:3306"
+
+    # Il recreate NON deve cambiare versione: senza pin, compose userebbe
+    # l'APP_IMAGE di .env.prod (latest, sul VPS spesso stantio: il CD
+    # deploya i tag SHA e latest non viene più pullato). È successo il
+    # 2026-07-08: recreate su latest vecchio di un giorno, app rotta.
+    - name: Detect running app image (recreate must not change it)
+      ansible.builtin.shell: |
+        set -o pipefail
+        cid="$({{ compose_cmd }} ps -q app)"
+        if [ -n "$cid" ]; then
+          docker inspect --format '{% raw %}{{.Config.Image}}{% endraw %}' "$cid"
+        fi
+      args:
+        chdir: "{{ project_dir }}"
+        executable: /bin/bash
+      register: running_image
+      changed_when: false
 
     - name: Recreate app container
       ansible.builtin.command: "{{ compose_cmd }} up -d app"
       args:
         chdir: "{{ project_dir }}"
+      environment: "{{ {'APP_IMAGE': running_image.stdout | trim} if running_image.stdout | trim != '' else {} }}"
       register: up_result
       changed_when: "'Started' in up_result.stderr or 'Recreate' in up_result.stderr"
 
