@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Services;
 
+use App\Shared\Middleware\TrustedProxyMiddleware;
 use App\Shared\Params\AuthParams;
 use Psr\Http\Message\ServerRequestInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
@@ -187,7 +188,12 @@ final readonly class AuthRateLimiter
 
     private function clientIp(ServerRequestInterface $request): string
     {
-        $ip = $request->getServerParams()['REMOTE_ADDR'] ?? null;
+        // IP reale risolto da TrustedProxyMiddleware: dietro il reverse
+        // proxy REMOTE_ADDR sarebbe l'IP del proxy, un bucket unico
+        // condiviso da tutti i client.
+        $ip = $request->getAttribute(TrustedProxyMiddleware::ATTRIBUTE_CLIENT_IP)
+            ?? $request->getServerParams()['REMOTE_ADDR']
+            ?? null;
 
         return is_string($ip) && $ip !== '' ? $ip : 'unknown';
     }

@@ -80,6 +80,16 @@ return [
         'secretKey' => $cookieSecretKey,
     ],
 
+    // Proxy fidati per gli header X-Forwarded-* (TrustedProxyMiddleware):
+    // IP, range CIDR o alias di IpRanges. Il default copre il reverse proxy
+    // Caddy sulle reti private Docker e il loopback (health check dal VPS).
+    'proxy' => [
+        'trustedIps' => array_values(array_filter(array_map(
+            static fn(string $ip): string => trim($ip),
+            explode(',', $env('TRUSTED_PROXY_IPS', 'private,localhost')),
+        ), static fn(string $ip): bool => $ip !== '')),
+    ],
+
     'entityLog' => [
         'enabled' => $envBool('ENTITY_LOG_ENABLED', true),
         'webEnabled' => $envBool('ENTITY_LOG_WEB_ENABLED', true),

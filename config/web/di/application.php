@@ -8,6 +8,7 @@ use App\Shared\Middleware\PasswordExpiredMiddleware;
 use App\Shared\Middleware\SameOriginRequestMiddleware;
 use App\Shared\Middleware\SecurityHeadersMiddleware;
 use App\Shared\Middleware\StatusPageMiddleware;
+use App\Shared\Middleware\TrustedProxyMiddleware;
 use Yiisoft\Cookies\CookieMiddleware;
 use Yiisoft\Csrf\CsrfTokenMiddleware;
 use Yiisoft\DataResponse\Middleware\FormatDataResponse;
@@ -35,6 +36,9 @@ return [
                 'withMiddlewares()' => [
                     [
                         ErrorCatcher::class,
+                        // Prima di tutto ciò che dipende da scheme o IP del
+                        // client (HSTS, cookie Secure, rate limiter).
+                        TrustedProxyMiddleware::class,
                         SecurityHeadersMiddleware::class,
                         LocaleMiddleware::class,
                         SessionMiddleware::class,

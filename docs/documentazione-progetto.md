@@ -160,7 +160,8 @@ Lette in `config/common/params.php` e nei compose. Le principali:
 | `AUTH_LOGIN_MAX_ATTEMPTS` | `5` | Tentativi login per finestra (registrazione: 3, reset: 3, cambio password: 5) |
 | `AUTH_DEFAULT_REGISTRATION_ROLE_CODE` | `UTENTE_ESTERNO` | Ruolo assegnato ai nuovi registrati |
 | `SESSION_SAVE_PATH` | `runtime/sessions` | Path sessioni su file |
-| `SESSION_COOKIE_SECURE` | `true` in prod | Flag Secure del cookie di sessione (vedi §10 per il caso dietro proxy) |
+| `SESSION_COOKIE_SECURE` | `true` in prod | Flag Secure del cookie di sessione (dietro il proxy funziona grazie a `TrustedProxyMiddleware`, vedi §4.4) |
+| `TRUSTED_PROXY_IPS` | `private,localhost` | Proxy fidati per gli header `X-Forwarded-*`: IP, range CIDR o alias di `IpRanges` |
 | `SESSION_COOKIE_SAMESITE` | `Lax` | SameSite del cookie di sessione |
 | `MAIL_TRANSPORT` | `file` (`smtp` in dev) | `file` / `smtp` / `native` |
 | `MAIL_FROM_EMAIL`, `MAIL_SMTP_*` | vedi `params.php` | Mittente e parametri SMTP |
@@ -176,18 +177,24 @@ Variabili solo compose: `APP_IMAGE`, `PROD_HOST`, `SERVER_NAME`, `APP_PORT`,
 Definita in `config/web/di/application.php`, in ordine di esecuzione:
 
 1. `ErrorCatcher` — cattura eccezioni e rende le pagine di errore;
-2. `SecurityHeadersMiddleware` — `X-Content-Type-Options: nosniff`,
+2. `TrustedProxyMiddleware` — se la connessione arriva da un proxy fidato
+   (`TRUSTED_PROXY_IPS`, default reti private + loopback) risolve
+   `X-Forwarded-Proto` nello scheme dell'URI e l'IP reale del client da
+   `X-Forwarded-For` (dal fondo della catena, saltando i proxy fidati)
+   nell'attributo `clientIp`; da connessioni non fidate gli header sono
+   ignorati;
+3. `SecurityHeadersMiddleware` — `X-Content-Type-Options: nosniff`,
    `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy`, `Permissions-Policy`;
    HSTS (`max-age=31536000; includeSubDomains`) solo su richieste HTTPS;
-3. `LocaleMiddleware` — risolve la lingua (it/en, vedi `AppLocales`);
-4. `SessionMiddleware`, `CookieMiddleware`, `CookieLoginMiddleware` —
+4. `LocaleMiddleware` — risolve la lingua (it/en, vedi `AppLocales`);
+5. `SessionMiddleware`, `CookieMiddleware`, `CookieLoginMiddleware` —
    sessione, cookie firmati/cifrati, auto-login *remember me*;
-5. `PasswordExpiredMiddleware` — forza il cambio password scaduta;
-6. `StatusPageMiddleware` — pagine di stato (access denied, too many
+6. `PasswordExpiredMiddleware` — forza il cambio password scaduta;
+7. `StatusPageMiddleware` — pagine di stato (access denied, too many
    requests, invalid request);
-7. `SameOriginRequestMiddleware` + `CsrfTokenMiddleware` — difesa CSRF a due
+8. `SameOriginRequestMiddleware` + `CsrfTokenMiddleware` — difesa CSRF a due
    livelli;
-8. `FormatDataResponse`, `RequestCatcherMiddleware`, `Router` — formattazione
+9. `FormatDataResponse`, `RequestCatcherMiddleware`, `Router` — formattazione
    risposta, request provider, dispatch della rotta.
 
 Fallback per rotte inesistenti: `NotFoundHandler` (404 custom).
@@ -582,8 +589,8 @@ docker compose --env-file .env.prod \
 
 **Override locale** (`compose.local.yml`, esempio versionato in
 `compose.local.example.yml`): espone il DB su `127.0.0.1:3307` per il tunnel
-SSH, imposta `SESSION_COOKIE_SECURE=false` (vedi §10) e aggiunge la label
-HSTS al proxy.
+SSH e aggiunge la label HSTS al proxy (belt & braces: l'app lo emette già
+sulle richieste https risolte da `TrustedProxyMiddleware`).
 
 **Reverse proxy** (`docker/proxy/compose.yml`):
 `lucaslorentz/caddy-docker-proxy:2.13-alpine` in ascolto su 80/443, legge le
@@ -796,14 +803,6 @@ Poi collegarsi con il client SQL a `127.0.0.1:3307` usando le credenziali di
 
 Dall'audit del 2 luglio 2026 e dallo stato attuale dell'infrastruttura:
 
-- **Cookie di sessione senza flag `Secure` dietro il proxy**: FrankenPHP non
-  traduce `X-Forwarded-Proto` per PHP, quindi sul VPS
-  `SESSION_COOKIE_SECURE=false` (override in `compose.local.yml`).
-  Mitigazione attiva: HSTS iniettato dal proxy. Fix definitivo previsto:
-  `yiisoft/proxy-middleware` per risolvere gli header forwarded dal proxy
-  fidato.
-- **Rate limiter dietro proxy**: usa `REMOTE_ADDR`, che dietro Caddy è l'IP
-  del proxy → bucket unico condiviso. Stessa soluzione del punto precedente.
 - **Trivy non bloccante** in CI (report-only, scelta esplicita in questa
   fase); `composer audit` è invece bloccante e senza advisory aperte.
 - **Provisioning server non automatizzato**: Ansible copre proxy, app config
