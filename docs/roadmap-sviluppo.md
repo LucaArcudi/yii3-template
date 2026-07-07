@@ -12,7 +12,7 @@ lo stato di CI/CD e monitoring è documentato in
 | Attività | Esito |
 |---|---|
 | Migration e seeder | Adottato `yiisoft/db-migration`: catena `App\Migrations` validata in CI (idempotenza + bootstrap da zero), comando `user:create` per il primo admin. |
-| Traduzioni | Italiano lingua di default, inglese selezionabile (`src/resources/messages/en/`). |
+| Traduzioni | Italiano lingua di default, inglese selezionabile (`src/Shared/resources/messages/en/`). |
 | Documentazione | README onboarding, CHANGELOG, documentazione di progetto completa in `docs/`, CONTRIBUTING, licenza MIT. |
 
 ## Backlog admin (pre 1.1)

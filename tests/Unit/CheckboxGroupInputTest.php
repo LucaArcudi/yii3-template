@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit;
 
-use App\Widgets\Inputs\CheckboxGroupInput;
+use App\Shared\Widgets\Inputs\CheckboxGroupInput;
 use Codeception\Test\Unit;
 
 final class CheckboxGroupInputTest extends Unit

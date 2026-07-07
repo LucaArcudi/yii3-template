@@ -48,7 +48,7 @@ pipeline CI/CD su GitHub Actions. Vedi la [sezione DevOps](#8-devops).
 | Framework | Yii3 (pacchetti `yiisoft/*`: DI, router FastRoute, middleware dispatcher, view renderer, validator, translator, session, CSRF, user/auth, data) |
 | HTTP runtime | FrankenPHP 1 (Caddy embedded) — `dunglas/frankenphp:1-php8.4-bookworm` |
 | Database | MySQL 8.4 (`yiisoft/db` + `yiisoft/db-mysql`, query builder senza ORM) |
-| Frontend | Tema ArchitectUI (Bootstrap 5), asset precompilati in `src/resources/architectui/`, gestiti da `yiisoft/assets` |
+| Frontend | Tema ArchitectUI (Bootstrap 5), asset precompilati in `src/Shared/resources/architectui/`, gestiti da `yiisoft/assets` |
 | Test | Codeception 5 (suite Unit, Functional, Console, Web) + PHPUnit 11 |
 | Analisi statica | Psalm 6, Rector 2, PHP CS Fixer 3, composer-dependency-analyser |
 | Sicurezza supply chain | Trivy 0.71 (fs, config, secret, image scan) |
@@ -99,14 +99,14 @@ componente "Guida progetto" della dashboard):
 |---|---|---|
 | `config/` | Alias, container DI, route, parametri e configurazioni separate per web, console e ambienti. | `config/common/di/db.php`, `config/common/routes.php`, `config/environments/dev/params.php` |
 | `src/<Modulo>/` (es. `src/Mes/`) | Moduli feature autocontenuti (vertical slice): per ogni dominio entità, input, repository, policy, action e view nella stessa cartella, più `routes.php` e `di.php` del modulo, raccolti automaticamente dalla config. | `src/Mes/Task/TaskPolicy.php`, `src/Mes/Task/Actions/IndexAction.php`, `src/Mes/routes.php` |
-| `src/Data/` | Primitive dati condivise tra i moduli (in attesa di consolidamento in `Shared/`): entità base, wrapper input, interfaccia policy, scope di ownership. | `src/Data/Core/BaseEntity.php`, `src/Data/Core/Scope/OwnershipScope.php`, `src/Data/AccessPolicyInterface.php` |
-| `src/Handlers/` | Middleware HTTP condivisi della pipeline applicativa (in attesa di consolidamento in `Shared/`). | `src/Handlers/Middleware/Core/RedirectGuestToLoginMiddleware.php`, `src/Handlers/Middleware/Core/LocaleMiddleware.php` |
-| `src/Services/` | Logica riusabile tra handler e moduli: autorizzazione, autenticazione, mail, supporto alle viste. | `src/Services/Core/AuthorizationService.php`, `src/Services/Core/Mail/Mailer.php` |
+| `src/Shared/Data/` | Primitive dati condivise tra i moduli: entità base, wrapper input, interfaccia policy, scope di ownership. | `src/Shared/Data/BaseEntity.php`, `src/Shared/Data/Scope/OwnershipScope.php`, `src/Shared/Data/AccessPolicyInterface.php` |
+| `src/Shared/Middleware/` | Middleware HTTP condivisi della pipeline applicativa. | `src/Shared/Middleware/RedirectGuestToLoginMiddleware.php`, `src/Shared/Middleware/LocaleMiddleware.php` |
+| `src/Shared/Services/` | Logica riusabile tra handler e moduli: autorizzazione, autenticazione, mail, supporto alle viste. | `src/Shared/Services/AuthorizationService.php`, `src/Shared/Services/Mail/Mailer.php` |
 | `src/Migrations/` | Migration del framework (`yiisoft/db-migration`) che eseguono gli snapshot SQL di release (vedi §5.2). | `src/Migrations/SqlSnapshotMigration.php` |
-| `src/Dashboard/` | Definizione, visibilità e rendering dei blocchi mostrati nella home autenticata. | `src/Dashboard/DashboardComponentProvider.php`, `src/resources/components/core/` |
-| `src/resources/` | Layout, componenti dashboard, template email, cataloghi traduzioni e risorse ArchitectUI (le view dei domini vivono nei moduli). | `src/resources/layouts/main.php`, `src/resources/messages/en/app.php` |
-| `src/Widgets/` | Widget UI riusabili: form, input, CRUD, liste, badge, menu, modali, viste dettaglio. | `src/Widgets/Card.php`, `src/Widgets/Crud/CrudActions.php`, `src/Widgets/Forms` |
-| `src/Assets/` e `assets/` | Bundle PHP che pubblicano gli asset e file statici sorgente (CSS custom). | `src/Assets/ArchitectUi/ArchitectUiAsset.php`, `assets/main/site.css` |
+| `src/Shared/Dashboard/` | Definizione, visibilità e rendering dei blocchi mostrati nella home autenticata. | `src/Shared/Dashboard/DashboardComponentProvider.php`, `src/Shared/resources/components/core/` |
+| `src/Shared/resources/` | Layout, componenti dashboard, template email, cataloghi traduzioni e risorse ArchitectUI (le view dei domini vivono nei moduli). | `src/Shared/resources/layouts/main.php`, `src/Shared/resources/messages/en/app.php` |
+| `src/Shared/Widgets/` | Widget UI riusabili: form, input, CRUD, liste, badge, menu, modali, viste dettaglio. | `src/Shared/Widgets/Card.php`, `src/Shared/Widgets/Crud/CrudActions.php`, `src/Shared/Widgets/Forms` |
+| `src/Shared/Assets/` e `assets/` | Bundle PHP che pubblicano gli asset e file statici sorgente (CSS custom). | `src/Shared/Assets/ArchitectUi/ArchitectUiAsset.php`, `assets/main/site.css` |
 | `database/` | Snapshot SQL idempotenti di release e seed, eseguiti da initdb.d e dalle migration del framework. | `database/migrations/release_1_0_2.sql`, `database/seeders/release_1_0_0.sql` |
 | `public/` | Document root: entry point web, favicon, robots, asset pubblicati. | `public/index.php`, `public/assets` |
 | `tests/` | Suite Codeception: unit, functional, console. | `tests/Unit`, `tests/Functional`, `codeception.yml` |
@@ -139,7 +139,7 @@ La configurazione è assemblata da `yiisoft/config` secondo
   (es. in `dev` il mail transport punta a un SMTP locale su porta 1025).
 
 I parametri sono esposti al codice tramite value object dedicati in
-`src/Params/Core/` (`ApplicationParams`, `AuthParams`, `LayoutParams`,
+`src/Shared/Params/` (`ApplicationParams`, `AuthParams`, `LayoutParams`,
 `MailParams`, `EntityLogParams`), popolati nel DI: le classi applicative non
 leggono mai `$params` o variabili d'ambiente direttamente.
 
@@ -230,7 +230,7 @@ responsabilità fissa:
 | `<D>Scope` | Restrizione delle query in base alla visibilità (vedi sotto) |
 
 La distinzione **`*_VIEW_ALL` vs `*_VIEW_OWN`** è implementata da
-`OwnershipScope` (`src/Data/Core/Scope/`): chi ha solo `VIEW_OWN` vede solo i
+`OwnershipScope` (`src/Shared/Data/Scope/`): chi ha solo `VIEW_OWN` vede solo i
 record di cui è owner; lo scope viene applicato a livello di query dal Reader.
 
 I moduli attuali: `Core` (User, Role, Permission, PermissionGroup,
@@ -239,7 +239,7 @@ Notification, Log, più i domini web Home/Error/NotFound/Language) e `Mes`
 action CRUD seguono lo stesso schema:
 policy check → hydration dell'Input → validazione → Repository → flash +
 redirect, con audit log automatico; `WebActionService`
-(`src/Services/Core/`) fornisce le primitive comuni (risposte
+(`src/Shared/Services/`) fornisce le primitive comuni (risposte
 forbidden/not-found, redirect, gestione degli URL "ricordati" per tornare
 alla lista dopo il salvataggio).
 
@@ -268,28 +268,29 @@ alla lista dopo il salvataggio).
 
 ### 4.8 UI: layout, tema, widget
 
-- Layout in `src/resources/layouts/` (`main.php` autenticato, `guest.php`
-  pubblico); view per dominio in `src/resources/views/<modulo>/<dominio>/`.
-- Tema ArchitectUI: asset precompilati in `src/resources/architectui/`,
+- Layout in `src/Shared/resources/layouts/` (`main.php` autenticato, `guest.php`
+  pubblico); le view dei domini vivono nei moduli, in
+  `src/<Modulo>/<Dominio>/views/`.
+- Tema ArchitectUI: asset precompilati in `src/Shared/resources/architectui/`,
   registrati da `ArchitectUiAsset` e pubblicati in `public/assets/`.
-- Widget riusabili in `src/Widgets/`: input form (`Inputs/*` con validazione
+- Widget riusabili in `src/Shared/Widgets/`: input form (`Inputs/*` con validazione
   client-side coerente col validator), filtri lista (`Filters/*` con
   FilterBar e modale), data view (`Grid`, `CardList`, `Detail`,
   `Pagination`), `CrudActions`, `FlashMessages`, `Menu`, `Tabs`, `Modal`,
   `Breadcrumb`, `NotificationDropdown`, `EntityLogList`.
 - La navigazione laterale è definita da `NavigationProvider`
-  (`src/Navigation/`) e filtrata tramite le `policyClass` dichiarate sulle
+  (`src/Shared/Navigation/`) e filtrata tramite le `policyClass` dichiarate sulle
   voci: la visibilità passa da `canAccess()`. La dashboard della home è
-  composta da componenti dichiarativi (`src/Dashboard/`) con lo stesso pattern
+  composta da componenti dichiarativi (`src/Shared/Dashboard/`) con lo stesso pattern
   policy-based.
 - Traduzioni: sorgenti in italiano usate come message ID; catalogo inglese in
-  `src/resources/messages/en/app.php`, messaggi del validator in italiano in
+  `src/Shared/resources/messages/en/app.php`, messaggi del validator in italiano in
   `it/yii-validator.php`. Helper `Translate` per le stringhe.
 
 ### 4.9 Email
 
-Servizio in `src/Services/Core/Mail/`: `Mailer` + `EmailRenderer` (template
-PHP in `src/resources/emails/`, layout dedicato) con transport intercambiabile:
+Servizio in `src/Shared/Services/Mail/`: `Mailer` + `EmailRenderer` (template
+PHP in `src/Shared/resources/emails/`, layout dedicato) con transport intercambiabile:
 
 - `file` (default) — scrive le mail in `runtime/emails/` (comodo in dev/test);
 - `smtp` — SMTP nativo con TLS/None (`SmtpEmailTransport`);
@@ -301,7 +302,7 @@ Email attuali: benvenuto alla registrazione e reset password.
 
 `./yii` espone i comandi Yii3 standard (`serve`, cache, assets…) più i comandi
 applicativi registrati in `config/console/commands.php` (es. `hello`,
-`App\Commands\Core\HelloCommand`, da usare come scheletro).
+`App\Shared\Commands\HelloCommand`, da usare come scheletro).
 
 ## 5. Database
 
@@ -753,7 +754,7 @@ Poi collegarsi con il client SQL a `127.0.0.1:3307` usando le credenziali di
 4. rotte in `src/<Modulo>/routes.php` e DI in `src/<Modulo>/di.php`,
    raccolti automaticamente dalla config (per un modulo nuovo basta creare
    i due file);
-5. voce di menu in `src/Navigation/NavigationProvider.php` con la
+5. voce di menu in `src/Shared/Navigation/NavigationProvider.php` con la
    `policyClass` del dominio;
 6. montare la nuova migration nei compose (`compose.yml` root e
    `docker/prod/compose.yml`) e applicarla a mano sul DB di produzione;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit;
 
-use App\Helpers\PublicAssetResolver;
+use App\Shared\Helpers\PublicAssetResolver;
 use Codeception\Test\Unit;
 
 final class PublicAssetResolverTest extends Unit

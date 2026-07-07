@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit;
 
-use App\Widgets\Menu;
+use App\Shared\Widgets\Menu;
 use Codeception\Test\Unit;
 
 final class MenuWidgetTest extends Unit

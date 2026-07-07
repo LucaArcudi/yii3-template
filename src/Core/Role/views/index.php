@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 use App\Core\Role\RolePresenter;
-use App\Helpers\Translate;
-use App\Widgets\Crud\CrudActions;
-use App\Widgets\DataView\Grid;
-use App\Widgets\Filters\FilterBar;
+use App\Shared\Helpers\Translate;
+use App\Shared\Widgets\Crud\CrudActions;
+use App\Shared\Widgets\DataView\Grid;
+use App\Shared\Widgets\Filters\FilterBar;
 use Yiisoft\Data\Db\QueryDataReader;
 use Yiisoft\Html\Html;
 use Yiisoft\Yii\DataView\GridView\Column\DataColumn;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit;
 
-use App\Widgets\Crud\CrudActions;
+use App\Shared\Widgets\Crud\CrudActions;
 use Codeception\Test\Unit;
 use Yiisoft\Yii\View\Renderer\Csrf;
 

@@ -6,7 +6,7 @@ namespace App\Core\Notification\Actions;
 
 use App\Core\Notification\NotificationPolicy;
 use App\Core\Notification\NotificationReader;
-use App\Services\Core\WebActionService;
+use App\Shared\Services\WebActionService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Yiisoft\Yii\View\Renderer\WebViewRenderer;

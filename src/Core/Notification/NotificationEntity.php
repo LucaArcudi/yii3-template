@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Notification;
 
-use App\Data\Core\BaseEntity;
+use App\Shared\Data\BaseEntity;
 
 final class NotificationEntity extends BaseEntity
 {

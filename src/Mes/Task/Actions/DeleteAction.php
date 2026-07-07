@@ -6,9 +6,9 @@ namespace App\Mes\Task\Actions;
 
 use App\Mes\Task\TaskPolicy;
 use App\Mes\Task\TaskRepository;
-use App\Helpers\Translate;
-use App\Services\Core\CurrentActorProvider;
-use App\Services\Core\WebActionService;
+use App\Shared\Helpers\Translate;
+use App\Shared\Services\CurrentActorProvider;
+use App\Shared\Services\WebActionService;
 use Psr\Http\Message\ResponseInterface;
 use Yiisoft\Router\HydratorAttribute\RouteArgument;
 use Yiisoft\Session\Flash\FlashInterface;

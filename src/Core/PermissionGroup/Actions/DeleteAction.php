@@ -6,9 +6,9 @@ namespace App\Core\PermissionGroup\Actions;
 
 use App\Core\PermissionGroup\PermissionGroupPolicy;
 use App\Core\PermissionGroup\PermissionGroupRepository;
-use App\Helpers\Translate;
-use App\Services\Core\CurrentActorProvider;
-use App\Services\Core\WebActionService;
+use App\Shared\Helpers\Translate;
+use App\Shared\Services\CurrentActorProvider;
+use App\Shared\Services\WebActionService;
 use Psr\Http\Message\ResponseInterface;
 use Yiisoft\Router\HydratorAttribute\RouteArgument;
 use Yiisoft\Session\Flash\FlashInterface;

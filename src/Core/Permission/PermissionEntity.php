@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Permission;
 
-use App\Data\Core\BaseEntity;
+use App\Shared\Data\BaseEntity;
 
 final class PermissionEntity extends BaseEntity
 {

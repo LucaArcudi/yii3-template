@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Role;
 
-use App\Data\Core\BaseEntity;
+use App\Shared\Data\BaseEntity;
 
 final class RoleEntity extends BaseEntity
 {

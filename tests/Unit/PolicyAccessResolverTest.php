@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit;
 
-use App\Services\Core\PolicyAccessResolver;
+use App\Shared\Services\PolicyAccessResolver;
 use App\Tests\Unit\Support\AllowAccessPolicy;
 use App\Tests\Unit\Support\ArrayContainer;
 use App\Tests\Unit\Support\DenyAccessPolicy;

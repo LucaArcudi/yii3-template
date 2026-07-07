@@ -12,7 +12,7 @@ return [
     '@public' => '@root/public',
     '@runtime' => '@root/runtime',
     '@vendor' => '@root/vendor',
-    '@resources' => '@src/resources',
+    '@resources' => '@src/Shared/resources',
     '@views' => '@resources/views',
     '@messages' => '@resources/messages',
 ];

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core\Notification;
 
-use App\Data\AccessPolicyInterface;
-use App\Services\Core\AuthorizationService;
+use App\Shared\Data\AccessPolicyInterface;
+use App\Shared\Services\AuthorizationService;
 use Yiisoft\User\CurrentUser;
 
 final readonly class NotificationPolicy implements AccessPolicyInterface

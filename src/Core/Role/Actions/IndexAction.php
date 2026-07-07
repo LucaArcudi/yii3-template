@@ -7,7 +7,7 @@ namespace App\Core\Role\Actions;
 use App\Core\Role\RoleFilter;
 use App\Core\Role\RolePolicy;
 use App\Core\Role\RoleReader;
-use App\Services\Core\WebActionService;
+use App\Shared\Services\WebActionService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Yiisoft\Yii\View\Renderer\WebViewRenderer;

@@ -6,12 +6,12 @@ namespace App\Core\User\Actions;
 
 use App\Core\User\ForgotPasswordInput;
 use App\Core\User\UserRepository;
-use App\Helpers\Translate;
-use App\Params\Core\AuthParams;
-use App\Services\Core\AuthRateLimitResult;
-use App\Services\Core\AuthRateLimiter;
-use App\Services\Core\AuthTokenService;
-use App\Services\Core\Mail\Mailer;
+use App\Shared\Helpers\Translate;
+use App\Shared\Params\AuthParams;
+use App\Shared\Services\AuthRateLimitResult;
+use App\Shared\Services\AuthRateLimiter;
+use App\Shared\Services\AuthTokenService;
+use App\Shared\Services\Mail\Mailer;
 use HttpSoft\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

@@ -7,7 +7,7 @@ namespace App\Core\PermissionGroup\Actions;
 use App\Core\PermissionGroup\PermissionGroupFilter;
 use App\Core\PermissionGroup\PermissionGroupPolicy;
 use App\Core\PermissionGroup\PermissionGroupReader;
-use App\Services\Core\WebActionService;
+use App\Shared\Services\WebActionService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Yiisoft\Yii\View\Renderer\WebViewRenderer;

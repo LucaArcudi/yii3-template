@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Commands\Core\HelloCommand;
+use App\Shared\Commands\HelloCommand;
 use App\Core\User\Commands\UserCreateCommand;
 
 return [

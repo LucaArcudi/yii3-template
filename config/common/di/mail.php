@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use App\Params\Core\MailParams;
-use App\Services\Core\Mail\Transport\EmailTransportInterface;
-use App\Services\Core\Mail\Transport\FileEmailTransport;
-use App\Services\Core\Mail\Transport\NativeEmailTransport;
-use App\Services\Core\Mail\Transport\SmtpEmailTransport;
+use App\Shared\Params\MailParams;
+use App\Shared\Services\Mail\Transport\EmailTransportInterface;
+use App\Shared\Services\Mail\Transport\FileEmailTransport;
+use App\Shared\Services\Mail\Transport\NativeEmailTransport;
+use App\Shared\Services\Mail\Transport\SmtpEmailTransport;
 use Yiisoft\Aliases\Aliases;
 
 /** @var array $params */

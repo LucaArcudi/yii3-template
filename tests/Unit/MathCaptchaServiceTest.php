@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit;
 
-use App\Services\Core\MathCaptchaService;
+use App\Shared\Services\MathCaptchaService;
 use Codeception\Test\Unit;
 use Yiisoft\Session\SessionInterface;
 

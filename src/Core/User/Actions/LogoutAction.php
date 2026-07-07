@@ -6,8 +6,8 @@ namespace App\Core\User\Actions;
 
 use HttpSoft\Message\Response;
 use App\Core\User\UserRepository;
-use App\Helpers\Translate;
-use App\Services\Core\RememberMeCookieService;
+use App\Shared\Helpers\Translate;
+use App\Shared\Services\RememberMeCookieService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Yiisoft\Session\Flash\FlashInterface;

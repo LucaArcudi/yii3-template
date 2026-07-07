@@ -3,15 +3,15 @@
 declare(strict_types=1);
 
 use App\Core\User\UserInput;
-use App\Helpers\Translate;
-use App\Widgets\BackButton;
-use App\Widgets\Card;
-use App\Widgets\Crud\CrudActions;
-use App\Widgets\Forms\FormCard;
-use App\Widgets\Forms\FormTheme;
-use App\Widgets\Inputs\EmailInput;
-use App\Widgets\Inputs\PasswordInput;
-use App\Widgets\Inputs\TextInput;
+use App\Shared\Helpers\Translate;
+use App\Shared\Widgets\BackButton;
+use App\Shared\Widgets\Card;
+use App\Shared\Widgets\Crud\CrudActions;
+use App\Shared\Widgets\Forms\FormCard;
+use App\Shared\Widgets\Forms\FormTheme;
+use App\Shared\Widgets\Inputs\EmailInput;
+use App\Shared\Widgets\Inputs\PasswordInput;
+use App\Shared\Widgets\Inputs\TextInput;
 use Yiisoft\Form\PureField\Field;
 use Yiisoft\Html\Html;
 use Yiisoft\Yii\View\Renderer\Csrf;

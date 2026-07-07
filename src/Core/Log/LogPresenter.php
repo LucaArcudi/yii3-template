@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Log;
 
-use App\Helpers\Translate;
+use App\Shared\Helpers\Translate;
 
 use function date;
 use function json_decode;

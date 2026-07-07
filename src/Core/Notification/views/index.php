@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use App\Core\Notification\NotificationPresenter;
-use App\Helpers\Translate;
-use App\Widgets\DataView\Grid;
+use App\Shared\Helpers\Translate;
+use App\Shared\Widgets\DataView\Grid;
 use Yiisoft\Data\Db\QueryDataReader;
 use Yiisoft\Html\Html;
 use Yiisoft\Yii\DataView\GridView\Column\DataColumn;

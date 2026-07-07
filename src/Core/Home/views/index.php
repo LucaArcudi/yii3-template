@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use App\Dashboard\DashboardComponentPresenter;
-use App\Dashboard\DashboardComponentRenderer;
-use App\Helpers\Translate;
-use App\Params\Core\ApplicationParams;
+use App\Shared\Dashboard\DashboardComponentPresenter;
+use App\Shared\Dashboard\DashboardComponentRenderer;
+use App\Shared\Helpers\Translate;
+use App\Shared\Params\ApplicationParams;
 use Yiisoft\Html\Html;
 use Yiisoft\User\CurrentUser;
 use Yiisoft\View\WebView;
@@ -14,7 +14,7 @@ use Yiisoft\View\WebView;
  * @var WebView $this
  * @var ApplicationParams $applicationParams
  * @var CurrentUser $currentUser
- * @var list<App\Dashboard\DashboardComponentDefinition> $components
+ * @var list<App\Shared\Dashboard\DashboardComponentDefinition> $components
  * @var DashboardComponentRenderer $componentRenderer
  */
 

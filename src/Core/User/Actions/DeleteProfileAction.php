@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Core\User\Actions;
 
 use App\Core\User\UserRepository;
-use App\Helpers\Translate;
-use App\Services\Core\RememberMeCookieService;
+use App\Shared\Helpers\Translate;
+use App\Shared\Services\RememberMeCookieService;
 use HttpSoft\Message\Response;
 use HttpSoft\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
