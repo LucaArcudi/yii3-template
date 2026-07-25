@@ -42,6 +42,7 @@ final class TrustedProxyMiddlewareTest extends Unit
 
         self::assertSame('203.0.113.10', $handler->clientIp);
         self::assertSame('https', $handler->scheme);
+        self::assertSame('app.test', $handler->host);
     }
 
     public function testSpoofedChainEntryIsIgnored(): void
@@ -113,7 +114,7 @@ final class TrustedProxyMiddlewareTest extends Unit
 
     private function request(string $remoteAddr): ServerRequestInterface
     {
-        return new ServerRequest(serverParams: ['REMOTE_ADDR' => $remoteAddr], uri: 'http://app.test/login');
+        return new ServerRequest(serverParams: ['REMOTE_ADDR' => $remoteAddr], uri: 'http://app.test:80/login');
     }
 }
 
@@ -121,6 +122,7 @@ final class ForwardedCaptureHandler implements RequestHandlerInterface
 {
     public ?string $clientIp = null;
     public string $scheme = '';
+    public string $host = '';
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
@@ -128,6 +130,7 @@ final class ForwardedCaptureHandler implements RequestHandlerInterface
         $clientIp = $request->getAttribute(TrustedProxyMiddleware::ATTRIBUTE_CLIENT_IP);
         $this->clientIp = $clientIp;
         $this->scheme = $request->getUri()->getScheme();
+        $this->host = $request->getHeaderLine('Host');
 
         return new Response();
     }

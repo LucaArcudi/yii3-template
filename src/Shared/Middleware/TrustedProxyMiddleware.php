@@ -53,7 +53,10 @@ final readonly class TrustedProxyMiddleware implements MiddlewareInterface
         $scheme = $this->forwardedScheme($request);
 
         if ($scheme !== null && $scheme !== $request->getUri()->getScheme()) {
-            $request = $request->withUri($request->getUri()->withScheme($scheme));
+            $request = $request->withUri(
+                $request->getUri()->withScheme($scheme),
+                preserveHost: true,
+            );
         }
 
         return $handler->handle(
