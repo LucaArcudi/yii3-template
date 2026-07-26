@@ -46,9 +46,9 @@ esclusioni approvate. `docs/assets/README.md` ne documenta ambiente e scopo.
 
 | Controllo | Esito |
 |---|---|
-| `make cs-fix` | OK; 311 file analizzati, nessuna correzione |
+| `make cs-fix` | OK; 312 file analizzati, nessuna correzione |
 | `make psalm` | OK; nessun errore |
-| `make test -- --skip-group database` | OK; 95 test, 242 asserzioni |
+| `make test -- --skip-group database` | OK; 102 test, 252 asserzioni |
 | Pubblicazione asset nello stack di sviluppo | OK; CSS, JS e Font Awesome Regular restituiti con HTTP 200 e identici agli output locali |
 
 Il `main.css` definitivo pubblicato da Yii è identico byte per byte all'output
