@@ -22,7 +22,7 @@ nel commit `33185ff` ("Security hardening, code quality pass and visual refresh"
 | 6 | Enumerazione utenti via timing sul login: se l'email non esisteva, `password_verify` (Argon2id, decine di ms) non veniva chiamato → il tempo di risposta rivelava le email registrate | **Risolto**: verifica sempre eseguita, contro un hash Argon2id fittizio quando l'utente non esiste. |
 | 7 | Rate limiter per-IP inefficace dietro reverse proxy: `AuthRateLimiter::clientIp()` usa solo `REMOTE_ADDR`, che dietro Caddy è l'IP del proxy → bucket condiviso da tutti i client (lockout collettivo facile, attaccante non identificato) | **Risolto** (2026-07-08): `TrustedProxyMiddleware` risolve `X-Forwarded-For`/`-Proto` solo da proxy fidati (`TRUSTED_PROXY_IPS`); il rate limiter usa l'IP risolto e la sessione può esigere il flag `Secure` anche dietro proxy. |
 | 8 | CD: `ssh-keyscan` a ogni deploy = trust-on-first-use ripetuto; un MITM sulla rete del runner può impersonare il VPS | **Aperto**: consigliato un secret `VPS_KNOWN_HOSTS` con la fingerprint pinnata. |
-| 9 | 9 advisory (`composer audit`) su 4 pacchetti **solo dev**: guzzlehttp/guzzle, guzzlehttp/psr7, symfony/yaml, symfony/dom-crawler — nessuno esposto a runtime | **Aperto**: eseguire `composer update` per le dipendenze dev nel container quando comodo. |
+| 9 | Advisory (`composer audit`) su pacchetti **solo dev**: guzzlehttp/guzzle, guzzlehttp/psr7, symfony/yaml, symfony/dom-crawler — nessuno esposto a runtime | **Risolto**: dipendenze dev aggiornate; il 2026-07-25 Guzzle è stato riallineato a 7.15.1 per le advisory pubblicate il 2026-07-20. |
 
 ### Punti forti riscontrati
 
