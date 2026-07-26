@@ -20,11 +20,7 @@ final class ArchitectUiAsset extends AssetBundle
 
     public array $js = [
         'scripts/main.js',
-        'scripts/scrollbar.js',
-        'scripts/chart_js.js',
         'scripts/demo.js',
-        'scripts/fullcalendar.js',
-        'scripts/toastr.js',
         'scripts/app.js',
     ];
 }
