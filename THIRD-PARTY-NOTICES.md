@@ -23,7 +23,7 @@ separatamente banner, confronti con i tag upstream e limiti dell'evidenza.
 | Font Awesome Free, Solid e Regular | 7.1.0 | <https://github.com/FortAwesome/Font-Awesome> | Il pacchetto dichiara `(CC-BY-4.0 AND OFL-1.1 AND MIT)`: font sotto SIL OFL 1.1, codice sotto MIT, icone SVG/JS sotto CC BY 4.0. La build distribuisce CSS e font WOFF2 Solid/Regular, non SVG/JS né Brands. Evidenza: lockfile, banner in `src/Shared/resources/architectui/assets/styles/main.css`, hash dei font e `LICENSE.txt` del pacchetto 7.1.0. |
 | Hamburgers, modificato da ArchitectUI | 1.1.3, identificata per confronto storico | <https://github.com/jonsuh/hamburgers/tree/v1.1.3> | MIT. Il sorgente vendorizzato non dichiara la versione: la correzione presente dalla 1.1.3 e la storia della prima vendorizzazione ArchitectUI identificano lo snapshot, poi modificato localmente dal tema. |
 | RFS incorporato nel CSS Bootstrap | snapshot coincidente con 10.0.0 | <https://github.com/twbs/rfs/tree/v10.0.0> | MIT. Il file vendorizzato dichiara origine/licenza ed è identico al file `scss.scss` del tag `v10.0.0`; non è una dipendenza del lockfile. |
-| Normalize.css incorporato in Bootstrap Reboot | non dichiarata, fork manuale | <https://github.com/necolas/normalize.css> | MIT. L'header Bootstrap dichiara il fork manuale, l'origine e la licenza, ma non conserva la versione di Normalize: vedere [Da verificare](#da-verificare). |
+| Normalize.css incorporato in Bootstrap Reboot | versione originaria non determinabile | <https://github.com/necolas/normalize.css> | MIT, versione originaria non determinabile perché il fork manuale in Bootstrap Reboot non la conserva. Nessun obbligo residuo. |
 
 `wNumb` 1.2.0 e `pe7-icon` 1.0.4 sono ancora dichiarati nel lockfile documentale
 della precedente pulizia. Nessuno dei due è importato dalla build corrente:
@@ -60,15 +60,6 @@ revisioni indicate:
 - [RFS 10.0.0, `LICENSE`](https://github.com/twbs/rfs/blob/v10.0.0/LICENSE);
 - [Normalize.css 8.0.1, `LICENSE.md`](https://github.com/necolas/normalize.css/blob/8.0.1/LICENSE.md);
 - [Creative Commons Attribution 4.0, testo legale](https://creativecommons.org/licenses/by/4.0/legalcode.txt).
-
-## Da verificare
-
-### Normalize.css
-
-Il fork incluso in Bootstrap Reboot dichiara origine e licenza MIT ma non una
-versione. Il testo MIT riportato sotto è quello del `LICENSE.md` del tag
-Normalize.css `8.0.1`, usato come notice autorevole del progetto; il materiale
-vendorizzato non permette di dimostrare che il fork derivi proprio da quel tag.
 
 ## Testi integrali delle licenze
 
