@@ -60,7 +60,7 @@ class Detail
             title: $title,
             body: implode('', $body),
             variant: $variant,
-            icon: 'pe-7s-note2',
+            icon: 'fa-regular fa-file-lines',
         );
     }
 

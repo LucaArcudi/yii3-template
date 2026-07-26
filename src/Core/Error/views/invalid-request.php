@@ -19,7 +19,7 @@ $returnLabel = $isGuest ? Translate::t('Torna al login') : Translate::t('Torna a
 $this->setTitle(Translate::t('Richiesta non valida'));
 $this->setParameter('guestHeaderSubtitle', Translate::t('Sessione del modulo'));
 $this->setParameter('guestCardSubtitle', Translate::t('Ricarica la pagina e riprova con un nuovo token di sicurezza.'));
-$this->setParameter('pageIcon', 'pe-7s-attention');
+$this->setParameter('pageIcon', 'fa-solid fa-triangle-exclamation');
 $this->setParameter('breadcrumbs', [
     ['label' => Translate::t('Dashboard'), 'url' => '/'],
     ['label' => Translate::t('Richiesta non valida')],

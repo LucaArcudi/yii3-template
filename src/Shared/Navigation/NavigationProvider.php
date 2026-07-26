@@ -41,7 +41,7 @@ final readonly class NavigationProvider
                 '_children' => [
                     [
                         'name' => Translate::t('Homepage'),
-                        'icon' => 'pe-7s-rocket',
+                        'icon' => 'fa-solid fa-rocket',
                         'url' => '/',
                         '_children' => [],
                     ],
@@ -53,7 +53,7 @@ final readonly class NavigationProvider
                 '_children' => [
                     [
                         'name' => Translate::t('Task'),
-                        'icon' => 'pe-7s-check',
+                        'icon' => 'fa-solid fa-check',
                         'url' => '/task',
                         'policyClass' => TaskPolicy::class,
                         '_children' => [],
@@ -66,33 +66,33 @@ final readonly class NavigationProvider
                 '_children' => [
                     [
                         'name' => Translate::t('Utenti'),
-                        'icon' => 'pe-7s-users',
+                        'icon' => 'fa-solid fa-users',
                         'url' => '/user',
                         'policyClass' => UserPolicy::class,
                         '_children' => [],
                     ],
                     [
                         'name' => Translate::t('Ruoli'),
-                        'icon' => 'pe-7s-shield',
+                        'icon' => 'fa-solid fa-shield-halved',
                         'url' => '/role',
                         'policyClass' => RolePolicy::class,
                         '_children' => [],
                     ],
                     [
                         'name' => Translate::t('Permessi'),
-                        'icon' => 'pe-7s-key',
+                        'icon' => 'fa-solid fa-key',
                         'toggle' => true,
                         '_children' => [
                             [
                                 'name' => Translate::t('Permessi'),
-                                'icon' => 'pe-7s-note2',
+                                'icon' => 'fa-regular fa-file-lines',
                                 'url' => '/permission',
                                 'policyClass' => PermissionPolicy::class,
                                 '_children' => [],
                             ],
                             [
                                 'name' => Translate::t('Gruppi'),
-                                'icon' => 'pe-7s-network',
+                                'icon' => 'fa-solid fa-layer-group',
                                 'url' => '/permission-group',
                                 'policyClass' => PermissionGroupPolicy::class,
                                 '_children' => [],

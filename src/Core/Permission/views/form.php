@@ -31,7 +31,7 @@ $action = $mode === 'update'
 $title = $mode === 'update' ? Translate::t('Modifica permesso') : Translate::t('Nuovo permesso');
 
 $this->setTitle($title);
-$this->setParameter('pageIcon', 'pe-7s-key');
+$this->setParameter('pageIcon', 'fa-solid fa-key');
 $this->setParameter('breadcrumbs', [
     ['label' => Translate::t('Dashboard'), 'url' => '/'],
     ['label' => Translate::t('Permessi'), 'url' => '/permission'],

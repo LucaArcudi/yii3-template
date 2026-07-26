@@ -21,17 +21,27 @@ separatamente banner, confronti con i tag upstream e limiti dell'evidenza.
 | jQuery | 4.0.0 | <https://github.com/jquery/jquery> | MIT. Versione dal lockfile finale e dai sidecar `src/Shared/resources/architectui/assets/scripts/main.js.LICENSE.txt` e `src/Shared/resources/architectui/assets/scripts/demo.js.LICENSE.txt`; testo da `LICENSE.txt` del pacchetto 4.0.0. |
 | MetisMenu | 3.1.0 | <https://github.com/onokumus/metismenu> | MIT. Versione dal lockfile finale e da `src/Shared/resources/architectui/assets/scripts/main.js.LICENSE.txt`; testo dal `LICENSE` del pacchetto 3.1.0. |
 | Font Awesome Free, Solid e Regular | 7.1.0 | <https://github.com/FortAwesome/Font-Awesome> | Il pacchetto dichiara `(CC-BY-4.0 AND OFL-1.1 AND MIT)`: font sotto SIL OFL 1.1, codice sotto MIT, icone SVG/JS sotto CC BY 4.0. La build distribuisce CSS e font WOFF2 Solid/Regular, non SVG/JS né Brands. Evidenza: lockfile, banner in `src/Shared/resources/architectui/assets/styles/main.css`, hash dei font e `LICENSE.txt` del pacchetto 7.1.0. |
-| `pe7-icon`, wrapper npm | 1.0.4 | <https://github.com/prasannatm/pe7-icon> | Il pacchetto dichiara MIT e contiene un `license.md` anonimo con il solo notice `Copyright 2017`. Questo non dimostra il diritto di rilicenziare font e icone Pixeden: vedere [Da verificare](#da-verificare). |
-| Pixeden Stroke 7 Icon Font Set | 1.2.0 per la risorsa originale | <https://www.pixeden.com/icon-fonts/stroke-7-icon-font-set> | Licenza proprietaria Pixeden. I quattro font distribuiti coincidono con quelli del wrapper npm e della risorsa Pixeden; i termini ufficiali non concedono la redistribuzione generale: vedere [Da verificare](#da-verificare). |
 | Hamburgers, modificato da ArchitectUI | 1.1.3, identificata per confronto storico | <https://github.com/jonsuh/hamburgers/tree/v1.1.3> | MIT. Il sorgente vendorizzato non dichiara la versione: la correzione presente dalla 1.1.3 e la storia della prima vendorizzazione ArchitectUI identificano lo snapshot, poi modificato localmente dal tema. |
-| Helper CSS Font Awesome adattato da Pixeden | 4.0.3 | <https://github.com/FortAwesome/Font-Awesome/tree/v4.0.3> | MIT per il CSS. Evidenza: banner conservato in `main.css` e licenza dichiarata nel README del tag 4.0.3. Non sono inclusi il font o le icone Font Awesome 4. |
 | RFS incorporato nel CSS Bootstrap | snapshot coincidente con 10.0.0 | <https://github.com/twbs/rfs/tree/v10.0.0> | MIT. Il file vendorizzato dichiara origine/licenza ed è identico al file `scss.scss` del tag `v10.0.0`; non è una dipendenza del lockfile. |
 | Normalize.css incorporato in Bootstrap Reboot | non dichiarata, fork manuale | <https://github.com/necolas/normalize.css> | MIT. L'header Bootstrap dichiara il fork manuale, l'origine e la licenza, ma non conserva la versione di Normalize: vedere [Da verificare](#da-verificare). |
 
-`wNumb` 1.2.0 è ancora dichiarata nel lockfile finale, ma non è importata e non
-compare nei tre output JavaScript/CSS upstream; non è quindi codice distribuito
-e non è inclusa nell'inventario sopra. I due sidecar rimasti e tutti i banner
+`wNumb` 1.2.0 e `pe7-icon` 1.0.4 sono ancora dichiarati nel lockfile documentale
+della precedente pulizia. Nessuno dei due è importato dalla build corrente:
+`pe7-icon` viene eliminata dal manifest temporaneo prima della ricostruzione.
+Non sono quindi codice distribuito e non sono incluse nell'inventario sopra.
+I due sidecar rimasti e tutti i banner
 `/*! ... */` di `main.css` sono coperti dalle voci elencate.
+
+## Componenti rimossi
+
+### pe7-icon e Pixeden Stroke 7
+
+La voce di verifica sulla licenza Pixeden è chiusa mediante rimozione. Il
+wrapper npm `pe7-icon`, il blocco CSS Pixeden e i font EOT, WOFF, TTF e SVG non
+fanno più parte dell'artefatto distribuito; tutte le classi applicative sono
+state sostituite con Font Awesome Free. La rimozione è necessaria perché i
+termini Pixeden non concedono la redistribuzione generale della risorsa dentro
+un template pubblico.
 
 ## Fonti di verifica
 
@@ -46,45 +56,12 @@ revisioni indicate:
 - [jQuery 4.0.0, `LICENSE.txt`](https://github.com/jquery/jquery/blob/4.0.0/LICENSE.txt);
 - [MetisMenu 3.1.0, `LICENSE`](https://github.com/onokumus/metismenu/blob/9e622f8c10612f8140ba79d2fed516d9374d07dc/LICENSE);
 - [Font Awesome Free 7.1.0, `LICENSE.txt`](https://github.com/FortAwesome/Font-Awesome/blob/7.1.0/LICENSE.txt);
-- [`pe7-icon` 1.0.4, `license.md`](https://github.com/prasannatm/pe7-icon/blob/V1.0.4/license.md),
-  [risorsa originale Pixeden](https://www.pixeden.com/icon-fonts/stroke-7-icon-font-set)
-  e [licenza Pixeden](https://www.pixeden.com/license);
 - [Hamburgers 1.1.3, `LICENSE`](https://github.com/jonsuh/hamburgers/blob/v1.1.3/LICENSE);
-- [Font Awesome 4.0.3, `README.md`](https://github.com/FortAwesome/Font-Awesome/blob/v4.0.3/README.md);
 - [RFS 10.0.0, `LICENSE`](https://github.com/twbs/rfs/blob/v10.0.0/LICENSE);
 - [Normalize.css 8.0.1, `LICENSE.md`](https://github.com/necolas/normalize.css/blob/8.0.1/LICENSE.md);
 - [Creative Commons Attribution 4.0, testo legale](https://creativecommons.org/licenses/by/4.0/legalcode.txt).
 
 ## Da verificare
-
-### Pixeden Stroke 7
-
-Il wrapper npm `pe7-icon` 1.0.4 attribuisce la propria origine a un fork non
-ufficiale della risorsa Pixeden, ma applica un file MIT privo del nome del
-titolare. Non è presente alcuna prova che il manutentore del wrapper abbia
-ricevuto da Pixeden il diritto di rilicenziare il font o l'artwork.
-
-La [licenza ufficiale Pixeden](https://www.pixeden.com/license) consente uso e
-modifica in progetti personali e commerciali, ma vieta di «redistribute,
-resell, lease, license, sub-license or offer our resources to any third party».
-Per l'inclusione in un item o template venduto richiede di contattare Pixeden;
-non concede un'eccezione automatica per template gratuite.
-
-Questo repository distribuisce direttamente i file EOT, WOFF, TTF e SVG del
-font. La sola attribuzione non risolve quindi il problema: prima di una
-distribuzione pubblica va ottenuta un'autorizzazione scritta da Pixeden oppure
-il font va sostituito o rimosso.
-
-La risorsa ufficiale è scaricata come
-`Icon-font-7-stroke-PIXEDEN-v-1-2-0.zip`. I file pubblicati dal progetto
-coincidono con quelli del wrapper npm 1.0.4; gli SHA-256 sono:
-
-```text
-d9896922379aeb729a67c4bc12f2a51ee970c37ea079ee30f856fd2807fd3e9c  Pe-icon-7-stroke.eot
-6fb4217048f333e23e0fd0ba2ab05e05fd7500f86a5a80a7cf04a2f94b257bec  Pe-icon-7-stroke.woff
-99620ded1c4d61277630422146e2488b1afaef9be2dc0924ff3f75e2ecd71820  Pe-icon-7-stroke.ttf
-c508f5a34aba76da55d77ad996baf4095b6e9b64b35566e3657e5f73f1921417  Pe-icon-7-stroke.svg
-```
 
 ### Normalize.css
 
@@ -156,9 +133,6 @@ Copyright OpenJS Foundation and other contributors, https://openjsf.org/
 MetisMenu 3.1.0
 Copyright (c) 2014-2026 Osman Nuri Okumuş
 
-pe7-icon 1.0.4 (notice del wrapper npm; non prova i diritti Pixeden)
-Copyright 2017
-
 Hamburgers 1.1.3
 Copyright (c) 2016 Jonathan Suh <hello@jonsuh.com> (jonsuh.com)
 
@@ -167,14 +141,6 @@ Copyright (c) 2017-2019 Martijn Cuppens
 
 Normalize.css
 Copyright © Nicolas Gallagher and Jonathan Neal
-```
-
-L'helper adattato da Font Awesome conserva questo notice nel CSS distribuito:
-
-```text
-Modified from font-awesome helper CSS classes - PIXEDEN
-Font Awesome 4.0.3 by @davegandy - http://fontawesome.io - @fontawesome
-License - http://fontawesome.io/license (CSS: MIT License)
 ```
 
 #### Testo MIT

@@ -24,7 +24,7 @@ use Yiisoft\Yii\View\Renderer\Csrf;
 /** @var bool $canDelete */
 
 $this->setTitle(Translate::t('Ruoli'));
-$this->setParameter('pageIcon', 'pe-7s-id');
+$this->setParameter('pageIcon', 'fa-regular fa-id-card');
 $this->setParameter('breadcrumbs', [
     ['label' => Translate::t('Dashboard'), 'url' => '/'],
     ['label' => Translate::t('Ruoli')],

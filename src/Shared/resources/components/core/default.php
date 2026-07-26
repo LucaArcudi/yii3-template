@@ -17,7 +17,7 @@ use Yiisoft\User\CurrentUser;
 
 <div class="app-dashboard-priority app-dashboard-priority--secondary">
     <div class="app-dashboard-priority__header">
-        <div class="app-dashboard-priority__icon"><i class="pe-7s-display1"></i></div>
+        <div class="app-dashboard-priority__icon"><i class="fa-solid fa-desktop"></i></div>
         <div class="app-dashboard-priority__copy">
             <div class="app-dashboard-priority__title"><?= Translate::t('Componente') ?></div>
             <div class="app-dashboard-priority__meta"><?= Html::encode($component->code()) ?></div>

@@ -22,7 +22,7 @@ use Yiisoft\Yii\View\Renderer\Csrf;
 /** @var Csrf $csrf */
 
 $this->setTitle($task->title());
-$this->setParameter('pageIcon', 'pe-7s-news-paper');
+$this->setParameter('pageIcon', 'fa-regular fa-newspaper');
 $this->setParameter('breadcrumbs', [
     ['label' => Translate::t('Dashboard'), 'url' => '/'],
     ['label' => Translate::t('Tasks'), 'url' => '/task'],

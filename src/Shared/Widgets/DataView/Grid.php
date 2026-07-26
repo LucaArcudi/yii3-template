@@ -77,7 +77,7 @@ class Grid
             body: $body,
             variant: $variant,
             tools: $toolbar,
-            icon: 'pe-7s-network',
+            icon: 'fa-solid fa-table-list',
         );
     }
 

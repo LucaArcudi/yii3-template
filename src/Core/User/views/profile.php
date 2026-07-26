@@ -34,7 +34,7 @@ $emailValidated ??= false;
 $currentEmail ??= (string) $input->email;
 
 $this->setTitle(Translate::t('Gestione profilo'));
-$this->setParameter('pageIcon', 'pe-7s-user');
+$this->setParameter('pageIcon', 'fa-regular fa-user');
 $this->setParameter('breadcrumbs', [
     ['label' => Translate::t('Dashboard'), 'url' => '/'],
     ['label' => Translate::t('Gestione profilo')],

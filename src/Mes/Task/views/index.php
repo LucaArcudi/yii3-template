@@ -34,7 +34,7 @@ use Yiisoft\Yii\View\Renderer\Csrf;
 /** @var bool $canDelete */
 
 $this->setTitle(Translate::t('Tasks'));
-$this->setParameter('pageIcon', 'pe-7s-note2');
+$this->setParameter('pageIcon', 'fa-regular fa-file-lines');
 $this->setParameter('breadcrumbs', [
     ['label' => Translate::t('Dashboard'), 'url' => '/'],
     ['label' => Translate::t('Tasks')],

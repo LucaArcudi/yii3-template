@@ -13,7 +13,7 @@ use Yiisoft\Yii\DataView\GridView\Column\DataColumn;
 /** @var callable $gridUrlCreator */
 
 $this->setTitle(Translate::t('Notifiche'));
-$this->setParameter('pageIcon', 'pe-7s-bell');
+$this->setParameter('pageIcon', 'fa-regular fa-bell');
 $this->setParameter('breadcrumbs', [
     ['label' => Translate::t('Dashboard'), 'url' => '/'],
     ['label' => Translate::t('Notifiche')],

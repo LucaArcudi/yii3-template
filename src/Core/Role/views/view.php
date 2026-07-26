@@ -24,7 +24,7 @@ use Yiisoft\Yii\View\Renderer\Csrf;
 /** @var Csrf $csrf */
 
 $this->setTitle($role->name());
-$this->setParameter('pageIcon', 'pe-7s-id');
+$this->setParameter('pageIcon', 'fa-regular fa-id-card');
 $this->setParameter('breadcrumbs', [
     ['label' => Translate::t('Dashboard'), 'url' => '/'],
     ['label' => Translate::t('Ruoli'), 'url' => '/role'],

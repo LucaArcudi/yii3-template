@@ -33,7 +33,7 @@ $action = $mode === 'update'
 $title = $mode === 'update' ? Translate::t('Modifica task') : Translate::t('Nuova task');
 
 $this->setTitle($title);
-$this->setParameter('pageIcon', 'pe-7s-note2');
+$this->setParameter('pageIcon', 'fa-regular fa-file-lines');
 $this->setParameter('breadcrumbs', [
     ['label' => Translate::t('Dashboard'), 'url' => '/'],
     ['label' => Translate::t('Tasks'), 'url' => '/task'],

@@ -28,7 +28,7 @@ if ($retryAfterSeconds !== null) {
 $this->setTitle(Translate::t('Troppi tentativi'));
 $this->setParameter('guestHeaderSubtitle', Translate::t('Protezione account'));
 $this->setParameter('guestCardSubtitle', Translate::t('Attendi qualche minuto prima di riprovare.'));
-$this->setParameter('pageIcon', 'pe-7s-timer');
+$this->setParameter('pageIcon', 'fa-regular fa-clock');
 $this->setParameter('breadcrumbs', [
     ['label' => Translate::t('Dashboard'), 'url' => '/'],
     ['label' => Translate::t('Troppi tentativi')],

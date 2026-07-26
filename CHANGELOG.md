@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Sostituite le 47 icone Pixeden Stroke 7 con Font Awesome Free Solid/Regular: il cambiamento è visibile in titoli pagina, menu, notifiche e dashboard. Rimossi il CSS `pe7-icon` e i quattro font EOT/WOFF/TTF/SVG (341,134 KiB), perché la licenza Pixeden non ne consente la redistribuzione generale dentro questo template pubblico.
 - Ridotti gli asset globali ArchitectUI per F-14: rimossi bundle globali inutilizzati per chart, calendario, notifiche toast e scrollbar, esclusi dal rebuild i relativi pacchetti e CSS orfani e documentato il debito frontend residuo. Unica modifica visibile: le 23 occorrenze `fa-regular` (`fa-calendar`, `fa-envelope`, `fa-user`, `fa-calendar-check`, `fa-address-card`) ora usano la face Regular a contorno; prima mancava il peso 400 e il browser ricadeva su Solid.
 - Login: corretto il controllo Same-Origin dietro Caddy/HTTPS — quando il proxy fidato aggiorna lo scheme dell'URI preserva ora l'header `Host` pubblico, evitando che HttpSoft lo rigeneri con la porta interna `:80` e che il POST venga respinto con 403 prima della validazione delle credenziali.
 - Monitoring: fix del contact point Telegram — il `chatid` interpolato dall'ambiente veniva ri-tipizzato da Grafana in numero e la validazione (che esige una stringa) è **fatale al boot**: Grafana in crash-loop (osservato il 2026-07-08); ora il valore è protetto con quote escapate. Alzati i limiti di ingestione di Loki (8 MB/s, burst 16) per assorbire il primo avvio di Alloy senza 429.

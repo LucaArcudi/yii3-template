@@ -22,56 +22,56 @@ $links = [
         'title' => Translate::t('Repository'),
         'meta' => Translate::t('Codice sorgente, README e onboarding.'),
         'url' => $repoUrl,
-        'icon' => 'pe-7s-share',
+        'icon' => 'fa-regular fa-share-from-square',
     ],
     [
         'title' => Translate::t('Documentazione di progetto'),
         'meta' => Translate::t('Architettura, database, DevOps e runbook operativi.'),
         'url' => $repoUrl . '/blob/main/docs/documentazione-progetto.md',
-        'icon' => 'pe-7s-notebook',
+        'icon' => 'fa-solid fa-book-open',
     ],
     [
         'title' => Translate::t('Roadmap di sviluppo'),
         'meta' => Translate::t('Backlog funzionale: cose fatte e prossimi step.'),
         'url' => $repoUrl . '/blob/main/docs/roadmap-sviluppo.md',
-        'icon' => 'pe-7s-map-2',
+        'icon' => 'fa-regular fa-map',
     ],
     [
         'title' => Translate::t('Roadmap infrastruttura'),
         'meta' => Translate::t('Centralizzazione log, notifiche degli alert e self-healing.'),
         'url' => $repoUrl . '/blob/main/docs/roadmap-infrastruttura.md',
-        'icon' => 'pe-7s-server',
+        'icon' => 'fa-solid fa-server',
     ],
     [
         'title' => Translate::t('Roadmap AI (Codex + Claude Code)'),
         'meta' => Translate::t('Integrazione degli agenti AI nel workflow di sviluppo.'),
         'url' => $repoUrl . '/blob/main/docs/roadmap-ai-codex-claude-code.md',
-        'icon' => 'pe-7s-magic-wand',
+        'icon' => 'fa-solid fa-wand-magic-sparkles',
     ],
     [
         'title' => Translate::t('Changelog'),
         'meta' => Translate::t('Storia delle release e delle modifiche.'),
         'url' => $repoUrl . '/blob/main/CHANGELOG.md',
-        'icon' => 'pe-7s-note2',
+        'icon' => 'fa-regular fa-file-lines',
     ],
     [
         'title' => Translate::t('Issue e pull request'),
         'meta' => Translate::t('Segnalazioni, proposte e revisioni in corso.'),
         'url' => $repoUrl . '/issues',
-        'icon' => 'pe-7s-comment',
+        'icon' => 'fa-regular fa-comment',
     ],
     [
         'title' => Translate::t('CI/CD (GitHub Actions)'),
         'meta' => Translate::t('Stato di build, test e deploy.'),
         'url' => $repoUrl . '/actions',
-        'icon' => 'pe-7s-config',
+        'icon' => 'fa-solid fa-gears',
     ],
 ];
 ?>
 
 <div class="app-dashboard-priority app-dashboard-priority--info">
     <div class="app-dashboard-priority__header">
-        <div class="app-dashboard-priority__icon"><i class="pe-7s-link"></i></div>
+        <div class="app-dashboard-priority__icon"><i class="fa-solid fa-link"></i></div>
         <div class="app-dashboard-priority__copy">
             <div class="app-dashboard-priority__title"><?= Translate::t('Riferimenti GitHub') ?></div>
             <div class="app-dashboard-priority__meta"><?= Translate::t('Codice, documentazione e pipeline') ?></div>

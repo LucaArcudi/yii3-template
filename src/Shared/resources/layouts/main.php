@@ -47,7 +47,7 @@ $this->addJsVars($assetManager->getJsVars());
 
 $title = $this->getTitle() ?: $applicationParams->name;
 $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
-$pageIcon = (string) $this->getParameter('pageIcon', 'pe-7s-browser');
+$pageIcon = (string) $this->getParameter('pageIcon', 'fa-regular fa-window-maximize');
 $breadcrumbsParameter = $this->getParameter('breadcrumbs', []);
 $breadcrumbs = is_array($breadcrumbsParameter) ? $breadcrumbsParameter : [];
 

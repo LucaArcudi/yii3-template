@@ -22,7 +22,7 @@ use Yiisoft\Yii\View\Renderer\Csrf;
 /** @var Csrf $csrf */
 
 $this->setTitle($permission->name());
-$this->setParameter('pageIcon', 'pe-7s-key');
+$this->setParameter('pageIcon', 'fa-solid fa-key');
 $this->setParameter('breadcrumbs', [
     ['label' => Translate::t('Dashboard'), 'url' => '/'],
     ['label' => Translate::t('Permessi'), 'url' => '/permission'],

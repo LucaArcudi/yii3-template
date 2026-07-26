@@ -48,7 +48,7 @@ final class Menu
             $hasChildren = $children !== [];
             $url = (string) ($item['url'] ?? '');
             $active = self::isActive($url, $currentPath) || self::hasActiveChild($children, $currentPath);
-            $icon = (string) ($item['icon'] ?? 'pe-7s-angle-right');
+            $icon = (string) ($item['icon'] ?? 'fa-solid fa-angle-right');
             $linkUrl = $type === NavigationItemType::TOGGLE ? '#' : ($url !== '' ? $url : '#');
             $liAttributes = [
                 'class' => $hasChildren && $active ? 'mm-active' : null,
@@ -70,7 +70,7 @@ final class Menu
             $html .= (string) Html::a(
                 (string) Html::i('', ['class' => 'metismenu-icon ' . $icon])
                 . Html::encode((string) $item['name'])
-                . ($hasChildren ? (string) Html::i('', ['class' => 'metismenu-state-icon pe-7s-angle-down caret-left']) : ''),
+                . ($hasChildren ? (string) Html::i('', ['class' => 'metismenu-state-icon fa-solid fa-angle-down caret-left']) : ''),
                 $linkUrl,
                 $linkAttributes,
             )->encode(false);

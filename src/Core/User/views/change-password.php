@@ -24,7 +24,7 @@ use Yiisoft\View\WebView;
 $this->setTitle(Translate::t('Cambio password'));
 FormTheme::boot();
 
-$this->setParameter('pageIcon', 'pe-7s-lock');
+$this->setParameter('pageIcon', 'fa-solid fa-lock');
 $this->setParameter('breadcrumbs', [
     ['label' => Translate::t('Dashboard'), 'url' => '/'],
     ['label' => Translate::t('Cambio password')],

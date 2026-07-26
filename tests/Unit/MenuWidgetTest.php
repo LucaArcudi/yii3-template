@@ -49,7 +49,7 @@ final class MenuWidgetTest extends Unit
                         [
                             'id' => 2,
                             'name' => 'Sales',
-                            'icon' => 'pe-7s-graph',
+                            'icon' => 'fa-regular fa-chart-bar',
                             'url' => '/reports/sales',
                             '_children' => [],
                         ],
@@ -76,7 +76,7 @@ final class MenuWidgetTest extends Unit
                         [
                             'id' => 2,
                             'name' => 'Sales',
-                            'icon' => 'pe-7s-graph',
+                            'icon' => 'fa-regular fa-chart-bar',
                             'url' => '/reports/sales',
                             '_children' => [],
                         ],
@@ -88,7 +88,7 @@ final class MenuWidgetTest extends Unit
 
         self::assertStringContainsString('Reports', $html);
         self::assertStringContainsString('Sales', $html);
-        self::assertStringContainsString('metismenu-icon pe-7s-graph', $html);
+        self::assertStringContainsString('metismenu-icon fa-regular fa-chart-bar', $html);
         self::assertStringContainsString('<li class="mm-active">', $html);
         self::assertStringContainsString('aria-expanded="true"', $html);
         self::assertStringContainsString('class="mm-collapse mm-show"', $html);

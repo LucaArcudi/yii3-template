@@ -6,7 +6,7 @@ use Yiisoft\Yii\View\WebView;
 
 /** @var WebView $this */
 $this->setTitle(Translate::t('Pagina non trovata'));
-$this->setParameter('pageIcon', 'pe-7s-way');
+$this->setParameter('pageIcon', 'fa-solid fa-route');
 $this->setParameter('breadcrumbs', [
     ['label' => 'Dashboard', 'url' => '/'],
     ['label' => Translate::t('Pagina non trovata')],

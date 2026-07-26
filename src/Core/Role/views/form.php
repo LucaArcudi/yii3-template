@@ -31,7 +31,7 @@ $action = $mode === 'update'
 $title = $mode === 'update' ? Translate::t('Modifica ruolo') : Translate::t('Nuovo ruolo');
 
 $this->setTitle($title);
-$this->setParameter('pageIcon', 'pe-7s-id');
+$this->setParameter('pageIcon', 'fa-regular fa-id-card');
 $this->setParameter('breadcrumbs', [
     ['label' => Translate::t('Dashboard'), 'url' => '/'],
     ['label' => Translate::t('Ruoli'), 'url' => '/role'],

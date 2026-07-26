@@ -19,7 +19,7 @@ $returnLabel = $isGuest ? Translate::t('Vai al login') : Translate::t('Torna all
 $this->setTitle(Translate::t('Accesso negato'));
 $this->setParameter('guestHeaderSubtitle', Translate::t('Area riservata'));
 $this->setParameter('guestCardSubtitle', Translate::t('La richiesta non puo essere completata con le autorizzazioni correnti.'));
-$this->setParameter('pageIcon', 'pe-7s-lock');
+$this->setParameter('pageIcon', 'fa-solid fa-lock');
 $this->setParameter('breadcrumbs', [
     ['label' => Translate::t('Dashboard'), 'url' => '/'],
     ['label' => Translate::t('Accesso negato')],

@@ -34,7 +34,7 @@ final class NotificationDropdown
 
                 return (string) Html::a(
                     (string) Html::span(
-                        (string) Html::i('', ['class' => 'pe-7s-bell']),
+                        (string) Html::i('', ['class' => 'fa-regular fa-bell']),
                         ['class' => 'app-notification-menu__item-icon'],
                     )->encode(false)
                     . (string) Html::span(
@@ -66,7 +66,7 @@ final class NotificationDropdown
 
         return (string) Html::div(
             (string) Html::button(
-                (string) Html::i('', ['class' => 'pe-7s-bell'])
+                (string) Html::i('', ['class' => 'fa-regular fa-bell'])
                 . $badge
                 . (string) Html::span(Translate::t('Notifiche'), ['class' => 'visually-hidden']),
                 [

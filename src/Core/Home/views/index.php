@@ -19,7 +19,7 @@ use Yiisoft\View\WebView;
  */
 
 $this->setTitle($applicationParams->name);
-$this->setParameter('pageIcon', 'pe-7s-home');
+$this->setParameter('pageIcon', 'fa-regular fa-house');
 $this->setParameter('breadcrumbs', [
     ['label' => Translate::t('Dashboard')],
 ]);
