@@ -1,30 +1,22 @@
 {
-    "name": "yiisoft/app",
+    "name": "lucaarcudi/yii3-template",
     "type": "project",
     "description": "Yii3 web application template",
     "keywords": [
         "yii3",
         "app"
     ],
+    "homepage": "https://github.com/LucaArcudi/yii3-template",
     "license": "BSD-3-Clause",
-    "support": {
-        "issues": "https://github.com/yiisoft/app/issues?state=open",
-        "source": "https://github.com/yiisoft/app",
-        "forum": "https://www.yiiframework.com/forum/",
-        "wiki": "https://www.yiiframework.com/wiki/",
-        "irc": "ircs://irc.libera.chat:6697/yii",
-        "chat": "https://t.me/yii3en"
-    },
-    "funding": [
+    "authors": [
         {
-            "type": "opencollective",
-            "url": "https://opencollective.com/yiisoft"
-        },
-        {
-            "type": "github",
-            "url": "https://github.com/sponsors/yiisoft"
+            "name": "Antonio Luca Maria Arcudi"
         }
     ],
+    "support": {
+        "issues": "https://github.com/LucaArcudi/yii3-template/issues",
+        "source": "https://github.com/LucaArcudi/yii3-template"
+    },
     "scripts": {
         "serve": [
             "Composer\\Config::disableProcessTimeout",

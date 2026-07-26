@@ -1,6 +1,7 @@
 # Contribuire
 
-Grazie dell'interesse! Il progetto è rilasciato sotto licenza [MIT](LICENSE):
+Grazie dell'interesse! Il progetto è rilasciato sotto licenza
+[BSD-3-Clause](LICENSE):
 contribuendo accetti che il tuo codice sia distribuito con la stessa licenza.
 
 ## Flusso

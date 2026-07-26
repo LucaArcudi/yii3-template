@@ -1,11 +1,14 @@
 # Yii3 Template
 
+> Questo template è fornito "così com'è".
+> Hardening e verifiche di sicurezza restano a carico di chi lo installa.
+
 Template applicativo [Yii3](https://www.yiiframework.com/) con tema
 ArchitectUI e domini admin pronti all'uso: utenti, ruoli e permessi, menu,
 task e notifiche. Include una pipeline completa: test e scansioni in CI,
 immagine pubblicata su GHCR, deploy automatico su VPS via SSH.
 
-Licenza [MIT](LICENSE) — contributi benvenuti, vedi
+Licenza [BSD-3-Clause](LICENSE) — contributi benvenuti, vedi
 [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Requisiti
