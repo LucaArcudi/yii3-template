@@ -105,6 +105,17 @@ jobs:
           docker compose -f compose.yml run --rm app ./yii migrate:up -y
           docker compose -f compose.yml run --rm app ./yii migrate:history
 
+      - name: Run database-group tests
+        run: |
+          # Il run principale esclude il gruppo "database" (gira con --no-deps,
+          # senza MySQL): qui il gruppo viene eseguito contro il DB della CI
+          # appena ricostruito dalla catena di migration.
+          set -o pipefail
+          docker compose -f compose.yml run --rm app ./vendor/bin/codecept run -g database --no-colors | tee /tmp/database-tests.log
+          # Guardia anti-regressione: se il gruppo smette di eseguire test
+          # (rinominato, svuotato, escluso) lo step deve fallire, non tacere.
+          grep -Eq "OK \([1-9][0-9]* test" /tmp/database-tests.log
+
       - name: Verify prod image artifact
         run: |
           DOCKER_BUILDKIT=1 docker build --file docker/Dockerfile --target prod --tag yii3-template-prod:ci-check .
