@@ -1,0 +1,48 @@
+name: Incident di produzione
+description: Gestione e postmortem di un incidente in produzione
+title: "[Incident] "
+labels: ["incident"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Raccogliere le evidenze con i runbook (`docs/runbooks/`, partendo
+        da `stato-e-log.md`). Per la diagnosi AI:
+        `docs/ai/prompts/incident-diagnosis.md`.
+  - type: input
+    id: alert
+    attributes:
+      label: Alert e severity
+      placeholder: "es. UpstreamProxyDown (critical)"
+  - type: input
+    id: quando
+    attributes:
+      label: Inizio (e fine, se rientrato)
+      placeholder: "2026-07-28 14:05 → 14:22 (Europe/Rome)"
+    validations:
+      required: true
+  - type: textarea
+    id: impatto
+    attributes:
+      label: Impatto osservato
+      description: Chi/cosa è stato colpito e come si manifestava.
+    validations:
+      required: true
+  - type: textarea
+    id: evidenze
+    attributes:
+      label: Evidenze raccolte
+      description: >-
+        Commit deployato, ultimo run CD, stato container, log rilevanti,
+        esito health check, metriche. Mai valori di segreti.
+    validations:
+      required: true
+  - type: textarea
+    id: azioni
+    attributes:
+      label: Azioni già intraprese
+      description: Runbook seguiti e comandi eseguiti, in ordine.
+  - type: textarea
+    id: causa
+    attributes:
+      label: Causa probabile (se nota)

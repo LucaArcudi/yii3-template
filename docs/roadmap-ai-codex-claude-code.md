@@ -48,8 +48,8 @@ appoggiarsi (deciso e verificato, non aspirazionale):
 ✔ migration del framework (yiisoft/db-migration) + comando user:create
 ✔ monitoring: Prometheus + node/cadvisor/mysqld exporter + metriche HTTP
   di Caddy; Grafana pubblica in TLS; 6 regole di alert versionate
-✔ runbook operativi in docs/documentazione-progetto.md §9 (log, rollback,
-  restore, diagnosi 500)
+✔ runbook operativi in file singoli sotto docs/runbooks/ (indice in
+  documentazione-progetto.md §9)
 ```
 
 Le sezioni che seguono costruiscono SOPRA questa base.
@@ -217,8 +217,8 @@ docs/
       fix-ci-failure.md
       review-pr.md
       incident-diagnosis.md
-  runbooks/           (oggi i runbook vivono in documentazione-progetto.md §9;
-                       estrarli in file singoli quando l'AI dovrà citarli)
+  runbooks/           (estratti: undici runbook singoli, indice in
+                       documentazione-progetto.md §9)
 
 AGENTS.md
 CLAUDE.md
@@ -657,22 +657,15 @@ Rules:
 
 ## 13. Runbook prima dell'AI
 
-Prima di far ragionare l'AI sugli incident servono runbook chiari. Oggi
-vivono in `docs/documentazione-progetto.md` §9 (stato e log, rollback,
-restore backup, diagnosi 500); quando l'AI dovrà citarli in automatico
-conviene estrarli in file singoli:
+**Fatto (2026-07-28)**: i runbook vivono in file singoli sotto
+`docs/runbooks/` — gli scenari di incident (`app-down`, `deploy-failed`,
+`db-down`, `disk-full`, `diagnosi-500`) più le procedure (`stato-e-log`,
+`deploy-manuale`, `rollback`, `backup-restore`, `accesso-db-tunnel`,
+`nuovo-dominio-crud`). Indice in `docs/documentazione-progetto.md` §9.
 
-```text
-docs/runbooks/app-down.md
-docs/runbooks/deploy-failed.md
-docs/runbooks/db-down.md
-docs/runbooks/rollback.md
-docs/runbooks/backup-restore.md
-docs/runbooks/disk-full.md
-```
-
-Ogni runbook: Symptoms, Immediate checks, Safe actions, AI instructions
-(cosa può e cosa NON può fare).
+Ogni runbook di incident segue lo schema: sintomi (con l'alert
+corrispondente), verifiche immediate, azioni sicure, cosa NON fare,
+istruzioni per l'AI (cosa può e cosa NON può fare).
 
 ---
 

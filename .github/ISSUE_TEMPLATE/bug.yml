@@ -1,0 +1,47 @@
+name: Bug
+description: Comportamento errato riproducibile
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: atteso
+    attributes:
+      label: Comportamento atteso
+    validations:
+      required: true
+  - type: textarea
+    id: osservato
+    attributes:
+      label: Comportamento osservato
+    validations:
+      required: true
+  - type: textarea
+    id: passi
+    attributes:
+      label: Passi per riprodurre
+      placeholder: |
+        1. ...
+        2. ...
+    validations:
+      required: true
+  - type: dropdown
+    id: ambiente
+    attributes:
+      label: Ambiente
+      options:
+        - locale
+        - CI
+        - produzione
+        - più ambienti
+    validations:
+      required: true
+  - type: textarea
+    id: evidenze
+    attributes:
+      label: Log ed evidenze
+      description: Stralci di log e screenshot. Mai segreti o dati personali.
+  - type: input
+    id: regressione
+    attributes:
+      label: Introdotto da (se noto)
+      description: Commit, PR o release sospetta.

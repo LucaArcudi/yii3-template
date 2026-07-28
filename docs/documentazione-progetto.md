@@ -512,7 +512,8 @@ Trigger: ogni `push` e `pull_request`. Due job:
    `${GITHUB_SHA}` e `latest`, autenticandosi con `GITHUB_TOKEN`
    (permessi `contents: read`, `packages: write`).
 
-Il tag `<sha>` per ogni release è ciò che rende possibile il rollback (§9.3).
+Il tag `<sha>` per ogni release è ciò che rende possibile il rollback
+([runbooks/rollback.md](runbooks/rollback.md)).
 
 ### 8.4 CD (`.github/workflows/cd.yml`)
 
@@ -556,11 +557,13 @@ dello script — il deploy risulterebbe verde ma interrotto a metà:
    ```
 
    L'header `X-Forwarded-Proto: https` è **necessario**: simula il proxy TLS;
-   senza, il cookie di sessione `Secure` fa rispondere 500 (vedi §9.5).
+   senza, il cookie di sessione `Secure` fa rispondere 500 (vedi
+   [runbooks/diagnosi-500.md](runbooks/diagnosi-500.md)).
    Se avvio, invariante o health check falliscono, lo script **ripristina
    automaticamente l'immagine precedente** (con health check di conferma;
-   le migration non vengono annullate, vedi §9.4) e il run fallisce
-   comunque, perché il deploy non è avvenuto.
+   le migration non vengono annullate, vedi
+   [runbooks/backup-restore.md](runbooks/backup-restore.md)) e il run
+   fallisce comunque, perché il deploy non è avvenuto.
 
 **Secrets richiesti** (repository secrets): `VPS_HOST`, `VPS_USER`,
 `VPS_SSH_KEY` (chiave dedicata `yii3_github_actions_cd`; la pubblica sta in
@@ -716,118 +719,38 @@ cAdvisor (metriche container), mysqld-exporter (utente MySQL dedicato
 
 ## 9. Runbook operativi
 
-### 9.1 Stato e log in produzione
+I runbook vivono in file singoli sotto [`docs/runbooks/`](runbooks/) — uno
+per scenario, citabili singolarmente (anche dall'AI nei prompt di
+`docs/ai/prompts/`). La base comune è
+[stato-e-log.md](runbooks/stato-e-log.md): definisce accesso SSH e alias
+`$DC` usati da tutti gli altri.
 
-```bash
-ssh deploy@<VPS_IP>
-cd /opt/yii3
+| Scenario | Runbook |
+|---|---|
+| Stato, log e health in produzione | [stato-e-log.md](runbooks/stato-e-log.md) |
+| Deploy manuale dal VPS | [deploy-manuale.md](runbooks/deploy-manuale.md) |
+| Deploy fallito (run CD rosso) | [deploy-failed.md](runbooks/deploy-failed.md) |
+| Rollback di una release | [rollback.md](runbooks/rollback.md) |
+| Backup, restore e patch del DB | [backup-restore.md](runbooks/backup-restore.md) |
+| 500 dopo un deploy | [diagnosi-500.md](runbooks/diagnosi-500.md) |
+| App giù (`UpstreamProxyDown`/`TargetDown`) | [app-down.md](runbooks/app-down.md) |
+| MySQL giù (`MysqlDown`) | [db-down.md](runbooks/db-down.md) |
+| Disco quasi pieno (`DiskAlmostFull`) | [disk-full.md](runbooks/disk-full.md) |
+| Accesso al DB dal PC locale (tunnel SSH) | [accesso-db-tunnel.md](runbooks/accesso-db-tunnel.md) |
+| Nuovo dominio CRUD (checklist) | [nuovo-dominio-crud.md](runbooks/nuovo-dominio-crud.md) |
 
-# alias della tripletta compose usata in tutti i comandi seguenti
-DC='docker compose --env-file .env.prod -f docker/prod/compose.yml -f docker/prod/compose.local.yml'
-
-$DC ps                      # stato container
-$DC logs app --tail=100     # log applicazione
-$DC logs db --tail=100      # log MySQL
-```
-
-### 9.2 Deploy manuale dal VPS
-
-Il percorso canonico è lo stesso script usato dal CD (migration, ricreazione
-esplicita, invariante, health check e rollback automatico inclusi):
-
-```bash
-# senza APP_IMAGE vale quello di .env.prod; per una versione precisa:
-APP_IMAGE=ghcr.io/lucaarcudi/yii3-template:<sha> bash /opt/yii3/scripts/deploy.sh
-```
-
-(In alternativa: GitHub → Actions → CD → *Run workflow*, con l'input
-`image_tag` facoltativo.)
-
-### 9.3 Rollback
-
-Se il deploy fallisce (avvio, invariante immagine o health check),
-`deploy.sh` **ripristina da solo** l'immagine che girava prima: il run del
-CD risulta rosso, ma l'app resta sulla versione precedente. Le migration
-non vengono annullate (vedi §9.4 per il restore del backup pre-deploy).
-
-Rollback manuale di una release sana ma da ritirare — ogni build è taggata
-con lo SHA del commit e il CD deploya proprio quel tag:
-
-```bash
-cd /opt/yii3
-APP_IMAGE=ghcr.io/lucaarcudi/yii3-template:<sha-precedente> $DC pull app
-APP_IMAGE=ghcr.io/lucaarcudi/yii3-template:<sha-precedente> $DC up -d app
-```
-
-Attenzione: il prossimo run del CD rideploya lo SHA del commit corrente di
-`main`; il rollback definitivo è il revert del commit su `main` via PR.
-
-### 9.4 Backup, restore e patch DB
-
-Backup automatico ad ogni deploy (step del CD). Backup manuale:
-
-```bash
-cd /opt/yii3 && mkdir -p backups
-$DC exec -T db sh -lc 'mysqldump --no-tablespaces -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' \
-  > backups/db_$(date +%F_%H-%M-%S).sql
-
-# retention consigliata (7 giorni)
-find /opt/yii3/backups -type f -name "db_*.sql" -mtime +7 -delete
-```
-
-Applicare una migration su DB esistente (initdb.d gira solo al primo avvio):
-
-```bash
-$DC exec -T db sh -lc 'mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' \
-  < database/migrations/release_X_Y_Z.sql
-```
-
-Restore da backup: stesso comando `mysql` con in input il file di dump.
-
-### 9.5 Diagnosi di un 500 dopo il deploy
-
-1. `$DC logs app --tail=200` — l'error handler logga su stdout/`runtime/logs`;
-2. ricordare che il curl di health **deve** includere
-   `-H 'X-Forwarded-Proto: https'`: senza header la richiesta appare HTTP e
-   il cookie di sessione `Secure` genera un 500 fuorviante;
-3. verificare che `.env.prod` contenga `AUTH_COOKIE_SECRET_KEY` non di
-   default e `DB_PASSWORD` corretti (il compose fallisce fast se mancano);
-4. `ansible-playbook playbooks/server_check.yml` per un check completo.
-
-### 9.6 Accesso al DB dal PC locale (tunnel SSH)
-
-```bash
-ssh -N -L 3307:127.0.0.1:3307 deploy@<VPS_IP>
-```
-
-Poi collegarsi con il client SQL a `127.0.0.1:3307` usando le credenziali di
-`.env.prod`. Il DB non è mai raggiungibile direttamente da internet.
-
-### 9.7 Aggiungere un nuovo dominio CRUD (checklist)
-
-1. Migration SQL idempotente in `database/migrations/` (+ eventuale seed dei
-   permessi `<DOMINIO>_VIEW_ALL/VIEW_OWN/CREATE/UPDATE/DELETE`);
-2. classi in `src/<Modulo>/<Dominio>/` sul modello di
-   `src/Mes/Task/` (Entity, Input, Repository, Reader, Filter, Policy,
-   Presenter, Scope);
-3. action in `src/<Modulo>/<Dominio>/Actions/` (Index/View/Create/
-   Update/Delete, con `withViewPath('@src/<Modulo>/<Dominio>/views')` nel
-   costruttore) e view in `src/<Modulo>/<Dominio>/views/`;
-4. rotte in `src/<Modulo>/routes.php` e DI in `src/<Modulo>/di.php`,
-   raccolti automaticamente dalla config (per un modulo nuovo basta creare
-   i due file);
-5. voce di menu in `src/Shared/Navigation/NavigationProvider.php` con la
-   `policyClass` del dominio;
-6. montare la nuova migration nei compose (`compose.yml` root e
-   `docker/prod/compose.yml`) e applicarla a mano sul DB di produzione;
-7. test unit per Input/Reader e aggiornamento del CHANGELOG.
+Ogni runbook di incident segue lo stesso schema: sintomi (con l'alert
+Prometheus corrispondente), verifiche immediate, azioni sicure, cosa NON
+fare, istruzioni per l'AI.
 
 ## 10. Limiti noti e lavori futuri
 
 Dall'audit del 2 luglio 2026 e dallo stato attuale dell'infrastruttura:
 
-- **Trivy non bloccante** in CI (report-only, scelta esplicita in questa
-  fase); `composer audit` è invece bloccante e senza advisory aperte.
+- **Trivy**: gate bloccante in CI sulle sole HIGH/CRITICAL **con fix
+  disponibile** (eccezioni in `.trivyignore`, con scadenza); il resto dello
+  scan resta report-only. `composer audit` è bloccante e senza advisory
+  aperte.
 - **Provisioning server non automatizzato**: Ansible copre proxy, app config
   e check; install Docker/utenti/firewall/hardening sono ancora manuali.
 - **Target Makefile ereditati dal template upstream** parzialmente non
