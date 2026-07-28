@@ -435,10 +435,18 @@ fallisce se il gruppo non esegue alcun test.
 | Rector | `rector.php` | `make rector` / `vendor/bin/rector` |
 | PHP CS Fixer | `.php-cs-fixer.php` | `make cs-fix` |
 | Dependency analyser | `composer-dependency-analyser.php` | `make composer-dependency-analyser` |
-| Trivy | `trivy.yaml` | `make trivy` (fs+config), `make trivy-image` |
+| Trivy | `trivy.yaml` | `make trivy` (fs+config), `make trivy-image`, `make trivy-gate` |
 
-Trivy è in modalità **report-only** (`exit-code 0`) sia in locale sia in CI;
-esclude `.git`, `vendor`, `.local`, dump/backup e i file `.env*`.
+Gli scan Trivy informativi sono **report-only** (`exit-code 0`) ed escludono
+`.git`, `vendor`, `.local`, dump/backup e i file `.env*`. In CI due **gate
+bloccanti** separati (`make trivy-gate` in locale) falliscono il job sulle
+vulnerabilità HIGH/CRITICAL **con fix disponibile** (`--ignore-unfixed`),
+sul filesystem e sull'immagine prod; eccezioni solo in `.trivyignore`,
+ognuna con motivazione e scadenza `exp:YYYY-MM-DD` (alla scadenza la voce
+si riattiva nel gate). Il lockfile documentale degli asset frontend
+(`docs/assets/architectui-4.5.0-package-lock-cleanup.json`) è incluso nello
+scan come manifest npm via `file-patterns`: le dipendenze dev sono escluse
+dal default di Trivy, restano sorvegliate le dipendenze runtime del bundle.
 
 ## 8. DevOps
 
@@ -449,11 +457,12 @@ push su main
    │
    ▼
 CI (.github/workflows/ci.yml)
-   ├─ Trivy fs/config/secret scan (report-only)
-   ├─ build immagine dev + Trivy image scan
+   ├─ Trivy fs/config/secret scan (report-only) + gate fs bloccante
+   ├─ build immagine dev (--pull) + Trivy image scan
    ├─ composer install / validate / audit
    ├─ codecept run --skip-group database
-   └─ validazione migration + codecept run -g database (su DB migrato)
+   ├─ validazione migration + codecept run -g database (su DB migrato)
+   └─ verifica artefatto prod + gate Trivy bloccante (fixable HIGH/CRITICAL)
    │  (job "test" verde)
    ▼
 publish-image (solo push su main)
@@ -476,7 +485,7 @@ Il CD si attiva **automaticamente** al termine con successo della CI su
 
 | Stage | Base | Contenuto |
 |---|---|---|
-| `base` | `dunglas/frankenphp:1-php8.4-bookworm` | Estensioni PHP (opcache, intl, dom, pdo_mysql, …) |
+| `base` | `dunglas/frankenphp:1-php8.4-bookworm` | `apt upgrade` dei pacchetti di sistema + estensioni PHP (opcache, intl, dom, pdo_mysql, …) |
 | `dev` | `base` | + Xdebug, Composer; utente non-root `appuser` con UID/GID dell'host (arg `USER_ID`/`GROUP_ID`), `CAP_NET_BIND_SERVICE` per bind su 80/443 |
 | `prod-builder` | `base` | `composer install --no-dev --classmap-authoritative`, poi rimuove `composer.json`/`composer.lock` |
 | `prod` | `base` | Copia `/app` dal builder, `APP_ENV=prod`, `SERVER_ROOT=/app/public`, esegue come `www-data` |
@@ -488,12 +497,16 @@ FrankenPHP incorpora Caddy: il container serve HTTP direttamente
 
 Trigger: ogni `push` e `pull_request`. Due job:
 
-1. **test** — Trivy fs/config/secret sul repo → build dell'immagine dev via
-   `compose.yml` root → Trivy image scan su `yii3-template-app:latest` →
-   `composer install`, `composer validate`, `composer audit` (bloccante)
-   → `codecept run --skip-group database` → validazione migration
+1. **test** — Trivy fs/config/secret sul repo (report-only) + gate fs
+   bloccante sulle HIGH/CRITICAL con fix disponibile → build dell'immagine
+   dev via `compose.yml` root (`--pull` della base mobile) → Trivy image
+   scan su `yii3-template-app:latest` → `composer install`,
+   `composer validate`, `composer audit` (bloccante) →
+   `codecept run --skip-group database` → validazione migration
    (idempotenza + bootstrap da zero) → `codecept run -g database` sul DB
-   migrato, con guardia sul numero di test eseguiti.
+   migrato, con guardia sul numero di test eseguiti → verifica artefatto
+   prod + gate Trivy bloccante sull'immagine prod. Eccezioni ai gate solo
+   via `.trivyignore` (motivazione + scadenza `exp:`).
 2. **publish-image** — dipende da `test`, gira **solo su push a `main`**.
    Builda `docker/Dockerfile --target prod` e pubblica su GHCR i tag
    `${GITHUB_SHA}` e `latest`, autenticandosi con `GITHUB_TOKEN`

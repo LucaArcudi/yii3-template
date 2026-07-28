@@ -23,6 +23,7 @@ DOCKER_COMPOSE_TEST := docker compose -f docker/compose.yml -f docker/test/compo
 TRIVY_VERSION := 0.71.2
 TRIVY_IMAGE := aquasec/trivy:${TRIVY_VERSION}
 TRIVY_APP_IMAGE := yii3-template-app:latest
+TRIVY_PROD_IMAGE := yii3-template-prod:local
 TRIVY_CACHE_DIR := $(CURDIR)/.cache/trivy
 TRIVY_RUN := docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$(CURDIR):/work" -v "$(TRIVY_CACHE_DIR):/root/.cache/trivy" -w /work $(TRIVY_IMAGE)
 TRIVY_IMAGE_SCAN_FLAGS := --format table --exit-code 0 --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL --scanners vuln,misconfig,secret
@@ -130,6 +131,13 @@ endif
 ifeq ($(PRIMARY_GOAL),trivy-image)
 trivy-image: ## Run Trivy image scan for yii3-template-app:latest
 	$(TRIVY_RUN) image $(TRIVY_IMAGE_SCAN_FLAGS) $(TRIVY_APP_IMAGE)
+endif
+
+ifeq ($(PRIMARY_GOAL),trivy-gate)
+trivy-gate: ## Run the blocking Trivy gate (fixable HIGH/CRITICAL, fs + prod image) as in CI
+	$(TRIVY_RUN) fs --config trivy.yaml --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 .
+	DOCKER_BUILDKIT=1 docker build --file docker/Dockerfile --target prod --pull --tag $(TRIVY_PROD_IMAGE) .
+	$(TRIVY_RUN) image --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 $(TRIVY_PROD_IMAGE)
 endif
 
 #

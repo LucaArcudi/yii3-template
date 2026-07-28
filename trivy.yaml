@@ -1,5 +1,8 @@
-# Repository scan defaults for local development and CI.
-# Keep exit-code 0 while Trivy runs in report-only mode.
+# Default degli scan per sviluppo locale e CI.
+# I default restano report-only (exit-code 0): in CI i gate bloccanti
+# sovrascrivono exit-code/severity/ignore-unfixed per imporre il blocco
+# sulle HIGH/CRITICAL con fix disponibile (eccezioni in .trivyignore,
+# con motivazione e scadenza).
 format: table
 exit-code: 0
 severity:
@@ -10,6 +13,13 @@ severity:
   - CRITICAL
 
 scan:
+  # Il lockfile documentale degli asset frontend ha un nome non standard di
+  # proposito (nessuna pipeline npm nel repo): il pattern lo fa comunque
+  # analizzare come manifest npm. Le dipendenze dev (lockfile v3) sono
+  # escluse dal default di Trivy: restano sorvegliate le sole dipendenze
+  # runtime del bundle ArchitectUI.
+  file-patterns:
+    - "npm:architectui-4\\.5\\.0-package-lock-cleanup\\.json"
   skip-dirs:
     - .git
     - .local

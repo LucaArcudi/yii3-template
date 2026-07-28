@@ -19,8 +19,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      # I report informativi devono restare completi: TRIVY_IGNOREFILE vuoto
+      # perché .trivyignore (raccolto di default dalla cwd) vale solo per i
+      # gate bloccanti, non deve nascondere le eccezioni accettate.
       - name: Run Trivy filesystem and config scan
         uses: aquasecurity/trivy-action@v0.36.0
+        env:
+          TRIVY_IGNOREFILE: /dev/null
         with:
           scan-type: fs
           scan-ref: .
@@ -30,17 +35,39 @@ jobs:
           version: v0.71.2
           cache: 'true'
 
+      # Gate bloccante (C-01/F-03): vulnerabilità HIGH/CRITICAL con fix
+      # disponibile non devono entrare. Il report completo resta nello step
+      # informativo sopra; eccezioni solo via .trivyignore, ognuna con
+      # motivazione e scadenza.
+      - name: Enforce Trivy gate on fixable HIGH/CRITICAL (fs)
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          trivy-config: trivy.yaml
+          scanners: vuln
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: HIGH,CRITICAL
+          version: v0.71.2
+          cache: 'true'
+          skip-setup-trivy: 'true'
+
       - name: Configure Docker user
         run: |
           mkdir -p runtime/cache/composer
           echo "LOCAL_UID=$(id -u)" >> "$GITHUB_ENV"
           echo "LOCAL_GID=$(id -g)" >> "$GITHUB_ENV"
 
+      # --pull: il tag base frankenphp è mobile, ogni build deve partire
+      # dalla base più recente (bump C-01), non da una cache stantia.
       - name: Build services
-        run: docker compose -f compose.yml build
+        run: docker compose -f compose.yml build --pull
 
       - name: Run Trivy image scan
         uses: aquasecurity/trivy-action@v0.36.0
+        env:
+          TRIVY_IGNOREFILE: /dev/null
         with:
           scan-type: image
           image-ref: yii3-template-app:latest
@@ -118,7 +145,7 @@ jobs:
 
       - name: Verify prod image artifact
         run: |
-          DOCKER_BUILDKIT=1 docker build --file docker/Dockerfile --target prod --tag yii3-template-prod:ci-check .
+          DOCKER_BUILDKIT=1 docker build --file docker/Dockerfile --target prod --pull --tag yii3-template-prod:ci-check .
           # Il CD esegue ./yii migrate:up DALL'IMMAGINE, non dal checkout
           # bind-montato: questi file devono esistere nell'artefatto
           # (esclusioni .dockerignore e bit di esecuzione inclusi).
@@ -132,6 +159,22 @@ jobs:
             test -d /app/vendor
             echo "Artefatto prod: OK"
           '
+
+      # Gate bloccante sull'artefatto che va davvero in produzione (C-01):
+      # è l'immagine prod, non quella dev, a spedire le vulnerabilità.
+      - name: Enforce Trivy gate on fixable HIGH/CRITICAL (prod image)
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: image
+          image-ref: yii3-template-prod:ci-check
+          scanners: vuln
+          format: table
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: HIGH,CRITICAL
+          version: v0.71.2
+          cache: 'true'
+          skip-setup-trivy: 'true'
 
       - name: Stop services
         if: always()

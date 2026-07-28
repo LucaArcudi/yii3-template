@@ -1,0 +1,18 @@
+# Eccezioni al gate Trivy bloccante (HIGH/CRITICAL con fix disponibile).
+#
+# Ogni voce DEVE avere sopra un commento con la motivazione e una scadenza
+# "exp:YYYY-MM-DD": alla scadenza Trivy riattiva la voce nel gate —
+# rivalutare (upstream ha rebuildato? la vulnerabilità è diventata
+# raggiungibile?), non rinnovare alla cieca.
+
+# kin-openapi < 0.144.0 dentro il binario /usr/local/bin/frankenphp (modulo
+# Caddy per la validazione OpenAPI: questa applicazione non lo usa, la
+# vulnerabilità non è raggiungibile). Si chiude da sola quando frankenphp
+# pubblica un binario rebuildato: il tag base è mobile e le build --pull la
+# raccolgono. Verificato ancora presente nella base il 2026-07-28.
+GHSA-r277-6w6q-xmqw exp:2026-08-31
+
+# grpc-go < 1.82.1 dentro lo stesso binario frankenphp (nessun servizio
+# gRPC/xDS esposto dall'applicazione). Stessa condizione di chiusura:
+# rebuild upstream. Verificato ancora presente nella base il 2026-07-28.
+GHSA-hrxh-6v49-42gf exp:2026-08-31

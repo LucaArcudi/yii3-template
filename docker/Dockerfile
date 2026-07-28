@@ -2,8 +2,12 @@ FROM composer/composer:2-bin AS composer
 
 FROM dunglas/frankenphp:1-php8.4-bookworm AS base
 
-RUN apt update && apt -y install \
-    unzip
+# apt upgrade: la base può restare indietro sui point update Debian; il gate
+# Trivy della CI blocca le HIGH/CRITICAL con fix disponibile, quindi ogni
+# build allinea i pacchetti di sistema alle versioni corrette.
+RUN apt update && apt -y upgrade && apt -y install \
+    unzip && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN install-php-extensions \
     opcache \
