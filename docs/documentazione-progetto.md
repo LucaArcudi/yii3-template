@@ -414,13 +414,18 @@ reader), **Functional**, **Console**, **Web**. Configurazione in
 # in container (come in CI)
 docker compose run --rm --no-deps app ./vendor/bin/codecept run --skip-group database
 
+# gruppo database (serve MySQL attivo e migrato, come in CI)
+docker compose run --rm app ./vendor/bin/codecept run -g database
+
 # in locale
 APP_ENV=test vendor/bin/codecept run Unit
 APP_ENV=test vendor/bin/codecept run Functional
 ```
 
-I test che richiedono il DB sono nel gruppo `database` (la CI li salta perché
-esegue le suite senza il servizio MySQL).
+I test che richiedono il DB sono nel gruppo `database`: il run principale
+della CI li salta (gira senza MySQL), poi un secondo step li esegue contro
+il DB della CI ricostruito dalla catena di migration, con una guardia che
+fallisce se il gruppo non esegue alcun test.
 
 ### 7.2 Analisi statica e stile
 
@@ -447,7 +452,8 @@ CI (.github/workflows/ci.yml)
    ├─ Trivy fs/config/secret scan (report-only)
    ├─ build immagine dev + Trivy image scan
    ├─ composer install / validate / audit
-   └─ codecept run --skip-group database
+   ├─ codecept run --skip-group database
+   └─ validazione migration + codecept run -g database (su DB migrato)
    │  (job "test" verde)
    ▼
 publish-image (solo push su main)
@@ -484,8 +490,10 @@ Trigger: ogni `push` e `pull_request`. Due job:
 
 1. **test** — Trivy fs/config/secret sul repo → build dell'immagine dev via
    `compose.yml` root → Trivy image scan su `yii3-template-app:latest` →
-   `composer install`, `composer validate`, `composer audit` (non bloccante)
-   → `codecept run --skip-group database`.
+   `composer install`, `composer validate`, `composer audit` (bloccante)
+   → `codecept run --skip-group database` → validazione migration
+   (idempotenza + bootstrap da zero) → `codecept run -g database` sul DB
+   migrato, con guardia sul numero di test eseguiti.
 2. **publish-image** — dipende da `test`, gira **solo su push a `main`**.
    Builda `docker/Dockerfile --target prod` e pubblica su GHCR i tag
    `${GITHUB_SHA}` e `latest`, autenticandosi con `GITHUB_TOKEN`
