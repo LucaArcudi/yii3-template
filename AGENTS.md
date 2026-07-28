@@ -1,11 +1,14 @@
-# Project Instructions for Codex
+# Project Instructions for AI Agents
 
 This is a Yii3 web application template with CI/CD, database migrations,
-monitoring, deployment scripts, and production runbooks.
+monitoring, deployment scripts, and production runbooks. These rules apply
+to every AI agent working on this repository (Codex, Claude Code, or any
+other).
 
 ## Operating Rules
 
-- Work on a dedicated branch. Never push directly to `main`.
+- Work on a dedicated branch cut from an up-to-date `main`. Never push
+  directly to `main`.
 - Keep changes small, focused, and reviewable.
 - Read the existing code before editing and follow local patterns.
 - Prefer existing Yii3 services, shared widgets, module domain classes, and
@@ -62,6 +65,24 @@ Shared infrastructure (`src/Shared/`):
   makes them unnecessary; do not add new entries to hide fresh issues unless
   explicitly approved.
 
+## Frontend Assets
+
+- The ArchitectUI bundles under `src/Shared/resources/architectui/assets/`
+  are build outputs: never edit them by hand. Any change goes through the
+  rebuild procedure in `docs/assets/REBUILD.md`.
+- `app.js`, `app-overrides.css`, and `app-theme.css` in that directory are
+  hand-written application files: they are the only asset files you may
+  edit, and no rebuild may overwrite them.
+- After every rebuild, update the lockfiles in `docs/assets/` (with their
+  SHA-256 in `docs/assets/README.md`), `THIRD-PARTY-NOTICES.md`, the
+  exclusion list in `docs/assets/REBUILD.md`, and the Trivy `file-patterns`
+  entry in `trivy.yaml` if the lockfile name changed.
+- Never add a frontend dependency whose license does not allow
+  redistribution inside this public template (see the pe7-icon precedent in
+  `docs/assets/REBUILD.md`).
+- Never declare a license you have not read in the package's own LICENSE
+  file.
+
 ## Verification
 
 Run the most relevant checks before finishing. Prefer the narrowest useful set
@@ -88,12 +109,21 @@ and the command that failed.
 
 - Use concise imperative commit messages.
 - Keep generated or unrelated local files out of commits.
+- Stage paths explicitly with `git add <path>`; never use `git commit -a`,
+  `git add -u`, or `git add -A`.
+- Agents do not push, do not open PRs, and do not merge: those are owner
+  actions. Finish with a clean `git status`, then hand over the branch name
+  and the commit message.
+- Before suggesting any push or sync command, check the target with
+  `git branch --show-current`.
 - For Codex-authored work, add this trailer to the commit message:
 
 ```text
 Co-Authored-By: Codex <noreply@openai.com>
 ```
 
+- For Claude-authored work, keep the `Co-Authored-By: Claude … <noreply@anthropic.com>`
+  trailer that Claude Code adds by default.
 - PR summaries must include what changed, why it changed, tests run, residual
   risks, and any manual verification steps.
 

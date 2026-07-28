@@ -16,8 +16,14 @@ questo repository con Node.js 24.18.0 e npm 11.16.0.
 - `architectui-4.5.0-package-lock-cleanup.json` descrive le dipendenze esatte
   della build finale dopo le esclusioni approvate. SHA-256:
   `10be224c77849ea73fce54955f075b4f33bdd9bba4260f80f461e1e85520a1df`.
+  Nota: dichiara ancora `pe7-icon`, rimossa in un secondo momento per
+  licenza — vedi la trappola documentata in [REBUILD.md](REBUILD.md) §2.
 
 I file hanno nomi documentali intenzionalmente diversi da `package-lock.json`.
 Non introducono npm o una pipeline frontend nel progetto e non sono usati
-dall'applicazione, da Composer o dalla CI. Servono esclusivamente come prova di
-provenienza, riproducibilità e supporto al censimento delle licenze.
+dall'applicazione né da Composer. La CI li legge in sola lettura: lo scan
+Trivy analizza `architectui-4.5.0-package-lock-cleanup.json` come manifest
+npm (`file-patterns` in `trivy.yaml`) per la sorveglianza CVE delle
+dipendenze runtime del bundle. Servono come prova di provenienza,
+riproducibilità e supporto al censimento delle licenze; la procedura di
+rebuild è in [REBUILD.md](REBUILD.md).
