@@ -89,5 +89,6 @@ Non richiede AI ed è il livello di resilienza più importante:
 ✔ deploy sul tag SHA del commit (niente più latest): run riproducibili
 ✔ rollback automatico: deploy.sh registra l'immagine in esecuzione
   (digest) e la ripristina se up, invariante o health check falliscono;
-  le migration non vengono annullate (runbook §9.4 per il restore)
+  le migration non vengono annullate (docs/runbooks/backup-restore.md
+  per il restore)
 ```

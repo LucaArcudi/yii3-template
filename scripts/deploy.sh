@@ -11,7 +11,7 @@
 # Se l'avvio della nuova versione fallisce (up, invariante immagine o
 # health check), l'app viene RIPRISTINATA automaticamente sull'immagine
 # che girava prima del deploy; le migration non vengono annullate
-# (idempotenti e additive: per il restore c'è il runbook §9.4) e il run
+# (idempotenti e additive: per il restore c'è docs/runbooks/backup-restore.md) e il run
 # fallisce comunque, perché il deploy non è avvenuto.
 #
 # Perché uno script e non un heredoc nel workflow: uno script inviato via
@@ -90,15 +90,15 @@ start_and_check() {
 if ! start_and_check; then
   echo "ERRORE: deploy fallito." >&2
   if [ -z "$PREV_IMAGE" ]; then
-    echo "Nessuna immagine precedente registrata (primo deploy?): niente rollback, intervento manuale (runbook §9.1)." >&2
+    echo "Nessuna immagine precedente registrata (primo deploy?): niente rollback, intervento manuale (runbook docs/runbooks/stato-e-log.md)." >&2
     exit 1
   fi
   echo "Rollback automatico su ${PREV_IMAGE}..." >&2
   if APP_IMAGE="$PREV_IMAGE" "${C[@]}" up -d --wait --wait-timeout 120 --force-recreate --no-deps app < /dev/null && health_check; then
     echo "Rollback OK: l'app è tornata su ${PREV_IMAGE}." >&2
-    echo "Le migration NON vengono annullate: se la release ne conteneva, valutare il restore del backup pre-deploy (runbook §9.4)." >&2
+    echo "Le migration NON vengono annullate: se la release ne conteneva, valutare il restore del backup pre-deploy (runbook docs/runbooks/backup-restore.md)." >&2
   else
-    echo "ROLLBACK FALLITO: intervento manuale immediato (runbook §9.1 e §9.3)." >&2
+    echo "ROLLBACK FALLITO: intervento manuale immediato (runbook docs/runbooks/app-down.md e rollback.md)." >&2
   fi
   exit 1
 fi

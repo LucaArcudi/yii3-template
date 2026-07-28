@@ -1,0 +1,43 @@
+name: Richiesta tecnica
+description: Nuova funzionalità o modifica, già pre-analizzata da un tecnico
+title: "[Feature] "
+labels: ["feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        La richiesta tecnica è la pre-analisi della richiesta del cliente:
+        la scrive un tecnico, non il cliente finale. È l'input del prompt
+        `docs/ai/prompts/genera-analisi-tecnica.md`.
+  - type: textarea
+    id: contesto
+    attributes:
+      label: Contesto e problema
+      description: Cosa succede oggi e perché non basta.
+    validations:
+      required: true
+  - type: textarea
+    id: obiettivo
+    attributes:
+      label: Obiettivo
+      description: Cosa deve essere vero a lavoro finito.
+    validations:
+      required: true
+  - type: textarea
+    id: criteri
+    attributes:
+      label: Criteri di accettazione
+      description: Elenco verificabile, un criterio per riga.
+      placeholder: "- [ ] ..."
+    validations:
+      required: true
+  - type: textarea
+    id: vincoli
+    attributes:
+      label: Vincoli e note tecniche
+      description: Moduli/domini coinvolti, pattern da seguire, migration previste.
+  - type: textarea
+    id: fuori-perimetro
+    attributes:
+      label: Fuori perimetro
+      description: Cosa esplicitamente NON va fatto in questa attività.
