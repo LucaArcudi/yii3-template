@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Deploy di produzione. Gira SUL VPS, invocato dal CD (o a mano) come
 # `bash /opt/yii3/scripts/deploy.sh` dal checkout già allineato dallo step
-# "Update repo files": la logica eseguita è sempre quella dell'ultimo commit.
+# "Update repo files": la logica eseguita appartiene allo stesso commit
+# indicato dal tag immagine.
 #
 # Il CD passa APP_IMAGE=<registry>:<sha del commit>: si deploya il tag
 # immutabile, non latest — run riproducibili e rollback deterministico.

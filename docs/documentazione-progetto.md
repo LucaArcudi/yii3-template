@@ -457,6 +457,7 @@ push su main
    │
    ▼
 CI (.github/workflows/ci.yml)
+   ├─ regressione helper checkout deploy in repository Git temporanei
    ├─ Trivy fs/config/secret scan (report-only) + gate fs bloccante
    ├─ build immagine dev (--pull) + Trivy image scan
    ├─ composer install / validate / audit
@@ -471,8 +472,9 @@ publish-image (solo push su main)
    │  (workflow CI concluso con successo)
    ▼
 CD (.github/workflows/cd.yml — workflow_run su CI / manuale)
+   ├─ risoluzione SHA + preflight manifest GHCR (deploy serializzati)
    ├─ SSH sul VPS come utente deploy
-   ├─ git fetch + merge --ff-only origin/main in /opt/yii3
+   ├─ checkout detached verificato dello stesso SHA in /opt/yii3
    ├─ backup DB (mysqldump → /opt/yii3/backups/)
    ├─ docker compose pull && up -d --wait (timeout 120s)
    └─ health check HTTP su 127.0.0.1:8080/login
@@ -497,10 +499,12 @@ FrankenPHP incorpora Caddy: il container serve HTTP direttamente
 
 Trigger: ogni `push` e `pull_request`. Due job:
 
-1. **test** — Trivy fs/config/secret sul repo (report-only) + gate fs
+1. **test** — regressione dell'helper di checkout su repository Git
+   temporanei (SHA vecchio/errato/estraneo, worktree sporco e file locali
+   preservati) → Trivy fs/config/secret sul repo (report-only) + gate fs
    bloccante sulle HIGH/CRITICAL con fix disponibile → build dell'immagine
-   dev via `compose.yml` root (`--pull` della base mobile) → Trivy image
-   scan su `yii3-template-app:latest` → `composer install`,
+   dev via `compose.yml` root (`--pull` della base mobile) → Trivy image scan
+   su `yii3-template-app:latest` → `composer install`,
    `composer validate`, `composer audit` (bloccante) →
    `codecept run --skip-group database` → validazione migration
    (idempotenza + bootstrap da zero) → `codecept run -g database` sul DB
@@ -518,21 +522,32 @@ Il tag `<sha>` per ogni release è ciò che rende possibile il rollback
 ### 8.4 CD (`.github/workflows/cd.yml`)
 
 Trigger: `workflow_run` (CI conclusa con successo su `main`, solo per run
-innescati da `push`) o `workflow_dispatch`. Un job `deploy` in quattro step,
-tutti via SSH. La logica di backup e deploy vive in `scripts/backup-db.sh`
-e `scripts/deploy.sh`, versionati nel repo ed eseguiti dal checkout
-allineato: il workflow li invoca soltanto. **Mai** logica remota via
-heredoc: `docker compose run`/`exec` leggono stdin e divorano il resto
-dello script — il deploy risulterebbe verde ma interrotto a metà:
+innescati da `push`) o `workflow_dispatch`. Il job `deploy` usa il concurrency
+group `production-deploy`: un solo deploy alla volta, con gli altri in coda e
+senza cancellare quello attivo. La logica remota vive negli helper versionati
+`scripts/checkout-deploy-commit.sh`, `scripts/backup-db.sh` e
+`scripts/deploy.sh`; il workflow li invoca soltanto. **Mai** logica remota via
+heredoc: `docker compose run`/`exec` leggono stdin e divorano il resto dello
+script — il deploy risulterebbe verde ma interrotto a metà.
 
-1. **Setup SSH** — chiave privata dal secret `VPS_SSH_KEY`; `known_hosts`
+1. **Target e preflight** — `DEPLOY_SHA` è l'unica fonte di verità. Nei run
+   automatici vale `workflow_run.head_sha`; nei run manuali l'input
+   obbligatorio `image_tag`, che accetta solo uno SHA completo di 40
+   caratteri. Lo stesso valore forma `APP_IMAGE`. Prima dell'SSH il CD accede
+   a GHCR in sola lettura e verifica che il manifest del tag esista: `latest`,
+   SHA abbreviati/malformati e immagini assenti falliscono senza modificare il
+   VPS;
+2. **Setup SSH** — chiave privata dal secret `VPS_SSH_KEY`; `known_hosts`
    popolato dal secret `VPS_KNOWN_HOSTS` (fingerprint pinnata: sostituisce
    l'`ssh-keyscan` a ogni deploy, che era trust-on-first-use ripetuto), con
    verifica immediata che il secret contenga una riga per `VPS_HOST`;
-2. **Allineamento repo sul VPS** — `git fetch` + `merge --ff-only
-   origin/main` in `/opt/yii3`: senza questo passo il deploy aggiornerebbe
-   solo l'immagine, lasciando compose/migration/config alla versione vecchia;
-3. **Backup DB** — `mysqldump` dentro il container `db` →
+3. **Allineamento repo sul VPS** — l'helper di checkout rifiuta modifiche a
+   file tracciati, aggiorna `origin/main`, verifica che `DEPLOY_SHA` esista e
+   appartenga alla sua storia, poi esegue un checkout detached senza
+   `--force` e controlla `HEAD == DEPLOY_SHA`. I file locali ignorati
+   (`.env.prod`, override compose e backup) non vengono toccati. La stessa
+   invariante viene ricontrollata immediatamente prima di backup e deploy;
+4. **Backup DB** — `mysqldump` dentro il container `db` →
    `/opt/yii3/backups/db_<timestamp>.sql`. Le credenziali sono lette da
    `.env.prod` sul VPS (non dall'env del container, che riflette `.env.prod`
    solo al momento della *creazione* del container: dopo una rotazione
@@ -540,11 +555,10 @@ dello script — il deploy risulterebbe verde ma interrotto a metà:
    live e un dump vuoto fa fallire lo step. Retention automatica: i dump
    più vecchi di 14 giorni vengono eliminati (glob stretto sul timestamp:
    i backup rinominati a mano si salvano);
-4. **Deploy** — il CD risolve l'immagine sul **tag SHA del commit** del run
-   (`workflow_run.head_sha`; su run manuale l'input `image_tag` o lo SHA
-   corrente) e la passa a `deploy.sh` via `APP_IMAGE`: non si deploya più
-   `latest`, ogni run è riproducibile. Lo script registra l'immagine in
-   esecuzione (digest, per l'eventuale rollback), poi `docker compose
+5. **Deploy** — il CD passa a `deploy.sh` l'immagine sullo stesso
+   **tag SHA del checkout** via `APP_IMAGE`: non si deploya `latest`, ogni
+   run è riproducibile. Lo script registra l'immagine in esecuzione (digest,
+   per l'eventuale rollback), poi `docker compose
    pull`, le migration del framework con l'immagine nuova (`run --rm app
    ./yii migrate:up -y`, idempotenti: lo schema è pronto prima che parta
    il nuovo codice), quindi `up -d --wait --wait-timeout 120` con
@@ -583,7 +597,7 @@ Layout sul server:
 
 | Percorso | Contenuto |
 |---|---|
-| `/opt/yii3` | Clone del repo (allineato dal CD con merge ff-only) |
+| `/opt/yii3` | Clone del repo in detached HEAD sullo SHA dell'immagine deployata |
 | `/opt/yii3/.env.prod` | Segreti reali di produzione — **fuori git** |
 | `/opt/yii3/docker/prod/compose.local.yml` | Override locale del VPS — **fuori git** (generato da Ansible, vedi §8.7) |
 | `/opt/yii3/backups/` | Dump DB pre-deploy e manuali |

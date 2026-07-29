@@ -4,9 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       image_tag:
-        description: "Tag dell'immagine da deployare (vuoto = SHA del commit corrente)"
-        required: false
-        default: ""
+        description: "SHA completo (40 caratteri) dell'immagine e del commit da deployare"
+        required: true
   workflow_run:
     workflows: ["CI"]
     types:
@@ -16,11 +15,16 @@ on:
 
 permissions:
   contents: read
+  packages: read
 
 jobs:
   deploy:
     name: Deploy to VPS
     runs-on: ubuntu-latest
+    concurrency:
+      group: production-deploy
+      cancel-in-progress: false
+      queue: max
 
     if: >
       github.event_name == 'workflow_dispatch' ||
@@ -28,20 +32,51 @@ jobs:
        github.event.workflow_run.event == 'push')
 
     steps:
-      # Si deploya il tag SHA pubblicato dalla CI per il commit del run,
-      # non latest: ogni deploy è riproducibile e il rollback deterministico.
-      - name: Resolve image to deploy
+      # DEPLOY_SHA è l'unica fonte di verità per immagine e checkout. Gli
+      # input GitHub passano dall'env: mai interpolare dati esterni nel Bash.
+      - name: Resolve deployment target
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          WORKFLOW_RUN_SHA: ${{ github.event.workflow_run.head_sha }}
+          MANUAL_IMAGE_TAG: ${{ inputs.image_tag }}
         run: |
           set -euo pipefail
-          if [ "${{ github.event_name }}" = "workflow_run" ]; then
-            TAG="${{ github.event.workflow_run.head_sha }}"
-          elif [ -n "${{ github.event.inputs.image_tag }}" ]; then
-            TAG="${{ github.event.inputs.image_tag }}"
+          if [ "$EVENT_NAME" = "workflow_run" ]; then
+            DEPLOY_SHA="$WORKFLOW_RUN_SHA"
           else
-            TAG="${{ github.sha }}"
+            DEPLOY_SHA="$MANUAL_IMAGE_TAG"
           fi
-          echo "APP_IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}:${TAG}" >> "$GITHUB_ENV"
-          echo "Immagine da deployare: ghcr.io/${GITHUB_REPOSITORY,,}:${TAG}"
+
+          if [[ ! "$DEPLOY_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "::error::image_tag deve essere uno SHA Git completo di 40 caratteri (niente latest o SHA abbreviati)"
+            exit 1
+          fi
+
+          APP_IMAGE="ghcr.io/${GITHUB_REPOSITORY,,}:${DEPLOY_SHA}"
+          {
+            echo "DEPLOY_SHA=$DEPLOY_SHA"
+            echo "APP_IMAGE=$APP_IMAGE"
+          } >> "$GITHUB_ENV"
+          echo "Target di deploy: commit $DEPLOY_SHA, immagine $APP_IMAGE"
+
+      - name: Login to GHCR for image preflight
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Fallire prima dell'SSH: un tag assente non deve cambiare il checkout
+      # sul VPS né produrre un backup per un deploy che non può iniziare.
+      - name: Verify image manifest
+        run: docker manifest inspect "$APP_IMAGE" > /dev/null
+
+      # Il workflow esegue l'helper appartenente alla propria revisione:
+      # la logica remota resta versionata, non duplicata in un heredoc.
+      - name: Checkout deployment helper
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.workflow_sha }}
 
       - name: Setup SSH
         run: |
@@ -61,18 +96,11 @@ jobs:
 
       - name: Update repo files on VPS
         run: |
-          ssh -i ~/.ssh/vps_key -o IdentitiesOnly=yes -o BatchMode=yes "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" << 'EOF'
-            set -euo pipefail
-
-            # Senza questo allineamento il deploy aggiorna solo l'immagine:
-            # compose, migration e config sul VPS resterebbero alla versione vecchia.
-            git config --global --get-all safe.directory 2>/dev/null | grep -qx /opt/yii3 \
-              || git config --global --add safe.directory /opt/yii3
-
-            git -C /opt/yii3 fetch origin main
-            git -C /opt/yii3 merge --ff-only origin/main
-            git -C /opt/yii3 log -1 --oneline
-          EOF
+          set -euo pipefail
+          ssh -i ~/.ssh/vps_key -o IdentitiesOnly=yes -o BatchMode=yes \
+            "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
+            "DEPLOY_SHA='$DEPLOY_SHA' bash -s" \
+            < scripts/checkout-deploy-commit.sh
 
       # La logica di backup e deploy vive in scripts/*.sh, versionati nel
       # repo e allineati sul VPS dallo step precedente: il workflow li
@@ -80,13 +108,29 @@ jobs:
       # leggono stdin e divorano il resto dello script (deploy "verdi" ma
       # interrotti a metà, 2026-07-04).
       - name: Backup DB on VPS
-        run: >
-          ssh -i ~/.ssh/vps_key -o IdentitiesOnly=yes -o BatchMode=yes
-          "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}"
-          'bash /opt/yii3/scripts/backup-db.sh'
+        run: |
+          set -euo pipefail
+          ssh -i ~/.ssh/vps_key -o IdentitiesOnly=yes -o BatchMode=yes \
+            "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
+            "set -eu
+             ACTUAL_SHA=\$(git -c safe.directory=/opt/yii3 -C /opt/yii3 rev-parse HEAD)
+             if [ \"\$ACTUAL_SHA\" != \"$DEPLOY_SHA\" ]; then
+               echo \"ERRORE: checkout VPS \$ACTUAL_SHA, atteso $DEPLOY_SHA prima del backup\" >&2
+               exit 1
+             fi
+             echo \"Checkout VPS verificato prima del backup: \$ACTUAL_SHA\"
+             bash /opt/yii3/scripts/backup-db.sh"
 
       - name: Deploy on VPS
-        run: >
-          ssh -i ~/.ssh/vps_key -o IdentitiesOnly=yes -o BatchMode=yes
-          "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}"
-          "APP_IMAGE='${{ env.APP_IMAGE }}' bash /opt/yii3/scripts/deploy.sh"
+        run: |
+          set -euo pipefail
+          ssh -i ~/.ssh/vps_key -o IdentitiesOnly=yes -o BatchMode=yes \
+            "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
+            "set -eu
+             ACTUAL_SHA=\$(git -c safe.directory=/opt/yii3 -C /opt/yii3 rev-parse HEAD)
+             if [ \"\$ACTUAL_SHA\" != \"$DEPLOY_SHA\" ]; then
+               echo \"ERRORE: checkout VPS \$ACTUAL_SHA, atteso $DEPLOY_SHA prima del deploy\" >&2
+               exit 1
+             fi
+             echo \"Checkout VPS verificato prima del deploy: \$ACTUAL_SHA\"
+             APP_IMAGE='$APP_IMAGE' bash /opt/yii3/scripts/deploy.sh"
