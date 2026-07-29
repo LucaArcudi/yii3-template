@@ -9,6 +9,8 @@ Run del workflow CD concluso in errore; eventualmente alert
 
 `deploy.sh` è progettato per fallire in sicurezza:
 
+- **SHA/tag non valido, manifest assente o checkout non allineabile** → il
+  workflow si ferma prima del backup e l'applicazione non viene toccata;
 - **fallimento in `migrate:up`** → la nuova versione non è mai partita:
   l'app resta sulla versione precedente, nessun rollback necessario;
 - **fallimento in avvio / invariante immagine / health check** → rollback
@@ -18,7 +20,8 @@ Run del workflow CD concluso in errore; eventualmente alert
 ## Verifiche immediate
 
 1. Log del run CD su GitHub: individuare lo **step esatto** fallito
-   (backup → migrate → up → invariante → health) e l'errore.
+   (risoluzione SHA → manifest → checkout → backup → migrate → up →
+   invariante → health) e l'errore.
 2. Sul VPS ([stato-e-log.md](stato-e-log.md)): `$DC ps`, health check,
    `$DC logs app --tail=200` — confermare che la versione precedente giri.
 3. Se il run dice "ROLLBACK FALLITO": app potenzialmente giù, passare

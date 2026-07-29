@@ -16,18 +16,29 @@ del fallimento vedi [deploy-failed.md](deploy-failed.md).
 
 ## Rollback manuale (release sana da ritirare)
 
-Ogni build è taggata con lo SHA del commit e il CD deploya proprio quel tag
-(alias `$DC`: vedi [stato-e-log.md](stato-e-log.md)):
+Ogni build è taggata con lo SHA del commit. Il percorso coerente è GitHub →
+Actions → CD → *Run workflow*, passando come `image_tag` lo SHA completo
+della release precedente: il workflow allinea allo stesso commit sia
+l'immagine sia il checkout.
+
+Solo se GitHub Actions non è disponibile e serve un ripristino immediato,
+si può ricreare direttamente l'app sulla vecchia immagine. L'alias `$DC`
+è lo stesso definito in [stato-e-log.md](stato-e-log.md):
 
 ```bash
 cd /opt/yii3
-APP_IMAGE=ghcr.io/lucaarcudi/yii3-template:<sha-precedente> $DC pull app
-APP_IMAGE=ghcr.io/lucaarcudi/yii3-template:<sha-precedente> $DC up -d app
+DC='docker compose --env-file .env.prod -f docker/prod/compose.yml -f docker/prod/compose.local.yml'
+# Sostituire il valore con lo SHA completo della release precedente.
+TARGET_SHA='INSERIRE_SHA_COMPLETO'
+APP_IMAGE="ghcr.io/lucaarcudi/yii3-template:${TARGET_SHA}" $DC pull app
+APP_IMAGE="ghcr.io/lucaarcudi/yii3-template:${TARGET_SHA}" $DC up -d app
 ```
 
-**Attenzione**: il prossimo run del CD rideploya lo SHA del commit corrente
-di `main` — il rollback definitivo è il **revert del commit su `main` via
-PR**.
+Questo fallback lascia temporaneamente immagine e checkout disallineati:
+non eseguire migration o altri script del checkout e ripristinare appena
+possibile il percorso canonico. Il prossimo run automatico del CD deploya lo
+SHA del nuovo run su `main`; il rollback definitivo resta il **revert del
+commit su `main` via PR**.
 
 ## Istruzioni per l'AI
 

@@ -18,7 +18,9 @@ DC='docker compose --env-file .env.prod -f docker/prod/compose.yml -f docker/pro
 $DC ps                      # stato container
 $DC logs app --tail=100     # log applicazione
 $DC logs db --tail=100      # log MySQL
-git -C /opt/yii3 log -1     # commit del checkout allineato all'ultimo deploy
+git -C /opt/yii3 status --short --branch  # detached HEAD atteso, file tracciati puliti
+git -C /opt/yii3 rev-parse HEAD           # SHA del checkout = tag immagine del deploy
+git -C /opt/yii3 log -1
 ```
 
 Health check dell'app (l'header è obbligatorio, vedi

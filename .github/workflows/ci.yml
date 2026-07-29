@@ -19,6 +19,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Test deployment checkout helper
+        run: bash tests/Deploy/checkout-deploy-commit.sh
+
       # I report informativi devono restare completi: TRIVY_IGNOREFILE vuoto
       # perché .trivyignore (raccolto di default dalla cwd) vale solo per i
       # gate bloccanti, non deve nascondere le eccezioni accettate.
