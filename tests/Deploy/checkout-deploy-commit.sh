@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
+export GIT_CONFIG_GLOBAL=/dev/null
+export GIT_CONFIG_SYSTEM=/dev/null
 
 PROJECT_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
 HELPER="${PROJECT_ROOT}/scripts/checkout-deploy-commit.sh"
@@ -51,7 +53,8 @@ cat > "${SEED_REPO}/.gitignore" << 'EOF'
 /backups/
 EOF
 printf 'first\n' > "${SEED_REPO}/tracked.txt"
-git -C "$SEED_REPO" add .gitignore tracked.txt
+printf 'stable\n' > "${SEED_REPO}/stable.txt"
+git -C "$SEED_REPO" add .gitignore stable.txt tracked.txt
 git -C "$SEED_REPO" commit -m First > /dev/null
 git -C "$SEED_REPO" remote add origin "$REMOTE_REPO"
 git -C "$SEED_REPO" push -u origin main > /dev/null
@@ -77,7 +80,7 @@ printf 'services: {}\n' > "${DEPLOY_REPO}/docker/prod/compose.local.yml"
 printf 'backup\n' > "${DEPLOY_REPO}/backups/db.sql"
 
 MISSING_SHA=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-for invalid_sha in "" latest abcdef0 "$MISSING_SHA"; do
+for invalid_sha in "" latest abcdef0 "${FIRST_SHA:0:12}" "$MISSING_SHA"; do
   if run_helper "$invalid_sha" > /dev/null 2>&1; then
     fail "SHA inatteso accettato: ${invalid_sha:-<vuoto>}"
   fi
@@ -88,6 +91,17 @@ if run_helper "$FOREIGN_SHA" > /dev/null 2>&1; then
   fail "commit estraneo a main accettato"
 fi
 assert_head "$LATEST_SHA"
+
+# stable.txt è identico tra LATEST_SHA e FIRST_SHA: senza la guardia dirty,
+# Git accetterebbe il checkout preservando la modifica locale.
+printf 'stable local change\n' > "${DEPLOY_REPO}/stable.txt"
+if run_helper "$FIRST_SHA" > /dev/null 2>&1; then
+  fail "checkout con file tracciato sporco ma invariato nel target accettato"
+fi
+assert_head "$LATEST_SHA"
+[ "$(cat "${DEPLOY_REPO}/stable.txt")" = "stable local change" ] \
+  || fail "la modifica al file stabile è stata sovrascritta"
+printf 'stable\n' > "${DEPLOY_REPO}/stable.txt"
 
 printf 'local change\n' > "${DEPLOY_REPO}/tracked.txt"
 if run_helper "$FIRST_SHA" > /dev/null 2>&1; then
@@ -111,9 +125,22 @@ git -C "$DEPLOY_REPO" restore --staged --worktree tracked.txt
 # Questo commit nasce dopo il clone: il checkout può riuscire solo se
 # l'helper aggiorna davvero origin/main prima di validare il target.
 printf 'remote after clone\n' > "${SEED_REPO}/tracked.txt"
-git -C "$SEED_REPO" commit -am "Remote after clone" > /dev/null
+printf 'remote content\n' > "${SEED_REPO}/remote-only.txt"
+git -C "$SEED_REPO" add remote-only.txt tracked.txt
+git -C "$SEED_REPO" commit -m "Remote after clone" > /dev/null
 git -C "$SEED_REPO" push origin main > /dev/null
 REMOTE_ONLY_SHA=$(git -C "$SEED_REPO" rev-parse HEAD)
+
+# Un checkout non forzato deve rifiutare il file del target che
+# sovrascriverebbe un omonimo untracked presente nel repository di deploy.
+printf 'local untracked content\n' > "${DEPLOY_REPO}/remote-only.txt"
+if run_helper "$REMOTE_ONLY_SHA" > /dev/null 2>&1; then
+  fail "checkout che sovrascrive un file untracked accettato"
+fi
+assert_head "$LATEST_SHA"
+[ "$(cat "${DEPLOY_REPO}/remote-only.txt")" = "local untracked content" ] \
+  || fail "il file untracked in conflitto è stato sovrascritto"
+rm -- "${DEPLOY_REPO}/remote-only.txt"
 
 run_helper "$REMOTE_ONLY_SHA" > /dev/null
 assert_head "$REMOTE_ONLY_SHA"
