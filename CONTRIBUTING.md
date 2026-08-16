@@ -30,18 +30,22 @@ contribuendo accetti che il tuo codice sia distribuito con la stessa licenza.
 ## Contributor AI
 
 Le modifiche assistite da agenti AI devono essere tracciabili nel commit con
-un trailer `Co-Authored-By`, come già avviene per Claude Code.
+un trailer `Co-Authored-By`.
 
 ```text
-Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
 Co-Authored-By: Codex <noreply@openai.com>
 ```
 
 Per Codex le linee guida operative persistenti del repository sono in
 [`AGENTS.md`](AGENTS.md).
 
+Il flusso del proprietario non richiede una issue preventiva: la richiesta
+viene fatta direttamente a Codex, che lavora su una branch dedicata, esegue i
+controlli, pusha la branch e apre la PR. Review e merge restano manuali.
+
 ## Segnalazioni
 
-- Bug e proposte: apri una issue.
+- I bug provenienti da utilizzatori esterni possono essere segnalati con il
+  form GitHub dedicato.
 - **Vulnerabilità di sicurezza: non aprire issue pubbliche** — usa la
   segnalazione privata di GitHub (tab *Security* → *Report a vulnerability*).

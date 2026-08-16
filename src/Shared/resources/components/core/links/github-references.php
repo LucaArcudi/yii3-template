@@ -43,9 +43,9 @@ $links = [
         'icon' => 'fa-solid fa-server',
     ],
     [
-        'title' => Translate::t('Roadmap AI (Codex + Claude Code)'),
-        'meta' => Translate::t('Integrazione degli agenti AI nel workflow di sviluppo.'),
-        'url' => $repoUrl . '/blob/main/docs/roadmap-ai-codex-claude-code.md',
+        'title' => Translate::t('Piano di miglioramento'),
+        'meta' => Translate::t('Priorità attive per template, qualità e DevOps.'),
+        'url' => $repoUrl . '/blob/main/PIANO_MIGLIORAMENTO_TEMPLATE.md',
         'icon' => 'fa-solid fa-wand-magic-sparkles',
     ],
     [
@@ -55,9 +55,9 @@ $links = [
         'icon' => 'fa-regular fa-file-lines',
     ],
     [
-        'title' => Translate::t('Issue e pull request'),
-        'meta' => Translate::t('Segnalazioni, proposte e revisioni in corso.'),
-        'url' => $repoUrl . '/issues',
+        'title' => Translate::t('Pull request'),
+        'meta' => Translate::t('Modifiche in revisione prima del merge.'),
+        'url' => $repoUrl . '/pulls',
         'icon' => 'fa-regular fa-comment',
     ],
     [

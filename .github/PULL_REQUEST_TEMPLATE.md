@@ -4,7 +4,7 @@
 
 ## Perché
 
-<!-- Motivazione e riferimenti: Closes #..., analisi tecnica collegata. -->
+<!-- Motivazione e contesto della richiesta. Una issue collegata è opzionale. -->
 
 ## Come è stato verificato
 
@@ -21,4 +21,4 @@
 - [ ] `CHANGELOG.md` e documentazione aggiornati se cambia un comportamento o un workflow
 - [ ] Nessun nuovo errore Psalm, nessun indebolimento di CI o baseline
 - [ ] Nessuna modifica manuale ai bundle frontend (`docs/assets/REBUILD.md`)
-- [ ] Per lavoro AI: trailer `Co-Authored-By` corretto (vedi `AGENTS.md`)
+- [ ] Per lavoro Codex: trailer `Co-Authored-By` corretto (vedi `AGENTS.md`)

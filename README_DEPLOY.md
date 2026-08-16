@@ -1,256 +1,185 @@
-Deploy Yii3 Template
+# Deploy del template Yii3
 
-Questo progetto usa Docker Compose, GitHub Actions e GHCR per una pipeline CI/CD semplice su VPS.
+Il progetto usa Docker Compose, GitHub Actions e GHCR per distribuire
+l'applicazione su un VPS Linux tramite SSH.
 
-Flusso attuale:
+Questa guida descrive il comportamento corrente. I valori specifici
+`/opt/yii3`, `main`, porta `22` e porta applicativa `8080` non sono ancora
+parametrizzati: la relativa attività è tracciata in
+[`PIANO_MIGLIORAMENTO_TEMPLATE.md`](PIANO_MIGLIORAMENTO_TEMPLATE.md).
 
-push su main
-→ CI
-→ Trivy
-→ build immagine Docker
-→ push su GHCR
-→ CD automatico
-→ backup DB
-→ pull immagine su VPS
-→ docker compose up -d
-→ health check
-Server
+## Flusso corrente
 
-VPS Contabo:
+```text
+merge su main
+  → CI verde
+  → build e push immagine GHCR con tag SHA
+  → avvio automatico della CD
+  → verifica del manifest
+  → connessione SSH al VPS
+  → checkout dello stesso SHA
+  → backup database
+  → pull immagine e migration
+  → ricreazione container e health check
+  → rollback applicativo in caso di errore
+```
 
-IP: <VPS_IP>
-Percorso progetto: /opt/yii3
-Utente deploy: deploy
+La CI non accede alla produzione. La CD parte soltanto dopo una CI riuscita
+su `main` oppure tramite avvio manuale esplicito.
 
-L’utente deploy è usato per deploy, Docker Compose, backup e tunnel DB.
+## Prerequisiti del VPS
 
-Root va tenuto solo come accesso di emergenza.
+Il VPS corrente deve avere già:
 
-File importanti
-.env.prod                         segreti reali di produzione, NON committare
-.env.prod.example                 esempio sicuro versionabile
-docker/prod/compose.yml           compose produzione versionato
-docker/prod/compose.local.yml     override locale VPS, NON committare se contiene config specifica
-.github/workflows/ci.yml          CI, Trivy, build e push immagine GHCR
-.github/workflows/cd.yml          CD automatico/manuale
-backups/                          backup DB generati sul server
-Accesso SSH
+- Linux con accesso SSH;
+- utente `deploy` autorizzato a usare Docker;
+- Docker Engine e Docker Compose v2;
+- repository clonato in `/opt/yii3`;
+- rete Docker esterna `caddy_public` e proxy Caddy;
+- `/opt/yii3/.env.prod` con i segreti runtime;
+- `/opt/yii3/docker/prod/compose.local.yml`;
+- directory `/opt/yii3/backups`;
+- chiave pubblica del CD in `/home/deploy/.ssh/authorized_keys`.
 
-Da PC locale:
+Il provisioning completo di questi prerequisiti non è ancora automatizzato.
 
-ssh deploy@<VPS_IP>
+## File sul VPS
 
-Se configurato in ~/.ssh/config:
+```text
+/opt/yii3/
+├── .env.prod                         # segreti runtime, fuori da Git
+├── docker/prod/compose.yml           # versione dal repository
+├── docker/prod/compose.local.yml     # configurazione locale, fuori da Git
+├── scripts/                          # backup e deploy versionati
+└── backups/                          # dump pre-deploy e manuali
+```
 
-ssh yii3-vps
-Verifica stato VPS
-cd /opt/yii3
+Il checkout viene portato in detached HEAD sullo stesso commit usato come tag
+dell'immagine. I file locali ignorati da Git non vengono rimossi.
 
-docker compose \
-  --env-file .env.prod \
-  -f docker/prod/compose.yml \
-  -f docker/prod/compose.local.yml \
-  ps
+## Configurazione GitHub
 
-Log app:
+Il workflow corrente legge quattro repository secrets:
 
-docker compose \
-  --env-file .env.prod \
-  -f docker/prod/compose.yml \
-  -f docker/prod/compose.local.yml \
-  logs app --tail=100
+| Secret | Contenuto |
+|---|---|
+| `VPS_HOST` | IP o hostname usato per SSH |
+| `VPS_USER` | utente operativo, normalmente `deploy` |
+| `VPS_SSH_KEY` | chiave privata dedicata alla CD |
+| `VPS_KNOWN_HOSTS` | righe complete `known_hosts` verificate per `VPS_HOST` |
 
-Log DB:
+La chiave pubblica corrispondente a `VPS_SSH_KEY` deve essere presente in
+`authorized_keys` sul VPS. Non riutilizzare chiavi personali o credenziali di
+Codex.
 
-docker compose \
-  --env-file .env.prod \
-  -f docker/prod/compose.yml \
-  -f docker/prod/compose.local.yml \
-  logs db --tail=100
-Deploy automatico
+`VPS_KNOWN_HOSTS` deve contenere la chiave host effettivamente verificata. Non
+disabilitare `StrictHostKeyChecking` e non sostituire il secret con un
+`ssh-keyscan` eseguito a ogni deploy.
 
-Il deploy parte automaticamente dopo CI verde su branch main.
+L'evoluzione prevista sposterà questa configurazione in un GitHub Environment
+`production`, separando Secrets e Variables non sensibili.
 
-Il workflow CD:
+## Configurazione runtime
 
-entra in SSH sulla VPS come deploy;
-entra in /opt/yii3;
-crea un backup DB;
-esegue docker compose pull;
-esegue docker compose up -d;
-verifica container;
-fa health check HTTP locale.
-Deploy manuale da GitHub Actions
+Partire da `.env.prod.example` e creare manualmente `/opt/yii3/.env.prod` sul
+VPS. Il file reale non deve transitare nel repository o nei log della CI.
 
-È ancora possibile lanciare il deploy manualmente:
+Contiene almeno:
 
+- immagine applicativa e host pubblico;
+- chiave dei cookie;
+- nome, utente e password del database;
+- password root MySQL;
+- eventuali porte e proxy fidati.
+
+Le modifiche allo schema passano sempre da `./yii migrate:up`. Gli script
+`initdb.d` servono soltanto al primo avvio di un volume MySQL vuoto e non sono
+una procedura di aggiornamento della produzione.
+
+## GHCR
+
+La CI pubblica:
+
+```text
+ghcr.io/<owner>/<repository>:<sha-completo>
+ghcr.io/<owner>/<repository>:latest
+```
+
+La CD distribuisce il tag SHA immutabile, non `latest`.
+
+Se il package GHCR è pubblico, il VPS può effettuare il pull senza login. Se
+è privato, il VPS necessita di una credenziale separata con il solo permesso
+`read:packages`. Non usare token personali con permessi amministrativi.
+
+## Deploy automatico
+
+Il workflow [`.github/workflows/cd.yml`](.github/workflows/cd.yml) riceve lo
+SHA dalla CI completata, verifica che l'immagine esista e poi esegue:
+
+1. `scripts/checkout-deploy-commit.sh`;
+2. `scripts/backup-db.sh`;
+3. `scripts/deploy.sh`.
+
+Il deploy è serializzato dal concurrency group `production-deploy`: non
+possono essere eseguiti due deploy contemporaneamente.
+
+## Deploy manuale da GitHub
+
+Percorso:
+
+```text
 GitHub → Actions → CD → Run workflow
+```
 
-Serve se vuoi rilanciare un deploy senza fare un nuovo push.
+L'input `image_tag` deve essere lo SHA Git completo di 40 caratteri di una
+release pubblicata. SHA abbreviati, `latest` e manifest inesistenti vengono
+rifiutati prima dell'accesso SSH.
 
-Deploy manuale da VPS
+## Operazioni manuali e incidenti
 
-Da VPS:
+Le procedure operative vivono sotto [`docs/runbooks/`](docs/runbooks/):
 
-ssh deploy@<VPS_IP>
-cd /opt/yii3
+- [stato e log](docs/runbooks/stato-e-log.md);
+- [deploy manuale](docs/runbooks/deploy-manuale.md);
+- [deploy fallito](docs/runbooks/deploy-failed.md);
+- [rollback](docs/runbooks/rollback.md);
+- [backup e restore](docs/runbooks/backup-restore.md);
+- [accesso DB tramite tunnel](docs/runbooks/accesso-db-tunnel.md).
 
-Pull immagine:
+Non improvvisare comandi di cancellazione, reset del repository, restore o
+ricreazione dei volumi fuori dai runbook.
 
-docker compose \
-  --env-file .env.prod \
-  -f docker/prod/compose.yml \
-  -f docker/prod/compose.local.yml \
-  pull
+## Ansible
 
-Riavvio container:
+Ansible non viene installato dal repository: chi amministra il server deve
+installarlo separatamente sulla propria postazione di controllo e verificare:
 
-docker compose \
-  --env-file .env.prod \
-  -f docker/prod/compose.yml \
-  -f docker/prod/compose.local.yml \
-  up -d
+```bash
+ansible-playbook --version
+```
 
-Verifica:
+Sul VPS normalmente non serve installare Ansible; sono sufficienti SSH e
+Python. L'inventory reale parte da `ansible/inventory.example.ini`, viene
+salvato come `ansible/inventory.ini` ed è ignorato da Git.
 
-docker compose \
-  --env-file .env.prod \
-  -f docker/prod/compose.yml \
-  -f docker/prod/compose.local.yml \
-  ps
+I playbook attuali sono ancora specifici dell'installazione esistente:
 
-Health check:
+- `server_check.yml` verifica un VPS già preparato;
+- `proxy.yml` gestisce rete e proxy Caddy;
+- `app.yml` modifica configurazione e ricrea l'app, sovrapponendosi alla CD.
 
-curl -fsS http://127.0.0.1:8080 > /dev/null
-Backup manuale DB
+Non costituiscono ancora un bootstrap riutilizzabile per un VPS nuovo. Prima
+di presentarli come percorso supportato dovranno essere parametrizzati,
+completati e separati dal deploy applicativo.
 
-Il CD esegue già un backup prima del deploy.
+## Responsabilità definitive
 
-Per fare un backup manuale:
+```text
+Ansible  prepara e verifica la macchina, raramente
+CI       testa e produce l'artefatto, a ogni PR/merge
+CD       distribuisce la release, dopo CI verde
+Docker   esegue i servizi in dev, CI e produzione
+```
 
-cd /opt/yii3
-
-mkdir -p /opt/yii3/backups
-
-docker compose \
-  --env-file .env.prod \
-  -f docker/prod/compose.yml \
-  -f docker/prod/compose.local.yml \
-  exec -T db sh -lc 'mysqldump --no-tablespaces -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' \
-  > /opt/yii3/backups/db_$(date +%F_%H-%M-%S).sql
-
-Verifica backup:
-
-ls -lh /opt/yii3/backups
-head -n 20 /opt/yii3/backups/*.sql
-tail -n 20 /opt/yii3/backups/*.sql
-
-Retention consigliata:
-
-find /opt/yii3/backups -type f -name "db_*.sql" -mtime +7 -delete
-Tunnel DB
-
-Il DB non deve essere esposto pubblicamente.
-
-Da PC locale:
-
-ssh -N -L 3307:127.0.0.1:3307 deploy@<VPS_IP>
-
-Se il terminale resta fermo, il tunnel è attivo.
-
-In DBeaver/HeidiSQL:
-
-Host: 127.0.0.1
-Port: 3307
-User: valore MYSQL_USER da .env.prod
-Password: valore MYSQL_PASSWORD da .env.prod
-Database: valore MYSQL_DATABASE da .env.prod
-Login GHCR sulla VPS
-
-La VPS deve poter fare pull da GHCR.
-
-Login manuale:
-
-docker login ghcr.io
-
-L’immagine attuale è:
-
-ghcr.io/lucaarcudi/yii3-template:latest
-Secrets GitHub Actions
-
-Repository secrets necessari:
-
-VPS_HOST
-VPS_USER
-VPS_SSH_KEY
-
-Esempio:
-
-VPS_HOST=<VPS_IP>
-VPS_USER=deploy
-VPS_SSH_KEY=chiave privata SSH dedicata a GitHub Actions
-
-La chiave pubblica corrispondente deve essere presente sulla VPS in:
-
-/home/deploy/.ssh/authorized_keys
-Aggiornamento database
-
-Gli script in /docker-entrypoint-initdb.d vengono eseguiti solo alla prima inizializzazione del volume DB.
-
-Su database già esistente, applicare eventuali patch manualmente:
-
-cd /opt/yii3
-
-docker compose \
-  --env-file .env.prod \
-  -f docker/prod/compose.yml \
-  -f docker/prod/compose.local.yml \
-  exec -T db sh -lc 'mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' \
-  < database/migrations/release_1_0_2.sql
-Rollback base
-
-Attualmente il deploy usa latest.
-
-Rollback manuale possibile usando un tag noto:
-
-cd /opt/yii3
-
-APP_IMAGE=ghcr.io/lucaarcudi/yii3-template:<tag-precedente> docker compose \
-  --env-file .env.prod \
-  -f docker/prod/compose.yml \
-  -f docker/prod/compose.local.yml \
-  pull app
-
-APP_IMAGE=ghcr.io/lucaarcudi/yii3-template:<tag-precedente> docker compose \
-  --env-file .env.prod \
-  -f docker/prod/compose.yml \
-  -f docker/prod/compose.local.yml \
-  up -d app
-
-Verifica:
-
-curl -fsS http://127.0.0.1:8080 > /dev/null
-
-Per rendere persistente il rollback, aggiornare APP_IMAGE in .env.prod.
-
-Note pre-Ansible
-
-Prima di introdurre Ansible, lo stato attuale deve rimanere chiaro:
-
-deploy manuale funzionante
-deploy automatico funzionante
-backup DB pre-deploy funzionante
-utente deploy funzionante
-root solo emergenza
-DB accessibile solo via tunnel SSH
-
-Ansible servirà dopo per automatizzare provisioning e configurazione server:
-
-install Docker
-creazione utente deploy
-configurazione SSH
-firewall
-directory /opt/yii3
-file compose
-backup
-hardening base
+Ansible non deve essere eseguito a ogni merge e la CD non deve installare o
+riconfigurare il sistema operativo.

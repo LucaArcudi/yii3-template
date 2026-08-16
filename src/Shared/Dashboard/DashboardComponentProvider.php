@@ -33,9 +33,8 @@ final readonly class DashboardComponentProvider
     private static function definitions(): array
     {
         return [
-            // Guida progetto, backlog e roadmap sono stati spostati in docs/
-            // (documentazione-progetto.md §3.1, roadmap-sviluppo.md,
-            // roadmap-ai-codex-claude-code.md): la dashboard rimanda al repo.
+            // Guida progetto, backlog e roadmap vivono nella documentazione
+            // versionata del repository: la dashboard rimanda alle fonti.
             new DashboardComponentDefinition(
                 code: 'github-references',
                 viewName: 'links/github-references',
