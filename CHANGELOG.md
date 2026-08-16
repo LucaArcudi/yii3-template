@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Sicurezza dipendenze di test: aggiornato `guzzlehttp/guzzle` da 7.15.1 a 7.15.3 e `guzzlehttp/promises` da 2.5.1 a 2.5.2, risolvendo CVE-2026-69245 e CVE-2026-69246 rilevate da `composer audit`.
 - Flusso Codex semplificato: la richiesta parte direttamente dalla conversazione, Codex lavora su una branch dedicata, esegue i controlli, pusha e apre la PR; review e merge restano manuali. `PIANO_MIGLIORAMENTO_TEMPLATE.md` raccoglie le priorità attive, `README_DEPLOY.md` chiarisce i confini tra CI/CD e Ansible e la dashboard rimanda al piano e alle pull request. La pulizia di `docs/` è rinviata a una modifica separata.
 - CD: immagine GHCR e checkout VPS condividono ora un unico `DEPLOY_SHA`; i run automatici usano `workflow_run.head_sha`, quelli manuali richiedono il tag SHA completo. Prima dell'SSH vengono validati formato e manifest dell'immagine; i deploy sono serializzati. L'helper versionato di checkout rifiuta file tracciati sporchi, commit inesistenti o estranei a `main` e usa detached HEAD senza operazioni forzate; il workflow ricontrolla lo SHA del checkout immediatamente prima di backup e deploy. Una regressione CI simula i casi sicuri e di errore in repository Git temporanei; runbook e documentazione descrivono il nuovo flusso e il percorso manuale d'emergenza.
 - Runbook operativi estratti da `documentazione-progetto.md` §9 in undici file singoli sotto `docs/runbooks/`, con scenari per app, database, deploy e disco ancorati agli alert Prometheus.
