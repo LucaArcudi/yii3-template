@@ -21,11 +21,11 @@ return [
     'Backlog funzionale: cose fatte e prossimi step.' => 'Functional backlog: what is done and next steps.',
     'Roadmap infrastruttura' => 'Infrastructure roadmap',
     'Centralizzazione log, notifiche degli alert e self-healing.' => 'Log centralization, alert notifications and self-healing.',
-    'Roadmap AI (Codex + Claude Code)' => 'AI roadmap (Codex + Claude Code)',
-    'Integrazione degli agenti AI nel workflow di sviluppo.' => 'Integrating AI agents into the development workflow.',
+    'Piano di miglioramento' => 'Improvement plan',
+    'Priorità attive per template, qualità e DevOps.' => 'Active priorities for the template, quality, and DevOps.',
     'Storia delle release e delle modifiche.' => 'History of releases and changes.',
-    'Issue e pull request' => 'Issues and pull requests',
-    'Segnalazioni, proposte e revisioni in corso.' => 'Reports, proposals and ongoing reviews.',
+    'Pull request' => 'Pull requests',
+    'Modifiche in revisione prima del merge.' => 'Changes under review before merging.',
     'Stato di build, test e deploy.' => 'Build, test and deploy status.',
 
     // Componenti dashboard (contenuto demo/guida)

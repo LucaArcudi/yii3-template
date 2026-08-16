@@ -1,15 +1,18 @@
-# Project Instructions for AI Agents
+# Project Instructions for Codex
 
 This is a Yii3 web application template with CI/CD, database migrations,
-monitoring, deployment scripts, and production runbooks. These rules apply
-to every AI agent working on this repository (Codex, Claude Code, or any
-other).
+monitoring, deployment scripts, and production runbooks. These rules define
+how Codex works on this repository.
 
 ## Operating Rules
 
-- Work on a dedicated branch cut from an up-to-date `main`. Never push
-  directly to `main`.
+- Requests are made directly in the Codex conversation. A GitHub issue or a
+  separate analysis document is not required.
+- Work on a dedicated branch cut from an up-to-date `origin/main`. Never push
+  directly to `main` and never force-push.
 - Keep changes small, focused, and reviewable.
+- Do not delegate work to other agents unless the owner explicitly asks for
+  it.
 - Read the existing code before editing and follow local patterns.
 - Prefer existing Yii3 services, shared widgets, module domain classes, and
   DI conventions over new architecture.
@@ -111,19 +114,21 @@ and the command that failed.
 - Keep generated or unrelated local files out of commits.
 - Stage paths explicitly with `git add <path>`; never use `git commit -a`,
   `git add -u`, or `git add -A`.
-- Agents do not push, do not open PRs, and do not merge: those are owner
-  actions. Finish with a clean `git status`, then hand over the branch name
-  and the commit message.
-- Before suggesting any push or sync command, check the target with
-  `git branch --show-current`.
+- After the relevant checks pass, Codex may push only its dedicated branch
+  and open or update the corresponding pull request.
+- Codex never pushes to `main`, merges pull requests, triggers deployments
+  manually, or performs production operations. Review and merge remain owner
+  actions.
+- Before every push, check `git branch --show-current`, the configured remote,
+  and the diff being published.
+- Finish with a clean `git status` and report the branch, commit, PR, checks
+  run, and residual risks.
 - For Codex-authored work, add this trailer to the commit message:
 
 ```text
 Co-Authored-By: Codex <noreply@openai.com>
 ```
 
-- For Claude-authored work, keep the `Co-Authored-By: Claude … <noreply@anthropic.com>`
-  trailer that Claude Code adds by default.
 - PR summaries must include what changed, why it changed, tests run, residual
   risks, and any manual verification steps.
 
