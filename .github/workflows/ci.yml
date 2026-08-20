@@ -106,6 +106,18 @@ jobs:
       - name: Audit Composer dependencies
         run: docker compose -f compose.yml run --rm --no-deps app composer audit --no-interaction
 
+      - name: Check PHP coding style
+        run: >-
+          docker compose -f compose.yml run --rm --no-deps app
+          ./vendor/bin/php-cs-fixer fix --dry-run --diff
+          --using-cache=no --sequential
+
+      - name: Analyze Composer dependency usage
+        run: >-
+          docker compose -f compose.yml run --rm --no-deps app
+          ./vendor/bin/composer-dependency-analyser
+          --config=composer-dependency-analyser.php
+
       - name: Run Psalm static analysis
         run: docker compose -f compose.yml run --rm --no-deps app ./vendor/bin/psalm --no-progress --no-cache --output-format=github
 
