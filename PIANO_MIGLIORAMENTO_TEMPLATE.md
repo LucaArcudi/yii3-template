@@ -1,9 +1,11 @@
 # Piano di miglioramento del template Yii3
 
-> Roadmap attiva dal 16 agosto 2026, consolidata il 20 agosto 2026.
+> Roadmap attiva dal 16 agosto 2026, consolidata il 21 agosto 2026.
 >
 > Questo è il backlog unico del repository. I documenti storici non sono
 > fonti operative parallele e restano recuperabili nello storico Git.
+> Il percorso dimostrativo Docker, CI/CD e monitoring è concluso; ciò che
+> rimane è classificato sotto senza riaprirlo implicitamente.
 
 ## 1. Obiettivo
 
@@ -16,6 +18,11 @@ per applicazioni gestionali. Il lavoro futuro ha cinque obiettivi:
 4. ridurre il debito tecnico e frontend;
 5. fornire a Codex un contesto preciso per produrre modifiche focalizzate e
    verificabili.
+
+Il primo obiettivo infrastrutturale è stato completato e verificato sul VPS il
+21 agosto 2026. P2-P5 restano manutenzione del template e della supply chain;
+P6 e P7 sono un backlog applicativo Yii3 separato e non sono criteri di
+completamento del percorso DevOps.
 
 ## 2. Base già disponibile
 
@@ -33,7 +40,8 @@ Il template parte da una base matura che non va riprogettata:
   gate Trivy;
 - immagine di produzione su GHCR e CD su VPS con backup, migration, health
   check e rollback applicativo;
-- monitoring con Prometheus, Grafana, Loki e Alloy;
+- monitoring con Prometheus, Grafana, Loki e Alloy, verificato sul VPS insieme
+  alle notifiche Telegram;
 - procedure di rebuild frontend, licenze e runbook operativi;
 - regole Codex in `AGENTS.md`.
 
@@ -102,8 +110,8 @@ Le modifiche devono restare focalizzate e retrocompatibili con il VPS attuale.
 2. [x] **Configurare il target GitHub.** Credenziali e valori di deploy usano
    rispettivamente Repository Secrets e Repository Variables. Il workflow ne
    valida i valori e fallisce prima dell'SSH se manca un Secret obbligatorio.
-   Un Environment GitHub resta una possibilità facoltativa e non fa parte
-   dell'assetto scelto.
+   Un Environment GitHub `production` resta tracciato come evoluzione futura
+   facoltativa e non fa parte dell'assetto attuale.
 3. [x] **Separare bootstrap e CD.** Rimossi i playbook Ansible specifici del
    VPS; il proxy Caddy resta versionato come stack Docker con bootstrap
    manuale, mentre la CD distribuisce soltanto le release applicative.
@@ -116,6 +124,10 @@ Le modifiche devono restare focalizzate e retrocompatibili con il VPS attuale.
 6. [x] **Riscrivere la guida di installazione production-ready.** Separare
    chiaramente bootstrap del VPS, configurazione GitHub, primo deploy e ciclo
    ordinario delle release.
+7. [x] **Verificare deploy e osservabilità reali.** Dopo il merge della PR #45
+   la CD ha distribuito il commit `bb2a1b8`; sul VPS sono stati verificati
+   tutti i target Prometheus `UP`, `mysql_up == 1`, Grafana 13.1.3, Loki
+   `ready`, ingestione Alloy e consegna di una notifica Telegram di prova.
 
 ### P2 — Hardening applicativo rapido
 
@@ -147,10 +159,12 @@ Le modifiche devono restare focalizzate e retrocompatibili con il VPS attuale.
 - [ ] Definire chiavi esterne e indici di Core tramite migration.
 - [x] Portare progressivamente GitHub Actions a SHA completi e immagini
   critiche a digest.
-- [x] Rivalutare le eccezioni Trivy alla relativa scadenza, senza proroghe
-  automatiche. Il 20 agosto 2026 la release FrankenPHP 1.12.7 contiene
-  ancora i due moduli vulnerabili censiti; le eccezioni mantengono la
-  scadenza del 31 agosto e richiederanno una nuova decisione esplicita.
+- [x] Eseguire una rivalutazione intermedia delle eccezioni Trivy. Il 20 agosto
+  2026 la release FrankenPHP 1.12.7 contiene ancora i due moduli vulnerabili
+  censiti.
+- [ ] Alla scadenza del 31 agosto 2026, rieseguire il gate e prendere una
+  decisione esplicita: aggiornare l'upstream, rimuovere le eccezioni oppure
+  accettare nuovamente il rischio con una nuova scadenza motivata.
 
 La riduzione dell'accesso host tramite socket proxy, Docker rootless e minori
 capability/mount resta un hardening facoltativo del VPS. Non blocca la chiusura
@@ -185,7 +199,10 @@ non vengono modificati a mano.
 - [ ] Correggere la sidebar su viewport molto basse con verifica responsive.
 - [ ] Valutare una build Bootstrap selettiva solo dopo un audit dedicato.
 
-### P6 — Backlog funzionale 1.1
+### P6 — Backlog applicativo Yii3 1.1
+
+Questo backlog è separato dal percorso DevOps ed è riepilogato anche nella
+[roadmap di sviluppo](docs/roadmap-sviluppo.md).
 
 - [ ] **Utente super.** Aggiungere `is_super` a `core_user` ed escludere gli
   utenti super dalle liste previste, con migration, policy e test.
@@ -194,7 +211,7 @@ non vengono modificati a mano.
 - [ ] **Select dipendenti.** Implementare un esempio nei form e nei filtri
   statici senza autosubmit preservando `FilterBar`.
 
-### P7 — Evoluzioni successive
+### P7 — Evoluzioni Yii3 successive
 
 - [ ] **Multitenancy.** Introdurre un modello semplice basato su `tenant_id`,
   definendo scope, indici, ownership e migrazione dei dati esistenti.
@@ -205,13 +222,31 @@ Queste evoluzioni iniziano solo dopo la stabilizzazione della release 1.1.
 Se il perimetro non è chiaro, Codex chiede conferma nella conversazione prima
 di modificare il codice.
 
-## 5. Ordine di esecuzione
+## 5. Stato dei perimetri
 
-1. Configurare e verificare il monitoring reale e le notifiche Telegram.
-2. Chiudere le attività rapide di P2.
-3. Procedere con sicurezza operativa e qualità P3-P5.
-4. Completare la release 1.1 con P6.
-5. Valutare P7 dopo la stabilizzazione.
+| Perimetro | Stato | Significato |
+|---|---|---|
+| P0-P1 — Docker, CI/CD e monitoring | **Completato** | Implementazione, CI/CD e verifica reale sul VPS concluse. |
+| P2 — Hardening applicativo | Aperto | Manutenzione PHP/Yii, separata dal percorso DevOps. |
+| P3 — Integrità e sicurezza operativa | Aperto | Attività applicative/dati più la sola scadenza Trivy esplicitata sotto. |
+| P4-P5 — Qualità e frontend | Aperto | Debito tecnico del template, da affrontare con PR dedicate. |
+| P6 — Funzionalità Yii3 1.1 | Backlog separato | Utente super, notifiche e select dipendenti. |
+| P7 — Evoluzioni Yii3 | Backlog separato | Multitenancy e pagamenti Stripe, solo dopo P6. |
+
+### Attività infrastrutturali residue e decisioni di perimetro
+
+| Voce | Classificazione | Impatto sulla chiusura DevOps |
+|---|---|---|
+| Decisione sulle eccezioni Trivy entro il 31 agosto 2026 | Manutenzione con scadenza | Unica azione infrastrutturale calendarizzata; non è un nuovo componente. |
+| Restore periodico di un dump reale del VPS | Facoltativo | Il drill isolato è già in CI; il test reale non è richiesto. |
+| Socket proxy, Docker rootless e riduzione di capability/mount | Hardening facoltativo | Rischio noto dell'accesso host, non bloccante. |
+| Metriche per-container di cAdvisor con snapshotter `overlayfs` | Limite upstream mitigato | La liveness usa le metriche degli upstream Caddy. |
+| Dashboard community Grafana | Visualizzazione facoltativa | Metriche, log e alert funzionano anche senza importarle. |
+| Endpoint applicativo `/metrics` e metriche di business | Evoluzione facoltativa | Richiede requisiti applicativi prima dell'implementazione. |
+| Eliminazione del proxy Caddy esterno | Semplificazione futura | Richiede un nuovo disegno per TLS, routing, certificati e metriche. |
+| GitHub Environment `production` | Evoluzione futura facoltativa | Potrà introdurre approvazioni al deploy e Secrets/Variables limitati all'ambiente; l'assetto attuale usa Repository Secrets/Variables. |
+| Ansible per il bootstrap | Decisione chiusa: rimosso | Il bootstrap del VPS resta manuale e documentato. |
+| Pull request automatiche Dependabot | Manutenzione ordinaria | Ogni proposta può essere valutata o ignorata; non è un requisito di chiusura. |
 
 ## 6. Definition of Done
 
@@ -244,19 +279,21 @@ Ogni modifica viene chiusa solo quando:
 - `docs/assets/`
 - `docs/runbooks/`
 
-## 8. Interventi che richiedono il proprietario
+## 8. Verifiche esterne e interventi del proprietario
 
-- creare il bot Telegram, inserire token e chat ID nel file locale del VPS e
-  verificare dalla UI Grafana l'arrivo di una notifica di prova;
-- verificare sul VPS che tutti i target Prometheus siano `UP`, che
-  `mysql_up == 1` e che Loki riceva i log;
-- decidere alla scadenza delle eccezioni Trivy se aggiornare l'upstream,
-  rimuovere l'eccezione o accettare nuovamente il rischio con nuova scadenza;
+Completati il 21 agosto 2026:
 
-Valutazioni future non bloccanti: restore periodico di un dump reale in un
-ambiente controllato, socket proxy/Docker rootless, riduzione dei privilegi di
-proxy e monitoring, metriche applicative di business ed eventuale eliminazione
-del proxy esterno. Restano annotate, ma non sono requisiti di chiusura.
+- merge tramite pull request e CD verde sul commit `bb2a1b8`;
+- ruleset di `main` e configurazione tramite Repository Secrets/Variables;
+- bot Telegram configurato nel file locale del VPS e notifica di prova
+  ricevuta;
+- target Prometheus tutti `UP`, `mysql_up == 1`, Grafana operativo, Loki
+  `ready` e log Docker consultabili tramite Alloy.
 
-P6 e P7 restano backlog applicativo e non bloccano la chiusura del percorso
-Docker, CI/CD e monitoring usato come progetto dimostrativo.
+Resta una sola azione calendarizzata: decidere entro il 31 agosto 2026 come
+gestire le due eccezioni Trivy in scadenza. Le altre voci della tabella in
+§5 sono possibilità future o decisioni già chiuse, non attività necessarie.
+
+P6 e P7 restano esclusivamente nel backlog applicativo Yii3 e non bloccano la
+chiusura del percorso Docker, CI/CD e monitoring usato come progetto
+dimostrativo.

@@ -1,6 +1,6 @@
 # Flusso e confini DevOps
 
-Stato del repository al 20 agosto 2026. La mappa distingue ciò che è
+Stato del repository al 21 agosto 2026. La mappa distingue ciò che è
 automatizzato e versionato da ciò che richiede un'azione del proprietario o
 accesso all'infrastruttura reale.
 
@@ -62,7 +62,8 @@ flowchart LR
 - preflight della configurazione prima dell'SSH;
 - backup con permessi restrittivi e prova periodica di restore isolato;
 - healthcheck dell'immagine, rollback applicativo e runbook di incidente;
-- monitoring versionato con metriche, log e notifiche.
+- monitoring versionato e verificato sul VPS con metriche, log e notifiche
+  Telegram.
 
 ## Confini di sicurezza
 
@@ -72,18 +73,27 @@ flowchart LR
   GitHub Actions.
 - Il deploy allinea checkout e immagine sullo stesso SHA completo.
 - Il proxy e Alloy leggono il socket Docker e cAdvisor usa mount/capability
-  dell'host: sono rischi espliciti da ridurre sul server reale.
+  dell'host: sono rischi espliciti, annotati come hardening facoltativo.
 - Un `HEALTHCHECK` rende osservabile un servizio non sano; la policy
   `restart: unless-stopped` non riavvia automaticamente un processo ancora
   vivo ma `unhealthy`.
 
-## Interventi esterni non automatizzabili dal repository
+## Stato delle verifiche esterne
 
-- configurare Environment, Secrets, Variables e ruleset nelle GitHub Settings;
-- verificare empiricamente il rifiuto del push diretto su `main`;
-- predisporre e irrobustire OS, SSH, firewall, Docker e DNS del VPS;
-- verificare un deploy e il monitoring sulla produzione reale;
-- rivalutare alla scadenza le eccezioni Trivy legate a dipendenze upstream.
+Sono completati e verificati:
+
+- Repository Secrets/Variables e ruleset di protezione di `main`; un GitHub
+  Environment non è stato adottato e non è necessario al workflow;
+- deploy tramite CD dello stesso SHA pubblicato su GHCR;
+- monitoring sul VPS: target Prometheus tutti `UP`, `mysql_up == 1`, Loki e
+  Alloy operativi e notifica Telegram consegnata.
+
+Il repository non automatizza il bootstrap di un nuovo server: OS, SSH,
+firewall, Docker e DNS restano responsabilità dell'installazione. L'unica
+azione calendarizzata sull'installazione corrente è la decisione sulle
+eccezioni Trivy in scadenza il 31 agosto 2026. Hardening host, restore di un
+dump reale e metriche applicative aggiuntive sono possibilità non bloccanti,
+classificate nel [piano di miglioramento](../PIANO_MIGLIORAMENTO_TEMPLATE.md).
 
 Il proxy esterno può essere eliminato in futuro per semplificare lo stack, ma
 solo dopo avere assegnato esplicitamente terminazione TLS, routing di Grafana,

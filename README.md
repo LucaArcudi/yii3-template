@@ -6,7 +6,8 @@
 Template applicativo [Yii3](https://www.yiiframework.com/) con tema
 ArchitectUI e domini admin pronti all'uso: utenti, ruoli e permessi, menu,
 task e notifiche. Include una pipeline completa: test e scansioni in CI,
-immagine pubblicata su GHCR, deploy automatico su VPS via SSH.
+immagine pubblicata su GHCR, deploy automatico su VPS via SSH e monitoring con
+Prometheus, Grafana, Loki, Alloy e notifiche Telegram.
 
 Licenza [BSD-3-Clause](LICENSE) — contributi benvenuti, vedi
 [CONTRIBUTING.md](CONTRIBUTING.md).
@@ -104,6 +105,9 @@ make trivy-image  # scansione dell'immagine app
   allinea i file sul VPS via SSH, esegue il backup del DB, applica le
   migration (`migrate:up`) e fa `docker compose pull` + `up` con health
   check finale.
+- **Monitoring** (`docker/monitoring/`): metriche, alert, log centralizzati e
+  notifiche Telegram in uno stack Compose separato dal ciclo di deploy
+  applicativo.
 
 Dettagli operativi: [README_DEPLOY.md](README_DEPLOY.md) e
 [indice della documentazione](docs/README.md). Mappa dei confini:

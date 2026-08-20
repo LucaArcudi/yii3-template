@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Chiuso e documentato il percorso dimostrativo Docker/CI/CD/monitoring dopo la verifica reale sul VPS: CD verde, target Prometheus tutti `UP`, `mysql_up == 1`, Grafana e Loki operativi, ingestione Alloy e notifica Telegram ricevuta. Il piano distingue ora la sola manutenzione Trivy con scadenza, gli extra infrastrutturali facoltativi, la manutenzione software P2-P5 e il backlog applicativo Yii3 P6-P7.
 - Monitoring verificato su uno stack Docker locale isolato; aggiunto un runbook per configurazione del bot Telegram e dell'utente MySQL exporter, avvio con env file esplicito e controlli di target, log e notifiche. GitHub Environment, restore reali e hardening host restano esplicitamente non bloccanti.
 - Corrette le entry Dependabot dei manifest Compose usando l'ecosistema `docker-compose`; il validatore operativo distingue ora queste directory dal Dockerfile gestito dall'ecosistema `docker`.
 - Il validatore dei pin della supply chain usa ora `grep`, disponibile sui runner GitHub, senza dipendere dal `rg` fornito soltanto dall'ambiente Codex locale.
