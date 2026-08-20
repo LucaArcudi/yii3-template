@@ -159,8 +159,9 @@ attuale.
   e funzionali.
 - [ ] Definire una soglia di coverage progressiva sui domini critici.
 - [ ] Aggiornare singolarmente le dipendenze major con note e suite completa.
-- [ ] Correggere i target Makefile ereditati e non coerenti con il compose di
-  root.
+- [x] Correggere i target Makefile ereditati e non coerenti con il compose di
+  root: tutti i target locali usano ora il Compose canonico, i test hanno uno
+  stack MySQL isolato e i residui Docker Swarm sono stati rimossi.
 - [ ] Mantenere documentazione e `CHANGELOG.md` nello stesso cambiamento che
   modifica comportamento o workflow.
 

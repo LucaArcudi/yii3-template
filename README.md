@@ -59,17 +59,24 @@ e `--role` (default `ADMIN`). Reset totale del DB:
 
 ## Test e qualità
 
-Sono gli stessi check eseguiti dalla CI: falli passare prima di aprire
-una PR.
+I target Make usano lo stesso `compose.yml` della root e gli stessi strumenti
+della CI. Falli passare prima di aprire una PR.
 
 | Comando | Cosa fa |
 |---|---|
-| `make test` | suite Codeception (ambiente test dedicato) |
+| `make test` | suite Codeception con MySQL in uno stack isolato e temporaneo |
 | `make psalm` | analisi statica |
 | `make cs-fix` | PHP CS Fixer |
 | `make rector` | refactoring automatici |
 | `make composer-dependency-analyser` | igiene delle dipendenze |
 | `make help` | elenco completo dei target |
+
+`make test` usa il progetto Compose `yii3-template-test`, applica le migration
+su un volume DB nuovo e rimuove container e volumi al termine anche in caso di
+errore. La porta MySQL di test predefinita è `33060`; può essere cambiata con
+`make test TEST_DB_PORT=<porta>`. I deploy di produzione non sono target Make:
+passano esclusivamente dalla pipeline e dagli script versionati descritti in
+[`README_DEPLOY.md`](README_DEPLOY.md).
 
 Le scansioni Trivy locali usano l'immagine ufficiale `aquasec/trivy`
 (nessuna installazione richiesta), in modalità report-only con

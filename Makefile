@@ -6,20 +6,21 @@ ifeq ($(PRIMARY_GOAL),)
     PRIMARY_GOAL := help
 endif
 
-include docker/.env
-
-# Current user ID and group ID except MacOS where it conflicts with Docker abilities
+# Current user ID and group ID except MacOS where it conflicts with Docker abilities.
+# The canonical root compose consumes LOCAL_UID/LOCAL_GID as build args.
 ifeq ($(shell uname), Darwin)
-    export UID=1000
-    export GID=1000
+    export LOCAL_UID=1000
+    export LOCAL_GID=1000
 else
-    export UID=$(shell id -u)
-    export GID=$(shell id -g)
+    export LOCAL_UID=$(shell id -u)
+    export LOCAL_GID=$(shell id -g)
 endif
 
-export COMPOSE_PROJECT_NAME=${STACK_NAME}
-DOCKER_COMPOSE_DEV := docker compose -f docker/compose.yml -f docker/dev/compose.yml
-DOCKER_COMPOSE_TEST := docker compose -f docker/compose.yml -f docker/test/compose.yml
+DOCKER_COMPOSE := docker compose -f compose.yml
+TEST_COMPOSE_PROJECT_NAME ?= yii3-template-test
+TEST_DB_PORT ?= 33060
+DOCKER_COMPOSE_TEST := COMPOSE_PROJECT_NAME=$(TEST_COMPOSE_PROJECT_NAME) DB_PORT=$(TEST_DB_PORT) docker compose -f compose.yml
+DOCKER_COMPOSE_TEST_RUN := $(DOCKER_COMPOSE_TEST) run --rm -e APP_ENV=test -e APP_DEBUG=false
 TRIVY_VERSION := 0.71.2
 TRIVY_IMAGE := aquasec/trivy:${TRIVY_VERSION}
 TRIVY_APP_IMAGE := yii3-template-app:latest
@@ -34,53 +35,53 @@ TRIVY_IMAGE_SCAN_FLAGS := --format table --exit-code 0 --severity UNKNOWN,LOW,ME
 
 ifeq ($(PRIMARY_GOAL),build)
 build: ## Build docker images
-	$(DOCKER_COMPOSE_DEV) build $(CLI_ARGS)
+	$(DOCKER_COMPOSE) build $(CLI_ARGS)
 endif
 
 ifeq ($(PRIMARY_GOAL),up)
 up: ## Up the dev environment
-	$(DOCKER_COMPOSE_DEV) up -d --remove-orphans
+	$(DOCKER_COMPOSE) up -d --remove-orphans
 endif
 
 ifeq ($(PRIMARY_GOAL),down)
 down: ## Down the dev environment
-	$(DOCKER_COMPOSE_DEV) down --remove-orphans
+	$(DOCKER_COMPOSE) down --remove-orphans
 endif
 
 ifeq ($(PRIMARY_GOAL),stop)
 stop: ## Stop the dev environment
-	$(DOCKER_COMPOSE_DEV) stop
+	$(DOCKER_COMPOSE) stop
 endif
 
 ifeq ($(PRIMARY_GOAL),clear)
 clear: ## Remove development docker containers and volumes
-	$(DOCKER_COMPOSE_DEV) down --volumes --remove-orphans
+	$(DOCKER_COMPOSE) down --volumes --remove-orphans
 endif
 
 ifeq ($(PRIMARY_GOAL),shell)
 shell: ## Get into container shell
-	$(DOCKER_COMPOSE_DEV) exec app /bin/bash
+	$(DOCKER_COMPOSE) exec app /bin/bash
 endif
 
 ifeq ($(PRIMARY_GOAL),yii)
 yii: ## Execute Yii command
-	$(DOCKER_COMPOSE_DEV) run --rm app ./yii $(CLI_ARGS)
+	$(DOCKER_COMPOSE) run --rm app ./yii $(CLI_ARGS)
 .PHONY: yii
 endif
 
 ifeq ($(PRIMARY_GOAL),composer)
 composer: ## Run Composer
-	$(DOCKER_COMPOSE_DEV) run --rm app composer $(CLI_ARGS)
+	$(DOCKER_COMPOSE) run --rm --no-deps app composer $(CLI_ARGS)
 endif
 
 ifeq ($(PRIMARY_GOAL),rector)
 rector: ## Run Rector
-	$(DOCKER_COMPOSE_DEV) run --rm app ./vendor/bin/rector $(CLI_ARGS)
+	$(DOCKER_COMPOSE) run --rm --no-deps app ./vendor/bin/rector $(CLI_ARGS)
 endif
 
 ifeq ($(PRIMARY_GOAL),cs-fix)
 cs-fix: ## Run PHP CS Fixer
-	$(DOCKER_COMPOSE_DEV) run --rm app ./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --diff
+	$(DOCKER_COMPOSE) run --rm --no-deps app ./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --diff
 endif
 
 #
@@ -88,28 +89,42 @@ endif
 #
 
 ifeq ($(PRIMARY_GOAL),test)
-test:
-	$(DOCKER_COMPOSE_TEST) run --rm app ./vendor/bin/codecept run $(CLI_ARGS)
+test: ## Run Codeception in an isolated Docker Compose project
+	@set -eu; \
+		cleanup() { $(DOCKER_COMPOSE_TEST) down --volumes --remove-orphans; }; \
+		trap 'status=$$?; trap - EXIT; cleanup || true; exit $$status' EXIT; \
+		cleanup; \
+		$(DOCKER_COMPOSE_TEST) build app; \
+		$(DOCKER_COMPOSE_TEST) up -d --wait db; \
+		$(DOCKER_COMPOSE_TEST_RUN) -e XDEBUG_MODE=off app ./yii migrate:up -y; \
+		$(DOCKER_COMPOSE_TEST_RUN) -e XDEBUG_MODE=off app ./vendor/bin/codecept run $(CLI_ARGS)
 endif
 
 ifeq ($(PRIMARY_GOAL),test-coverage)
-test-coverage:
-	$(DOCKER_COMPOSE_TEST) run --rm app ./vendor/bin/codecept run --coverage --coverage-html --disable-coverage-php
+test-coverage: ## Run Codeception coverage in an isolated Docker Compose project
+	@set -eu; \
+		cleanup() { $(DOCKER_COMPOSE_TEST) down --volumes --remove-orphans; }; \
+		trap 'status=$$?; trap - EXIT; cleanup || true; exit $$status' EXIT; \
+		cleanup; \
+		$(DOCKER_COMPOSE_TEST) build app; \
+		$(DOCKER_COMPOSE_TEST) up -d --wait db; \
+		$(DOCKER_COMPOSE_TEST_RUN) -e XDEBUG_MODE=off app ./yii migrate:up -y; \
+		$(DOCKER_COMPOSE_TEST_RUN) -e XDEBUG_MODE=coverage app ./vendor/bin/codecept run --coverage --coverage-html --disable-coverage-php $(CLI_ARGS)
 endif
 
 ifeq ($(PRIMARY_GOAL),codecept)
 codecept: ## Run Codeception
-	$(DOCKER_COMPOSE_TEST) run --rm app ./vendor/bin/codecept $(CLI_ARGS)
+	$(DOCKER_COMPOSE_TEST_RUN) -e XDEBUG_MODE=off app ./vendor/bin/codecept $(CLI_ARGS)
 endif
 
 ifeq ($(PRIMARY_GOAL),psalm)
 psalm: ## Run Psalm
-	$(DOCKER_COMPOSE_DEV) run --rm app ./vendor/bin/psalm $(CLI_ARGS)
+	$(DOCKER_COMPOSE) run --rm --no-deps app ./vendor/bin/psalm $(CLI_ARGS)
 endif
 
 ifeq ($(PRIMARY_GOAL),composer-dependency-analyser)
 composer-dependency-analyser: ## Run Composer Dependency Analyser
-	$(DOCKER_COMPOSE_DEV) run --rm app ./vendor/bin/composer-dependency-analyser --config=composer-dependency-analyser.php $(CLI_ARGS)
+	$(DOCKER_COMPOSE) run --rm --no-deps app ./vendor/bin/composer-dependency-analyser --config=composer-dependency-analyser.php $(CLI_ARGS)
 endif
 
 ifeq ($(PRIMARY_GOAL),trivy)
@@ -138,37 +153,6 @@ trivy-gate: ## Run the blocking Trivy gate (fixable HIGH/CRITICAL, fs + prod ima
 	$(TRIVY_RUN) fs --config trivy.yaml --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 .
 	DOCKER_BUILDKIT=1 docker build --file docker/Dockerfile --target prod --pull --tag $(TRIVY_PROD_IMAGE) .
 	$(TRIVY_RUN) image --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 $(TRIVY_PROD_IMAGE)
-endif
-
-#
-# Production
-#
-
-ifeq ($(PRIMARY_GOAL),prod-build)
-prod-build: ## PROD | Build an image
-	docker build --file docker/Dockerfile --target prod --pull -t ${IMAGE}:${IMAGE_TAG} .
-endif
-
-ifeq ($(PRIMARY_GOAL),prod-push)
-prod-push: ## PROD | Push image to repository
-	docker push ${IMAGE}:${IMAGE_TAG}
-endif
-
-ifeq ($(PRIMARY_GOAL),prod-deploy)
-prod-deploy: ## PROD | Deploy to production
-	set -euo pipefail \
-	docker -H ${PROD_SSH} stack deploy --prune --detach=false --with-registry-auth -c docker/compose.yml -c docker/prod/compose.yml ${STACK_NAME} 2>&1 | tee deploy.log \
-	if grep -qiE 'rollback:|update rolled back' deploy.log then \
-		FAILED_TASK_ID="$(grep -oiE 'task[[:space:]]+[a-z0-9]+' deploy.log | head -n 1 | awk '{print $2}')" \
-		if [ -n "${FAILED_TASK_ID}" ]; then \
-			echo "Docker Swarm update rolled back; failing job. Failed task ID: ${FAILED_TASK_ID}" \
-			echo "--- docker service logs (${FAILED_TASK_ID}) ---" \
-			docker -H ${PROD_SSH} service logs --timestamps --tail 500 "${FAILED_TASK_ID}" || true \
-		else \
-			echo 'Docker Swarm update rolled back; failing job. Failed task ID: not found in deploy output.' \
-		fi \
-		exit 1 \
-	fi
 endif
 
 #

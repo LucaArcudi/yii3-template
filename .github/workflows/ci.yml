@@ -19,6 +19,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Test local Makefile workflow
+        run: bash tests/Tooling/makefile-workflow.sh
+
       - name: Test deployment checkout helper
         run: bash tests/Deploy/checkout-deploy-commit.sh
 
