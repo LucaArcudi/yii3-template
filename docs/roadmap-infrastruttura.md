@@ -1,94 +1,66 @@
-# Roadmap infrastruttura e osservabilità
+# Infrastruttura e osservabilità
 
-Evoluzioni dell'infrastruttura di produzione e dello stack di osservabilità.
-Sono prerequisiti tecnici indipendenti dall'AI; la roadmap che li usa come
-base (incident automation, fix CI assistiti, ecc.) vive in
-[roadmap-ai-codex-claude-code.md](roadmap-ai-codex-claude-code.md).
-Lo stato attuale di CI/CD e monitoring è documentato in
-[documentazione-progetto.md](documentazione-progetto.md) §8; i limiti noti
-minori del provisioning manuale in §10.
+Stato consolidato al 20 agosto 2026. Il backlog normativo è nel
+[piano di miglioramento](../PIANO_MIGLIORAMENTO_TEMPLATE.md); questo documento
+riassume capacità e rischi dell'infrastruttura corrente.
 
-## Stato attuale (2026-07-07)
+## Capacità implementate
 
-```text
-✔ CI severa: build, Trivy, composer validate/audit, Psalm, Codeception,
-  doppia validazione migration, verifica artefatto prod, promtool,
-  validazione config Loki/Alloy
-✔ CD versionato in scripts/: backup con retention, migrate:up,
-  ricreazione esplicita dell'app, invariante immagine, health check,
-  deploy sul tag SHA del commit, rollback automatico su deploy fallito
-✔ monitoring: Prometheus + node/cadvisor/mysqld exporter + metriche HTTP
-  di Caddy; Grafana pubblica in TLS; 6 regole di alert versionate
-✔ log centralizzati: Loki + Alloy (container e log applicativo),
-  datasource in Grafana, retention 14 giorni
-✔ notifiche alert su Telegram (provisioning Grafana versionato)
-✔ container unhealthy → restart (restart: unless-stopped + healthcheck)
-✔ runbook operativi in documentazione-progetto.md §9
-```
+- CI su push e pull request con validazione di workflow, shell e Compose,
+  Composer audit/dependency analysis, PHP CS Fixer, Psalm, Codeception,
+  migration e gate Trivy.
+- Build unica dell'immagine prod, verifica dell'artefatto e pubblicazione su
+  GHCR con tag SHA e `latest` soltanto da `main`.
+- CD versionata in `scripts/`: preflight, checkout dello stesso SHA, backup,
+  migration, avvio con healthcheck e rollback dell'immagine su deploy fallito.
+- Backup con retention di 14 giorni, directory `0700`, dump `0600` e guardia
+  contro file vuoti.
+- Drill completo dump/drop/restore su MySQL isolato in ogni CI e tramite
+  schedule settimanale sulla branch predefinita.
+- Prometheus, Grafana, node-exporter, cAdvisor e mysqld-exporter; metriche HTTP
+  del proxy e sei regole di alert versionate.
+- Loki e Alloy per log container/applicazione con retention di 14 giorni.
+- Notifiche Telegram provisionate nello stack Grafana.
+- Runbook separati per stato, deploy, rollback, database e incidenti.
 
-I tre cantieri, chiusi il 2026-07-07:
+Le configurazioni di Prometheus, Loki e Alloy sono validate in CI. Immagini
+operative, basi Docker e GitHub Actions sono fissate rispettivamente a digest
+o commit SHA e censite da Dependabot.
 
----
+## Semantica di health e recovery
 
-## 1. Centralizzazione dei log — ✔ FATTO (2026-07-07)
+L'immagine prod contiene un `HEALTHCHECK`; Compose lo usa durante
+`up --wait` e lo script di deploy aggiunge una verifica HTTP con retry. Se il
+nuovo container non supera il deploy, viene ripristinata l'immagine precedente.
 
-Implementato con Loki + Alloy nello stack `docker/monitoring/`
-(documentazione in [documentazione-progetto.md](documentazione-progetto.md)
-§8.9):
+La policy `restart: unless-stopped` interviene quando il processo termina o il
+daemon riparte. Docker non riavvia automaticamente un container che resta vivo
+ma diventa `unhealthy`: in esercizio il problema viene rilevato da healthcheck,
+metriche e alert e gestito con i runbook. Per questo il repository non dichiara
+un generico “self-healing” a runtime.
 
-```text
-✔ Alloy raccoglie stdout/stderr di TUTTI i container (Docker service
-  discovery, socket read-only) + runtime/logs/app.log (volume app ro)
-✔ Loki su filesystem (volume loki_data), retention 14 giorni allineata
-  ai backup, solo rete interna
-✔ datasource Loki provisionato in Grafana accanto a Prometheus
-✔ config validate in CI (loki -verify-config, alloy fmt)
-```
+Il restore sintetico della CI prova la procedura e le migration, ma non prova
+la leggibilità dei backup reali del VPS. Un test periodico di quei dump richiede
+un ambiente controllato e un'azione esplicita del proprietario.
 
-Benefici ottenuti: i log sopravvivono alla ricreazione dei container a
-ogni deploy, query LogQL da Grafana (una sola UI per metriche e log),
-diagnosi senza SSH (un estratto di log è un link a una query Loki).
+## Rischi e attività esterne residue
 
-Alternative valutate e scartate per un singolo VPS: ELK/OpenSearch
-(troppo pesante), servizi SaaS (costo e dati fuori dal server);
-Promtail scartato perché in maintenance mode (Alloy è il successore).
+- **GitHub:** configurare Environment `production`, Secrets, Variables,
+  approval policy e ruleset; provare il rifiuto di un push diretto a `main`.
+- **VPS:** verificare il primo deploy reale, il percorso pubblico, alert e
+  restore di un dump reale senza modificare la produzione.
+- **Accesso host:** valutare socket proxy o Docker rootless per proxy/Alloy e
+  ridurre privilegi, device e mount di cAdvisor.
+- **Supply chain:** rivalutare entro la scadenza le eccezioni `.trivyignore`
+  legate a FrankenPHP, senza proroghe automatiche.
+- **Metriche applicative:** aggiungere un endpoint di business soltanto dopo
+  avere definito dati, cardinalità e retention.
 
----
+## Possibile semplificazione del proxy
 
-## 2. Notifiche degli alert — ✔ FATTO (2026-07-07)
-
-Implementato con il provisioning alerting di Grafana
-(`docker/monitoring/grafana/provisioning/alerting/`, vedi
-[documentazione-progetto.md](documentazione-progetto.md) §8.9):
-
-```text
-✔ contact point Telegram (token e chat ID da docker/monitoring/.env)
-✔ alert rule ponte che rilancia ALERTS{alertstate="firing"} di
-  Prometheus: una notifica per (alertname, severity), repeat 4h
-✔ notification policy versionata; le soglie restano SOLO nelle regole
-  Prometheus validate da promtool
-```
-
-Alertmanager dedicato scartato in questa fase: un servizio in più senza
-benefici finché il fan-out è un solo canale. Il passo successivo
-(webhook → issue incident GitHub per la diagnosi assistita) è descritto
-nella [roadmap AI](roadmap-ai-codex-claude-code.md) e presuppone questo.
-
----
-
-## 3. Self-healing deterministico — ✔ FATTO (2026-07-07)
-
-Non richiede AI ed è il livello di resilienza più importante:
-
-```text
-✔ container unhealthy → restart (restart: unless-stopped + healthcheck)
-✔ deploy: migrate PRIMA dell'avvio, app sempre ricreata, invariante
-  immagine (il drift fa fallire il run), health check con retry
-✔ backup pre-deploy con retention e guardia sul dump vuoto
-✔ alert Prometheus su CPU/RAM/disco/target/MySQL/upstream
-✔ deploy sul tag SHA del commit (niente più latest): run riproducibili
-✔ rollback automatico: deploy.sh registra l'immagine in esecuzione
-  (digest) e la ripristina se up, invariante o health check falliscono;
-  le migration non vengono annullate (docs/runbooks/backup-restore.md
-  per il restore)
-```
+FrankenPHP incorpora già Caddy, ma oggi lo stack separato
+`caddy-docker-proxy` gestisce TLS, discovery tramite label, pubblicazione di
+Grafana e metriche HTTP. La sua eliminazione è una valutazione futura: prima
+vanno ridisegnati tutti questi compiti e la persistenza dei certificati. Non è
+necessaria per considerare completo il percorso Docker/CI/CD/monitoring del
+template.

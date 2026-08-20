@@ -1,10 +1,9 @@
 # Piano di miglioramento del template Yii3
 
-> Roadmap attiva dal 16 agosto 2026.
+> Roadmap attiva dal 16 agosto 2026, consolidata il 20 agosto 2026.
 >
-> Questo è il backlog consolidato del repository. La pulizia dei documenti
-> precedenti è rinviata a una modifica separata: nel frattempo non
-> costituiscono fonti operative parallele.
+> Questo è il backlog unico del repository. I documenti storici non sono
+> fonti operative parallele e restano recuperabili nello storico Git.
 
 ## 1. Obiettivo
 
@@ -81,29 +80,30 @@ GitHub restano nel credential store della postazione di sviluppo.
 ### P0 — Consolidamento documentale e flusso Codex
 
 - [x] Creare una sola roadmap attiva per il template.
-- [ ] Riordinare `docs/` e valutare l'archiviazione di audit, prompt, recap e
-  piani non più attivi in una modifica documentale separata.
-- [ ] Semplificare i form GitHub del precedente flusso interno ed eliminare i
+- [x] Riordinare `docs/` rimuovendo dalle fonti attive audit, prompt e piani
+  superati, che restano recuperabili nello storico Git.
+- [x] Semplificare i form GitHub del precedente flusso interno ed eliminare i
   riferimenti ai prompt non più operativi.
 - [x] Allineare `AGENTS.md`, `CONTRIBUTING.md`, README e template PR al flusso
   richiesta diretta → branch → PR.
-- [ ] Creare un indice della documentazione attiva.
-- [ ] Documentare visivamente i confini tra Codex, GitHub, Docker, CI/CD,
+- [x] Creare un indice della documentazione attiva.
+- [x] Documentare visivamente i confini tra Codex, GitHub, Docker, CI/CD,
   proxy Caddy e VPS.
 - [ ] Verificare empiricamente che il ruleset di `main` respinga un push
   diretto del proprietario.
 
 ### P1 — Docker, CI/CD e bootstrap riutilizzabili
 
-Le modifiche vanno eseguite in PR separate e retrocompatibili con il VPS
-attuale.
+Le modifiche devono restare focalizzate e retrocompatibili con il VPS attuale.
 
 1. [x] **Parametrizzare gli script di deploy.** Introdurre variabili per
    directory di deploy, remote, branch, porta SSH e health URL mantenendo gli
    attuali valori come default. Aggiungere test per default e override.
 2. [ ] **Configurare il target GitHub.** Usare un Environment `production`,
    GitHub Secrets per le credenziali e GitHub Variables per i valori non
-   sensibili. Fallire prima dell'SSH se manca una configurazione obbligatoria.
+   sensibili. Il workflow supporta già le Variables, ne valida i valori e
+   fallisce prima dell'SSH se manca un Secret obbligatorio; restano da creare
+   Environment e valori effettivi nelle GitHub Settings.
 3. [x] **Separare bootstrap e CD.** Rimossi i playbook Ansible specifici del
    VPS; il proxy Caddy resta versionato come stack Docker con bootstrap
    manuale, mentre la CD distribuisce soltanto le release applicative.
@@ -113,7 +113,7 @@ attuale.
    `latest`; GHCR le assegna il digest content-addressed.
 5. [x] **Validare i file operativi.** Aggiungere controlli per workflow GitHub,
    shell e Docker Compose senza indebolire i gate esistenti.
-6. [ ] **Riscrivere la guida di installazione production-ready.** Separare
+6. [x] **Riscrivere la guida di installazione production-ready.** Separare
    chiaramente bootstrap del VPS, configurazione GitHub, primo deploy e ciclo
    ordinario delle release.
 
@@ -165,7 +165,7 @@ attuale.
 - [x] Correggere i target Makefile ereditati e non coerenti con il compose di
   root: tutti i target locali usano ora il Compose canonico, i test hanno uno
   stack MySQL isolato e i residui Docker Swarm sono stati rimossi.
-- [ ] Mantenere documentazione e `CHANGELOG.md` nello stesso cambiamento che
+- [x] Mantenere documentazione e `CHANGELOG.md` nello stesso cambiamento che
   modifica comportamento o workflow.
 
 ### P5 — Debito frontend
@@ -205,13 +205,11 @@ di modificare il codice.
 
 ## 5. Ordine di esecuzione
 
-1. Completare P0 con una modifica documentale dedicata, decidendo prima quali
-   file storici versionare.
-2. Eseguire P1 nell'ordine indicato, una PR per responsabilità.
-3. Chiudere le attività rapide di P2.
-4. Procedere con sicurezza operativa e qualità P3-P5.
-5. Completare la release 1.1 con P6.
-6. Valutare P7 dopo la stabilizzazione.
+1. Completare le attività esterne P0/P1 nelle GitHub Settings e provarle.
+2. Chiudere le attività rapide di P2.
+3. Procedere con sicurezza operativa e qualità P3-P5.
+4. Completare la release 1.1 con P6.
+5. Valutare P7 dopo la stabilizzazione.
 
 ## 6. Definition of Done
 
@@ -236,11 +234,27 @@ Ogni modifica viene chiusa solo quando:
 - `README.md`
 - `README_DEPLOY.md`
 - `CHANGELOG.md`
+- `docs/README.md`
+- `docs/DEVOPS_WORKFLOW.md`
 - `docs/documentazione-progetto.md`
 - `docs/roadmap-sviluppo.md`
 - `docs/roadmap-infrastruttura.md`
 - `docs/assets/`
 - `docs/runbooks/`
 
-I rapporti, i prompt e i piani precedenti restano per ora nel repository, ma
-non sono fonti operative. Saranno riordinati in una modifica separata.
+## 8. Interventi che richiedono il proprietario
+
+- configurare l'Environment `production`, Secrets, Variables e approval policy
+  nelle GitHub Settings;
+- verificare empiricamente che il ruleset respinga un push diretto su `main`;
+- eseguire e osservare un deploy sulla VPS reale e verificare il percorso
+  pubblico/monitoring;
+- valutare sul VPS socket proxy, Docker rootless e riduzione dei privilegi di
+  monitoring;
+- decidere alla scadenza delle eccezioni Trivy se aggiornare l'upstream,
+  rimuovere l'eccezione o accettare nuovamente il rischio con nuova scadenza;
+- effettuare, in un ambiente autorizzato, un restore periodico di un backup
+  reale della VPS.
+
+P6 e P7 restano backlog applicativo e non bloccano la chiusura del percorso
+Docker, CI/CD e monitoring usato come progetto dimostrativo.

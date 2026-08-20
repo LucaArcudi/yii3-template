@@ -69,6 +69,8 @@ della CI. Falli passare prima di aprire una PR.
 | `make cs-fix` | PHP CS Fixer |
 | `make rector` | refactoring automatici |
 | `make composer-dependency-analyser` | igiene delle dipendenze |
+| `make validate-ops` | actionlint, ShellCheck e render di tutti i Compose operativi |
+| `make trivy-gate` | gate HIGH/CRITICAL con fix su filesystem e immagine prod |
 | `make help` | elenco completo dei target |
 
 `make test` usa il progetto Compose `yii3-template-test`, applica le migration
@@ -90,18 +92,22 @@ make trivy-image  # scansione dell'immagine app
 
 ## CI/CD
 
-- **CI** (`.github/workflows/ci.yml`): build, scansioni Trivy, `composer
-  validate`/`audit` e suite Codeception nel compose di root, su ogni push e
-  PR. Dopo i test costruisce una sola immagine prod, la verifica e la sottopone
-  al gate Trivy; su push a `main` pubblica su GHCR quella stessa immagine
-  (`ghcr.io/lucaarcudi/yii3-template`, tag `latest` e SHA del commit).
+- **CI** (`.github/workflows/ci.yml`): validazione dei file operativi, build,
+  scansioni Trivy, Composer validate/audit/dependency analysis, PHP CS Fixer,
+  Psalm, suite Codeception e drill backup/restore isolato. Dopo i test
+  costruisce una sola immagine prod, ne
+  verifica anche il `HEALTHCHECK` e la sottopone al gate Trivy; su push a
+  `main` pubblica su GHCR quella stessa immagine
+  (`ghcr.io/lucaarcudi/yii3-template`, tag `latest` e SHA del commit). Uno
+  schedule settimanale mantiene esercitata la procedura di recovery.
 - **CD** (`.github/workflows/cd.yml`): al successo della CI su `main`
   allinea i file sul VPS via SSH, esegue il backup del DB, applica le
   migration (`migrate:up`) e fa `docker compose pull` + `up` con health
   check finale.
 
 Dettagli operativi: [README_DEPLOY.md](README_DEPLOY.md) e
-[docs/documentazione-progetto.md](docs/documentazione-progetto.md).
+[indice della documentazione](docs/README.md). Mappa dei confini:
+[flusso DevOps](docs/DEVOPS_WORKFLOW.md).
 Roadmap: [piano di miglioramento](PIANO_MIGLIORAMENTO_TEMPLATE.md),
 [sviluppo funzionale](docs/roadmap-sviluppo.md) e
 [infrastruttura e osservabilità](docs/roadmap-infrastruttura.md).

@@ -7,8 +7,7 @@ body:
     attributes:
       value: |
         Raccogliere le evidenze con i runbook (`docs/runbooks/`, partendo
-        da `stato-e-log.md`). Per la diagnosi AI:
-        `docs/ai/prompts/incident-diagnosis.md`.
+        da `stato-e-log.md`). Non inserire segreti o dati personali.
   - type: input
     id: alert
     attributes:

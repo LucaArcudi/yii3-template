@@ -20,7 +20,7 @@ return [
     'Roadmap di sviluppo' => 'Development roadmap',
     'Backlog funzionale: cose fatte e prossimi step.' => 'Functional backlog: what is done and next steps.',
     'Roadmap infrastruttura' => 'Infrastructure roadmap',
-    'Centralizzazione log, notifiche degli alert e self-healing.' => 'Log centralization, alert notifications and self-healing.',
+    'Log centralizzati, alert e recovery dei deploy.' => 'Centralized logs, alerts, and deploy recovery.',
     'Piano di miglioramento' => 'Improvement plan',
     'Priorità attive per template, qualità e DevOps.' => 'Active priorities for the template, quality, and DevOps.',
     'Storia delle release e delle modifiche.' => 'History of releases and changes.',
