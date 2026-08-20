@@ -92,7 +92,7 @@ services:
     restart: unless-stopped
 
   loki:
-    image: grafana/loki:3.5.12@sha256:c2a6860c2f94ecc98fffce7c10e6c8b350cf25e2ea3daa255dff27d7c6a4dffc
+    image: grafana/loki:3.7.6@sha256:efd47c67f9bac88ca29bcf8cb997d9ab29d1848bd0aff579282295542a745952
     command:
       - -config.file=/etc/loki/loki-config.yml
     volumes:
