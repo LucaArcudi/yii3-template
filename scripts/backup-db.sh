@@ -35,4 +35,6 @@ docker compose \
 # timestamp risparmia i backup rinominati a mano (es. *_before_rotation).
 find backups -maxdepth 1 -name 'db_????-??-??_??-??-??.sql' -mtime +14 -delete
 
-ls -lh backups | tail
+find backups -maxdepth 1 -type f -printf '%TY-%Tm-%Td %TH:%TM %10s %p\n' \
+  | sort \
+  | tail

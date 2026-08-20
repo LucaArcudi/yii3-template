@@ -19,6 +19,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Validate operational files
+        run: make validate-ops
+
       - name: Test local Makefile workflow
         run: bash tests/Tooling/makefile-workflow.sh
 

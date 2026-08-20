@@ -24,7 +24,6 @@ jobs:
     concurrency:
       group: production-deploy
       cancel-in-progress: false
-      queue: max
 
     if: >
       github.event_name == 'workflow_dispatch' ||

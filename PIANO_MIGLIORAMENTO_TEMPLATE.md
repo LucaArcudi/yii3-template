@@ -111,7 +111,7 @@ attuale.
    sola immagine di produzione, ne verifica il contenuto, applica il gate
    Trivy e sui push a `main` pubblica quella stessa immagine con tag SHA e
    `latest`; GHCR le assegna il digest content-addressed.
-5. [ ] **Validare i file operativi.** Aggiungere controlli per workflow GitHub,
+5. [x] **Validare i file operativi.** Aggiungere controlli per workflow GitHub,
    shell e Docker Compose senza indebolire i gate esistenti.
 6. [ ] **Riscrivere la guida di installazione production-ready.** Separare
    chiaramente bootstrap del VPS, configurazione GitHub, primo deploy e ciclo

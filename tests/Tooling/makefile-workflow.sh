@@ -38,6 +38,11 @@ override_output=$(make --no-print-directory -n test \
 assert_contains "$override_output" "COMPOSE_PROJECT_NAME=custom-test" "make test override"
 assert_contains "$override_output" "DB_PORT=34000" "make test override"
 
+validate_ops_output=$(make --no-print-directory -n validate-ops)
+assert_contains "$validate_ops_output" \
+  "bash tests/Tooling/validate-operational-files.sh" \
+  "make validate-ops"
+
 if grep -Eq 'docker/(compose\.yml|dev/compose\.yml|test/compose\.yml)|docker stack|PROD_SSH' Makefile; then
   fail "Makefile still references a legacy Compose or Docker Swarm"
 fi

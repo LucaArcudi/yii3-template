@@ -127,6 +127,11 @@ composer-dependency-analyser: ## Run Composer Dependency Analyser
 	$(DOCKER_COMPOSE) run --rm --no-deps app ./vendor/bin/composer-dependency-analyser --config=composer-dependency-analyser.php $(CLI_ARGS)
 endif
 
+ifeq ($(PRIMARY_GOAL),validate-ops)
+validate-ops: ## Validate GitHub Actions, shell scripts and Docker Compose files
+	bash tests/Tooling/validate-operational-files.sh
+endif
+
 ifeq ($(PRIMARY_GOAL),trivy)
 trivy: ## Run Trivy filesystem and configuration scans
 	$(MAKE) trivy-fs
