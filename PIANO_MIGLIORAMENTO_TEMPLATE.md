@@ -107,9 +107,10 @@ attuale.
 3. [x] **Separare bootstrap e CD.** Rimossi i playbook Ansible specifici del
    VPS; il proxy Caddy resta versionato come stack Docker con bootstrap
    manuale, mentre la CD distribuisce soltanto le release applicative.
-4. [ ] **Pubblicare l'artefatto verificato.** Costruire una sola immagine di
-   produzione, scansionarla e pubblicare quella stessa immagine con SHA e
-   digest immutabili.
+4. [x] **Pubblicare l'artefatto verificato.** Il job `image` costruisce una
+   sola immagine di produzione, ne verifica il contenuto, applica il gate
+   Trivy e sui push a `main` pubblica quella stessa immagine con tag SHA e
+   `latest`; GHCR le assegna il digest content-addressed.
 5. [ ] **Validare i file operativi.** Aggiungere controlli per workflow GitHub,
    shell e Docker Compose senza indebolire i gate esistenti.
 6. [ ] **Riscrivere la guida di installazione production-ready.** Separare

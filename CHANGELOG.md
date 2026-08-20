@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- CI dell'immagine di produzione riallineata all'artefatto pubblicato: il job `image` esegue una sola build prod dopo i test, verifica i file necessari al deploy, applica il gate Trivy bloccante e, solo sui push a `main`, pubblica su GHCR quella stessa immagine con i tag SHA e `latest`. Una regressione statica impedisce di reintrodurre la doppia build.
 - Workflow Docker locale riallineato: tutti i target Make usano il `compose.yml` canonico della root; `make test` prepara uno stack MySQL isolato, applica le migration e rimuove container e volumi al termine. Rimossi i Compose dev/test e i target Docker Swarm ereditati da `yiisoft/app`; build, pubblicazione e deploy di produzione restano responsabilità esclusiva della CI/CD versionata.
 - Provisioning VPS semplificato: rimossi i playbook Ansible incompleti e specifici dell'installazione esistente. Il proxy Caddy resta versionato in `docker/proxy/` con bootstrap manuale documentato; CI e CD non cambiano e questa modifica non esegue bootstrap o riavvii automatici del proxy sul VPS.
 - Sicurezza dipendenze di test: aggiornato `guzzlehttp/guzzle` da 7.15.1 a 7.15.3 e `guzzlehttp/promises` da 2.5.1 a 2.5.2, risolvendo CVE-2026-69245 e CVE-2026-69246 rilevate da `composer audit`.

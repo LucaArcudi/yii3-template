@@ -12,8 +12,9 @@ parametrizzati: la relativa attività è tracciata in
 
 ```text
 merge su main
+  → CI: test, build, verifica e scansione dell'immagine prod
+  → push della stessa immagine su GHCR con tag SHA
   → CI verde
-  → build e push immagine GHCR con tag SHA
   → avvio automatico della CD
   → verifica del manifest
   → connessione SSH al VPS
@@ -158,7 +159,10 @@ ghcr.io/<owner>/<repository>:<sha-completo>
 ghcr.io/<owner>/<repository>:latest
 ```
 
-La CD distribuisce il tag SHA immutabile, non `latest`.
+La build prod viene eseguita una sola volta: la CI verifica e scansiona
+l'immagine locale, poi pubblica proprio quella con entrambi i tag. GHCR la
+rende inoltre indirizzabile tramite il digest content-addressed. La CD
+distribuisce il tag associato allo SHA del commit, non `latest`.
 
 Se il package GHCR è pubblico, il VPS può effettuare il pull senza login. Se
 è privato, il VPS necessita di una credenziale separata con il solo permesso
