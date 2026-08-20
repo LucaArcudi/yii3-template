@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Corrette le entry Dependabot dei manifest Compose usando l'ecosistema `docker-compose`; il validatore operativo distingue ora queste directory dal Dockerfile gestito dall'ecosistema `docker`.
 - Il validatore dei pin della supply chain usa ora `grep`, disponibile sui runner GitHub, senza dipendere dal `rg` fornito soltanto dall'ambiente Codex locale.
 - Pipeline di qualità completata con PHP CS Fixer in dry-run e Composer Dependency Analyser dopo installazione/audit delle dipendenze.
 - Documentazione operativa consolidata: rimossi dalle fonti attive audit, prompt e roadmap AI superati; aggiunti indice e diagramma dei confini DevOps; riscritte guida di produzione, recovery e roadmap infrastrutturale distinguendo automazioni versionate da GitHub Settings/VPS. Corretto inoltre il significato di `HEALTHCHECK`: `restart: unless-stopped` non riavvia da solo un container ancora vivo ma `unhealthy`.
