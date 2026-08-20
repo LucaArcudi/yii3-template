@@ -46,4 +46,17 @@ for image_var in ACTIONLINT_IMAGE SHELLCHECK_IMAGE; do
     || fail "${image_var} non fissata a digest"
 done
 
+dependabot_entries=$(awk '
+  $1 == "-" && $2 == "package-ecosystem:" { ecosystem = $3 }
+  $1 == "directory:" { print ecosystem " " $2 }
+' .github/dependabot.yml)
+
+grep -Fxq 'docker /docker' <<< "$dependabot_entries" \
+  || fail "ecosistema Dependabot errato per il Dockerfile in /docker"
+
+for compose_dir in / /docker/prod /docker/proxy /docker/monitoring; do
+  grep -Fxq "docker-compose ${compose_dir}" <<< "$dependabot_entries" \
+    || fail "ecosistema Dependabot errato per Compose in ${compose_dir}"
+done
+
 echo "Supply-chain pins: OK"
