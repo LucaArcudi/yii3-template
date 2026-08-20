@@ -459,18 +459,19 @@ push su main
    │
    ▼
 CI (.github/workflows/ci.yml)
+   │  job "test"
    ├─ regressione helper checkout deploy in repository Git temporanei
    ├─ Trivy fs/config/secret scan (report-only) + gate fs bloccante
    ├─ build immagine dev (--pull) + Trivy image scan
    ├─ composer install / validate / audit
    ├─ codecept run --skip-group database
-   ├─ validazione migration + codecept run -g database (su DB migrato)
-   └─ verifica artefatto prod + gate Trivy bloccante (fixable HIGH/CRITICAL)
+   └─ validazione migration + codecept run -g database (su DB migrato)
    │  (job "test" verde)
    ▼
-publish-image (solo push su main)
-   ├─ build docker/Dockerfile --target prod
-   └─ push su GHCR: ghcr.io/lucaarcudi/yii3-template:{<sha>, latest}
+image (ogni push e pull request)
+   ├─ unica build docker/Dockerfile --target prod
+   ├─ verifica contenuto artefatto + gate Trivy bloccante
+   └─ solo su main: push della stessa immagine su GHCR con {<sha>, latest}
    │  (workflow CI concluso con successo)
    ▼
 CD (.github/workflows/cd.yml — workflow_run su CI / manuale)
@@ -510,13 +511,15 @@ Trigger: ogni `push` e `pull_request`. Due job:
    `composer validate`, `composer audit` (bloccante) →
    `codecept run --skip-group database` → validazione migration
    (idempotenza + bootstrap da zero) → `codecept run -g database` sul DB
-   migrato, con guardia sul numero di test eseguiti → verifica artefatto
-   prod + gate Trivy bloccante sull'immagine prod. Eccezioni ai gate solo
+   migrato, con guardia sul numero di test eseguiti. Eccezioni ai gate solo
    via `.trivyignore` (motivazione + scadenza `exp:`).
-2. **publish-image** — dipende da `test`, gira **solo su push a `main`**.
-   Builda `docker/Dockerfile --target prod` e pubblica su GHCR i tag
-   `${GITHUB_SHA}` e `latest`, autenticandosi con `GITHUB_TOKEN`
-   (permessi `contents: read`, `packages: write`).
+2. **image** — dipende da `test` e gira su ogni push e pull request. Esegue
+   l'unica build `docker/Dockerfile --target prod` del workflow, verifica
+   nell'immagine i file richiesti dal deploy e applica il gate Trivy
+   bloccante sulle HIGH/CRITICAL con fix disponibile. Solo sui push a `main`
+   autentica la CI con `GITHUB_TOKEN` e pubblica su GHCR la stessa immagine
+   locale con i tag `${GITHUB_SHA}` e `latest` (permessi `contents: read`,
+   `packages: write`); il registry ne calcola il digest content-addressed.
 
 Il tag `<sha>` per ogni release è ciò che rende possibile il rollback
 ([runbooks/rollback.md](runbooks/rollback.md)).

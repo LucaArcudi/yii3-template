@@ -92,7 +92,8 @@ make trivy-image  # scansione dell'immagine app
 
 - **CI** (`.github/workflows/ci.yml`): build, scansioni Trivy, `composer
   validate`/`audit` e suite Codeception nel compose di root, su ogni push e
-  PR; su push a `main` pubblica l'immagine su GHCR
+  PR. Dopo i test costruisce una sola immagine prod, la verifica e la sottopone
+  al gate Trivy; su push a `main` pubblica su GHCR quella stessa immagine
   (`ghcr.io/lucaarcudi/yii3-template`, tag `latest` e SHA del commit).
 - **CD** (`.github/workflows/cd.yml`): al successo della CI su `main`
   allinea i file sul VPS via SSH, esegue il backup del DB, applica le
