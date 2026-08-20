@@ -1,7 +1,6 @@
 # Regole di alert valutate da Prometheus (visibili in /alerts e in Grafana
-# via la metrica ALERTS). Le notifiche push arriveranno quando verrà
-# collegato un canale (Alertmanager o contact point Grafana): per ora gli
-# alert "firing" si vedono nelle UI. Validate in CI con promtool.
+# via la metrica ALERTS). Il bridge provisionato in Grafana inoltra gli alert
+# "firing" al contact point Telegram. Validate in CI con promtool.
 groups:
   - name: infrastruttura
     rules:

@@ -22,6 +22,7 @@ riassume capacità e rischi dell'infrastruttura corrente.
 - Loki e Alloy per log container/applicazione con retention di 14 giorni.
 - Notifiche Telegram provisionate nello stack Grafana.
 - Runbook separati per stato, deploy, rollback, database e incidenti.
+- Repository Secrets/Variables configurati e `main` protetto da ruleset.
 
 Le configurazioni di Prometheus, Loki e Alloy sono validate in CI. Immagini
 operative, basi Docker e GitHub Actions sono fissate rispettivamente a digest
@@ -39,22 +40,16 @@ ma diventa `unhealthy`: in esercizio il problema viene rilevato da healthcheck,
 metriche e alert e gestito con i runbook. Per questo il repository non dichiara
 un generico “self-healing” a runtime.
 
-Il restore sintetico della CI prova la procedura e le migration, ma non prova
-la leggibilità dei backup reali del VPS. Un test periodico di quei dump richiede
-un ambiente controllato e un'azione esplicita del proprietario.
-
 ## Rischi e attività esterne residue
 
-- **GitHub:** configurare Environment `production`, Secrets, Variables,
-  approval policy e ruleset; provare il rifiuto di un push diretto a `main`.
-- **VPS:** verificare il primo deploy reale, il percorso pubblico, alert e
-  restore di un dump reale senza modificare la produzione.
-- **Accesso host:** valutare socket proxy o Docker rootless per proxy/Alloy e
-  ridurre privilegi, device e mount di cAdvisor.
+- **Monitoring VPS:** configurare il bot Telegram e verificare notifica di
+  prova, target Prometheus, `mysql_up` e ingestione dei log in Loki.
 - **Supply chain:** rivalutare entro la scadenza le eccezioni `.trivyignore`
   legate a FrankenPHP, senza proroghe automatiche.
-- **Metriche applicative:** aggiungere un endpoint di business soltanto dopo
-  avere definito dati, cardinalità e retention.
+
+Restore di un dump reale, socket proxy/Docker rootless, riduzione dei privilegi
+host e metriche applicative di business sono valutazioni future non bloccanti.
+Non fanno parte dei requisiti di chiusura del progetto dimostrativo.
 
 ## Possibile semplificazione del proxy
 

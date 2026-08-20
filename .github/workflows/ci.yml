@@ -140,7 +140,7 @@ jobs:
         run: |
           docker run --rm \
             -v "$PWD/docker/monitoring/loki:/etc/loki:ro" \
-            grafana/loki:3.5.0@sha256:4c431d2e6b9b38718694b31c5d56be7c80dc69c513215fde1aeb5b02cd4e2665 \
+            grafana/loki:3.5.12@sha256:c2a6860c2f94ecc98fffce7c10e6c8b350cf25e2ea3daa255dff27d7c6a4dffc \
             -config.file=/etc/loki/loki-config.yml -verify-config
 
       - name: Validate Alloy config

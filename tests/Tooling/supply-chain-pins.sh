@@ -34,7 +34,7 @@ grep -Eq '^TRIVY_IMAGE := aquasec/trivy:\$\{TRIVY_VERSION\}@sha256:[0-9a-f]{64}$
 
 for ci_image in \
   prom/prometheus:v3.1.0 \
-  grafana/loki:3.5.0 \
+  grafana/loki:3.5.12 \
   grafana/alloy:v1.8.1; do
   grep -Eq "${ci_image}@sha256:[0-9a-f]{64}" .github/workflows/ci.yml \
     || fail "immagine CI ${ci_image} non fissata a digest"
