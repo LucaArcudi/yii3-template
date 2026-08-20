@@ -17,10 +17,11 @@ documentazione attiva; restano recuperabili nello storico Git.
 ## Backlog
 
 - [Piano di miglioramento](../PIANO_MIGLIORAMENTO_TEMPLATE.md): unica roadmap
-  consolidata e distinzione tra attività autonome ed esterne.
-- [Roadmap di sviluppo](roadmap-sviluppo.md): backlog Yii/applicativo.
-- [Infrastruttura e osservabilità](roadmap-infrastruttura.md): stato attuale e
-  rischi operativi residui.
+  consolidata, con percorso DevOps concluso e manutenzione residua classificata.
+- [Backlog applicativo Yii3](roadmap-sviluppo.md): funzionalità P6 e P7,
+  separate dall'infrastruttura.
+- [Infrastruttura e osservabilità](roadmap-infrastruttura.md): capacità e
+  verifiche reali completate, manutenzione calendarizzata ed extra facoltativi.
 - [Changelog](../CHANGELOG.md): modifiche visibili e operative.
 
 ## Procedure

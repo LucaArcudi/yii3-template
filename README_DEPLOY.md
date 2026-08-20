@@ -128,7 +128,9 @@ essere presente nell'`authorized_keys` dell'utente configurato.
 | `HEALTH_URL` | `http://127.0.0.1:8080/login` | Endpoint HTTP(S) verificato dalla CD |
 
 L'assetto scelto usa Repository Secrets e Repository Variables. Un Environment
-GitHub con regole di approvazione è facoltativo e non è necessario al workflow.
+GitHub `production`, con eventuali regole di approvazione e valori limitati
+all'ambiente, è tracciato nel backlog come evoluzione futura facoltativa e non
+è necessario al workflow attuale.
 
 ## 3. Primo deploy
 

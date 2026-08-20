@@ -606,8 +606,9 @@ verificata tramite un canale fidato; **non** la sola stringa `SHA256:...`).
 
 **Variables opzionali**: `DEPLOY_DIR` (`/opt/yii3`), `DEPLOY_REMOTE`
 (`origin`), `DEPLOY_BRANCH` (`main`), `VPS_SSH_PORT` (`22`) e `HEALTH_URL`
-(`http://127.0.0.1:8080/login`). La configurazione di un Environment GitHub
-`production` e delle relative protection rules richiede il proprietario.
+(`http://127.0.0.1:8080/login`). L'installazione usa Repository Secrets e
+Repository Variables; un Environment GitHub `production` è una possibilità
+facoltativa che non è stata adottata e non è richiesta dal workflow.
 
 ### 8.5 Infrastruttura di produzione
 
@@ -717,7 +718,8 @@ cAdvisor (metriche container), mysqld-exporter (utente MySQL dedicato
   `ssh -L 9090:127.0.0.1:9090 deploy@<VPS_IP>` e poi
   `http://localhost:9090` in locale.
 - Avvio/aggiornamento sul VPS, da `/opt/yii3`:
-  `docker compose -f docker/monitoring/compose.yml up -d --wait`.
+  `docker compose --env-file docker/monitoring/.env -f
+  docker/monitoring/compose.yml up -d --wait`.
 - Dashboard consigliate (import per ID da grafana.com): **1860** (Node
   Exporter Full), **14282** (cAdvisor), **14057** (MySQL).
 - Il job `caddy` scrappa le metriche HTTP del reverse proxy
@@ -751,6 +753,12 @@ cAdvisor (metriche container), mysqld-exporter (utente MySQL dedicato
 - Estensione futura: endpoint `/metrics` applicativo (richiede la scelta
   delle metriche di business e uno storage per i contatori).
 
+Il 21 agosto 2026 lo stack è stato aggiornato e verificato sul VPS: Grafana
+13.1.3 con database `ok`, Prometheus e tutti i target `UP`, `mysql_up == 1`,
+Loki `ready`, log Docker presenti tramite Alloy e notifica Telegram di prova
+ricevuta. Il dettaglio operativo è nel
+[runbook monitoring](runbooks/monitoring.md).
+
 ## 9. Runbook operativi
 
 I runbook vivono in file singoli sotto [`docs/runbooks/`](runbooks/) — uno
@@ -770,6 +778,7 @@ per scenario, citabile dalla conversazione o da una issue. La base comune è
 | MySQL giù (`MysqlDown`) | [db-down.md](runbooks/db-down.md) |
 | Disco quasi pieno (`DiskAlmostFull`) | [disk-full.md](runbooks/disk-full.md) |
 | Accesso al DB dal PC locale (tunnel SSH) | [accesso-db-tunnel.md](runbooks/accesso-db-tunnel.md) |
+| Monitoring e notifiche Telegram | [monitoring.md](runbooks/monitoring.md) |
 | Nuovo dominio CRUD (checklist) | [nuovo-dominio-crud.md](runbooks/nuovo-dominio-crud.md) |
 
 Ogni runbook di incident segue lo stesso schema: sintomi (con l'alert
@@ -778,8 +787,9 @@ fare, istruzioni per l'AI.
 
 ## 10. Limiti noti e lavori futuri
 
-Lo stato residuo dell'infrastruttura è deliberatamente separato tra codice e
-servizi esterni:
+Il percorso Docker, CI/CD e monitoring è concluso. Lo stato residuo è
+deliberatamente separato tra manutenzione con scadenza, estensioni facoltative
+e backlog applicativo:
 
 - **Trivy**: gate bloccante in CI sulle sole HIGH/CRITICAL **con fix
   disponibile** (eccezioni in `.trivyignore`, con scadenza); il resto dello
@@ -788,11 +798,18 @@ servizi esterni:
 - **Provisioning server non automatizzato**: installazione di Docker,
   utenti, SSH, firewall, hardening e bootstrap iniziale restano manuali e
   sono separati dalla CD applicativa.
-- **GitHub Settings**: Environment `production`, Secrets, Variables, approval
-  policy e prova empirica del ruleset richiedono il proprietario.
+- **GitHub Settings**: Repository Secrets/Variables e ruleset sono configurati;
+  l'Environment `production` non è stato adottato ed è facoltativo.
 - **Accesso all'host**: proxy e Alloy leggono il socket Docker; cAdvisor usa
   mount e privilegi estesi. Socket proxy/rootless e riduzione dei privilegi
-  richiedono test sul VPS reale.
+  restano hardening facoltativo.
 - **Proxy esterno**: può essere eliminato in futuro, ma oggi gestisce TLS,
   routing di app/Grafana e metriche. La semplificazione richiede un disegno
   sostitutivo esplicito e non blocca la chiusura del progetto DevOps.
+
+Restore di un dump reale, dashboard community e metriche di business sono
+altre estensioni non bloccanti. P2-P5 restano manutenzione del template e della
+supply chain; P6 e P7 costituiscono il
+[backlog applicativo Yii3](roadmap-sviluppo.md), separato dal progetto DevOps.
+La classificazione normativa completa è nel
+[piano di miglioramento](../PIANO_MIGLIORAMENTO_TEMPLATE.md) §5.

@@ -1,6 +1,6 @@
 # Infrastruttura e osservabilità
 
-Stato consolidato al 20 agosto 2026. Il backlog normativo è nel
+Stato consolidato al 21 agosto 2026. Il backlog normativo è nel
 [piano di miglioramento](../PIANO_MIGLIORAMENTO_TEMPLATE.md); questo documento
 riassume capacità e rischi dell'infrastruttura corrente.
 
@@ -20,13 +20,31 @@ riassume capacità e rischi dell'infrastruttura corrente.
 - Prometheus, Grafana, node-exporter, cAdvisor e mysqld-exporter; metriche HTTP
   del proxy e sei regole di alert versionate.
 - Loki e Alloy per log container/applicazione con retention di 14 giorni.
-- Notifiche Telegram provisionate nello stack Grafana.
+- Notifiche Telegram provisionate e verificate nello stack Grafana.
 - Runbook separati per stato, deploy, rollback, database e incidenti.
 - Repository Secrets/Variables configurati e `main` protetto da ruleset.
 
 Le configurazioni di Prometheus, Loki e Alloy sono validate in CI. Immagini
 operative, basi Docker e GitHub Actions sono fissate rispettivamente a digest
 o commit SHA e censite da Dependabot.
+
+## Verifica sul VPS
+
+Il 21 agosto 2026, dopo la CD verde del commit `bb2a1b8`, è stato verificato
+l'intero percorso operativo:
+
+- Grafana 13.1.3 operativo con database `ok` e contact point Telegram testato
+  con consegna reale;
+- Prometheus `ready`, con i target `prometheus`, `node`, `cadvisor`, `mysql` e
+  `caddy` tutti `UP`;
+- `mysql_up == 1`, quindi exporter, rete interna e credenziali dedicate sono
+  funzionanti;
+- Loki `ready`, con etichette e log Docker ingeriti da Alloy consultabili in
+  Grafana Explore.
+
+Questa verifica chiude il percorso Docker, CI/CD e monitoring usato come
+progetto dimostrativo. Non sono stati versionati token, password o altri valori
+del file `docker/monitoring/.env` presente esclusivamente sul VPS.
 
 ## Semantica di health e recovery
 
@@ -40,16 +58,31 @@ ma diventa `unhealthy`: in esercizio il problema viene rilevato da healthcheck,
 metriche e alert e gestito con i runbook. Per questo il repository non dichiara
 un generico “self-healing” a runtime.
 
-## Rischi e attività esterne residue
+## Manutenzione ed estensioni non bloccanti
 
-- **Monitoring VPS:** configurare il bot Telegram e verificare notifica di
-  prova, target Prometheus, `mysql_up` e ingestione dei log in Loki.
-- **Supply chain:** rivalutare entro la scadenza le eccezioni `.trivyignore`
-  legate a FrankenPHP, senza proroghe automatiche.
+L'unica attività infrastrutturale calendarizzata è la decisione sulle due
+eccezioni `.trivyignore` in scadenza il 31 agosto 2026. La rivalutazione
+intermedia del 20 agosto ha confermato che FrankenPHP 1.12.7 contiene ancora i
+moduli interessati; alla scadenza non è ammessa una proroga automatica.
 
-Restore di un dump reale, socket proxy/Docker rootless, riduzione dei privilegi
-host e metriche applicative di business sono valutazioni future non bloccanti.
-Non fanno parte dei requisiti di chiusura del progetto dimostrativo.
+Restano annotate come estensioni facoltative:
+
+- GitHub Environment `production`, per introdurre in futuro eventuali
+  approvazioni al deploy e Secrets/Variables limitati all'ambiente;
+- restore periodico di un dump reale, oltre al drill isolato già eseguito in
+  CI;
+- socket proxy/Docker rootless e riduzione di capability e mount per proxy,
+  Alloy e cAdvisor;
+- dashboard Grafana community e metriche applicative di business;
+- soluzione upstream alla visibilità per-container di cAdvisor con snapshotter
+  `overlayfs`.
+
+Il GitHub Environment non è necessario per l'assetto corrente, ma resta nel
+backlog come possibile evoluzione. Ansible è stato invece rimosso
+intenzionalmente. Le pull request Dependabot sono proposte di manutenzione
+valutabili singolarmente, non criteri di completamento. La classificazione
+completa è mantenuta nel §5 del
+[piano di miglioramento](../PIANO_MIGLIORAMENTO_TEMPLATE.md).
 
 ## Possibile semplificazione del proxy
 
