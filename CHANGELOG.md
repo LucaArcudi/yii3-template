@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Workflow Docker locale riallineato: tutti i target Make usano il `compose.yml` canonico della root; `make test` prepara uno stack MySQL isolato, applica le migration e rimuove container e volumi al termine. Rimossi i Compose dev/test e i target Docker Swarm ereditati da `yiisoft/app`; build, pubblicazione e deploy di produzione restano responsabilità esclusiva della CI/CD versionata.
 - Provisioning VPS semplificato: rimossi i playbook Ansible incompleti e specifici dell'installazione esistente. Il proxy Caddy resta versionato in `docker/proxy/` con bootstrap manuale documentato; CI e CD non cambiano e questa modifica non esegue bootstrap o riavvii automatici del proxy sul VPS.
 - Sicurezza dipendenze di test: aggiornato `guzzlehttp/guzzle` da 7.15.1 a 7.15.3 e `guzzlehttp/promises` da 2.5.1 a 2.5.2, risolvendo CVE-2026-69245 e CVE-2026-69246 rilevate da `composer audit`.
 - Flusso Codex semplificato: la richiesta parte direttamente dalla conversazione, Codex lavora su una branch dedicata, esegue i controlli, pusha e apre la PR; review e merge restano manuali. `PIANO_MIGLIORAMENTO_TEMPLATE.md` raccoglie le priorità attive, `README_DEPLOY.md` chiarisce i confini tra CI/CD, Docker, proxy e VPS e la dashboard rimanda al piano e alle pull request. La pulizia di `docs/` è rinviata a una modifica separata.

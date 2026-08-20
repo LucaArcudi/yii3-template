@@ -393,13 +393,13 @@ Il `Makefile` incapsula i flussi Docker: `make up|down|stop|clear`,
 `make psalm`, `make rector`, `make cs-fix`, `make trivy|trivy-fs|trivy-config|trivy-image`,
 `make help`.
 
-> **Nota (eredità upstream):** i target dev/test del Makefile usano
-> `docker/compose.yml` + `docker/dev|test/compose.yml`, che si aspettano file
-> `docker/dev/.env` e `docker/test/.env` non presenti nel repo, e
-> `prod-deploy` è pensato per Docker Swarm. Sono residui del template
-> `yiisoft/app`: il flusso effettivo di sviluppo è il `compose.yml` root
-> (§6.2) e quello di produzione è descritto in §8. Restano pienamente
-> operativi i target di analisi e i target Trivy.
+Tutti i target applicativi usano il `compose.yml` root (§6.2). `make test`
+crea uno stack isolato (`yii3-template-test`), usa una porta MySQL distinta
+(`33060`, sovrascrivibile con `TEST_DB_PORT`), applica le migration su un
+volume nuovo ed elimina stack e volume al termine. I vecchi Compose dev/test
+e i target Docker Swarm ereditati da `yiisoft/app` sono stati rimossi: build,
+pubblicazione e deploy di produzione passano esclusivamente da CI/CD e dagli
+script versionati descritti in §8.
 
 ## 7. Test e qualità del codice
 
@@ -410,6 +410,9 @@ reader), **Functional**, **Console**, **Web**. Configurazione in
 `codeception.yml`, coverage abilitato via `codeception/c3` (`APP_C3=1`).
 
 ```bash
+# flusso locale completo: DB isolato, migration, tutte le suite, cleanup
+make test
+
 # in container (come in CI)
 docker compose run --rm --no-deps app ./vendor/bin/codecept run --skip-group database
 
