@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Il job CD è ora associato esplicitamente all'Environment GitHub `production`; `make validate-ops` protegge il collegamento da regressioni e la guida di deploy documenta la migrazione sicura di Secrets, Variables e regole del target.
 - Corrette le entry Dependabot dei manifest Compose usando l'ecosistema `docker-compose`; il validatore operativo distingue ora queste directory dal Dockerfile gestito dall'ecosistema `docker`.
 - Il validatore dei pin della supply chain usa ora `grep`, disponibile sui runner GitHub, senza dipendere dal `rg` fornito soltanto dall'ambiente Codex locale.
 - Pipeline di qualità completata con PHP CS Fixer in dry-run e Composer Dependency Analyser dopo installazione/audit delle dipendenze.

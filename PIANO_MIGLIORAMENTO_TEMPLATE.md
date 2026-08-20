@@ -101,9 +101,10 @@ Le modifiche devono restare focalizzate e retrocompatibili con il VPS attuale.
    attuali valori come default. Aggiungere test per default e override.
 2. [ ] **Configurare il target GitHub.** Usare un Environment `production`,
    GitHub Secrets per le credenziali e GitHub Variables per i valori non
-   sensibili. Il workflow supporta già le Variables, ne valida i valori e
-   fallisce prima dell'SSH se manca un Secret obbligatorio; restano da creare
-   Environment e valori effettivi nelle GitHub Settings.
+   sensibili. Il job di deploy dichiara già l'Environment, supporta le
+   Variables, ne valida i valori e fallisce prima dell'SSH se manca un Secret
+   obbligatorio; restano da creare e popolare il target nelle GitHub Settings
+   e verificarlo con un deploy reale.
 3. [x] **Separare bootstrap e CD.** Rimossi i playbook Ansible specifici del
    VPS; il proxy Caddy resta versionato come stack Docker con bootstrap
    manuale, mentre la CD distribuisce soltanto le release applicative.

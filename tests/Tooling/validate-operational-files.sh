@@ -23,6 +23,7 @@ docker run --rm \
   "${SHELL_FILES[@]}"
 
 bash tests/Tooling/supply-chain-pins.sh
+bash tests/Tooling/cd-environment-workflow.sh
 
 docker compose --env-file .env.example -f compose.yml config --quiet
 docker compose \

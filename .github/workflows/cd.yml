@@ -21,6 +21,7 @@ jobs:
   deploy:
     name: Deploy to VPS
     runs-on: ubuntu-latest
+    environment: production
     concurrency:
       group: production-deploy
       cancel-in-progress: false

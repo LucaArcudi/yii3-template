@@ -127,10 +127,37 @@ essere presente nell'`authorized_keys` dell'utente configurato.
 | `VPS_SSH_PORT` | `22` | Porta SSH |
 | `HEALTH_URL` | `http://127.0.0.1:8080/login` | Endpoint HTTP(S) verificato dalla CD |
 
-Il passo successivo nelle impostazioni GitHub è creare l'Environment
-`production`, spostarvi secrets/variables e applicare le regole di approvazione
-desiderate. È una configurazione esterna e non viene simulata dal codice del
-repository.
+### Environment `production`
+
+Il job di deploy dichiara `environment: production`: GitHub applica quindi le
+regole di protezione dell'Environment prima di rendere disponibili i relativi
+Secrets e registra i deploy sul target `production`.
+
+Configurarlo nelle GitHub Settings **prima di fare merge** della PR che
+introduce questo collegamento:
+
+1. aprire **Settings → Environments → New environment**;
+2. creare l'Environment con il nome esatto `production`;
+3. aggiungere come Environment Secrets i quattro valori `VPS_HOST`,
+   `VPS_USER`, `VPS_SSH_KEY` e `VPS_KNOWN_HOSTS` già usati dalla CD;
+4. aggiungere come Environment Variables soltanto gli eventuali override
+   `DEPLOY_DIR`, `DEPLOY_REMOTE`, `DEPLOY_BRANCH`, `VPS_SSH_PORT` e
+   `HEALTH_URL`;
+5. in **Deployment branches and tags** scegliere **Selected branches and
+   tags**, aggiungere una regola di tipo **Branch** e usare il pattern esatto
+   `main`;
+6. scegliere se richiedere un'approvazione manuale. In un repository gestito
+   da una sola persona non abilitare **Prevent self-review**, altrimenti chi ha
+   avviato il run non potrà approvarlo.
+
+Durante la migrazione, reinserire i valori dalla fonte originale senza
+cancellare quelli esistenti a livello repository: GitHub non consente di
+rileggere il contenuto di un Secret salvato. Se un valore non è subito
+disponibile, il job può continuare a usare temporaneamente il Secret omonimo a
+livello repository. I Secrets dell'Environment con lo stesso nome hanno la
+precedenza per questo job. Eliminare i duplicati a livello repository soltanto
+dopo un primo deploy riuscito che mostri `production` come Environment; la
+configurazione esterna non può essere validata dal codice del repository.
 
 ## 3. Primo deploy
 
@@ -140,7 +167,8 @@ Prima del merge che attiverà la prima CD:
 2. verificare il checkout, `.env.prod` e `compose.local.yml`;
 3. avviare il proxy e controllarne i log;
 4. assicurarsi che il VPS possa eseguire il pull dell'immagine GHCR;
-5. configurare Secrets e, se servono, Variables su GitHub;
+5. configurare l'Environment `production`, i relativi Secrets e, se servono,
+   Variables su GitHub;
 6. validare le configurazioni dal repository con `make validate-ops`;
 7. aprire una PR e attendere la CI verde prima del merge.
 
