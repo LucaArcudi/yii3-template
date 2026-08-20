@@ -9,3 +9,23 @@ updates:
     directory: /
     schedule:
       interval: weekly
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker
+    directory: /docker
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker
+    directory: /docker/prod
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker
+    directory: /docker/proxy
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker
+    directory: /docker/monitoring
+    schedule:
+      interval: weekly

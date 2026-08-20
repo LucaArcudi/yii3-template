@@ -147,10 +147,12 @@ attuale.
 - [ ] Definire chiavi esterne e indici di Core tramite migration.
 - [ ] Ridurre l'accesso all'host di proxy e monitoring valutando socket proxy,
   Docker rootless e riduzione di capability/mount.
-- [ ] Portare progressivamente GitHub Actions a SHA completi e immagini
+- [x] Portare progressivamente GitHub Actions a SHA completi e immagini
   critiche a digest.
-- [ ] Rivalutare le eccezioni Trivy alla relativa scadenza, senza proroghe
-  automatiche.
+- [x] Rivalutare le eccezioni Trivy alla relativa scadenza, senza proroghe
+  automatiche. Il 20 agosto 2026 la release FrankenPHP 1.12.7 contiene
+  ancora i due moduli vulnerabili censiti; le eccezioni mantengono la
+  scadenza del 31 agosto e richiederanno una nuova decisione esplicita.
 
 ### P4 — Qualità e debito tecnico
 
@@ -171,12 +173,13 @@ attuale.
 Ogni modifica ai bundle passa da `docs/assets/REBUILD.md`; i file minificati
 non vengono modificati a mano.
 
-- [ ] Rigenerare il lockfile di cleanup senza la dipendenza rimossa per
-  licenza e aggiornare SHA-256, notice, procedura e pattern Trivy.
+- [x] Rigenerare il lockfile di cleanup senza la dipendenza rimossa per
+  licenza e aggiornare SHA-256, notice e procedura; verificare il pattern
+  Trivy, rimasto valido perché il nome del file non cambia.
 - [ ] Valutare l'allineamento tra Bootstrap CSS e Bootstrap JS.
 - [ ] Eliminare la duplicazione di jQuery tra `main.js` e `demo.js`.
-- [ ] Rimuovere la dipendenza `wnumb` non emessa dagli artefatti.
-- [ ] Chiudere le incertezze di attribuzione per Hamburgers e RFS.
+- [x] Rimuovere la dipendenza `wnumb` non emessa dagli artefatti.
+- [x] Chiudere le incertezze di attribuzione per Hamburgers e RFS.
 - [ ] Correggere la sidebar su viewport molto basse con verifica responsive.
 - [ ] Valutare una build Bootstrap selettiva solo dopo un audit dedicato.
 

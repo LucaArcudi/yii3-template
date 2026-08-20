@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Validate operational files
         run: make validate-ops
@@ -35,7 +35,7 @@ jobs:
       # perché .trivyignore (raccolto di default dalla cwd) vale solo per i
       # gate bloccanti, non deve nascondere le eccezioni accettate.
       - name: Run Trivy filesystem and config scan
-        uses: aquasecurity/trivy-action@v0.36.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         env:
           TRIVY_IGNOREFILE: /dev/null
         with:
@@ -44,7 +44,7 @@ jobs:
           trivy-config: trivy.yaml
           scanners: vuln,misconfig,secret
           exit-code: '0'
-          version: v0.71.2
+          version: v0.74.0
           cache: 'true'
 
       # Gate bloccante (C-01/F-03): vulnerabilità HIGH/CRITICAL con fix
@@ -52,7 +52,7 @@ jobs:
       # informativo sopra; eccezioni solo via .trivyignore, ognuna con
       # motivazione e scadenza.
       - name: Enforce Trivy gate on fixable HIGH/CRITICAL (fs)
-        uses: aquasecurity/trivy-action@v0.36.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: fs
           scan-ref: .
@@ -61,7 +61,7 @@ jobs:
           exit-code: '1'
           ignore-unfixed: true
           severity: HIGH,CRITICAL
-          version: v0.71.2
+          version: v0.74.0
           cache: 'true'
           skip-setup-trivy: 'true'
 
@@ -71,13 +71,13 @@ jobs:
           echo "LOCAL_UID=$(id -u)" >> "$GITHUB_ENV"
           echo "LOCAL_GID=$(id -g)" >> "$GITHUB_ENV"
 
-      # --pull: il tag base frankenphp è mobile, ogni build deve partire
-      # dalla base più recente (bump C-01), non da una cache stantia.
+      # --pull verifica sul registry i digest dichiarati nel Dockerfile;
+      # gli aggiornamenti restano espliciti e passano dalle PR Dependabot.
       - name: Build services
         run: docker compose -f compose.yml build --pull
 
       - name: Run Trivy image scan
-        uses: aquasecurity/trivy-action@v0.36.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         env:
           TRIVY_IGNOREFILE: /dev/null
         with:
@@ -87,7 +87,7 @@ jobs:
           format: table
           exit-code: '0'
           severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
-          version: v0.71.2
+          version: v0.74.0
           cache: 'true'
           skip-setup-trivy: 'true'
 
@@ -115,21 +115,21 @@ jobs:
         run: |
           docker run --rm \
             -v "$PWD/docker/monitoring/prometheus:/etc/prometheus:ro" \
-            --entrypoint promtool prom/prometheus:v3.1.0 \
+            --entrypoint promtool prom/prometheus:v3.1.0@sha256:6559acbd5d770b15bb3c954629ce190ac3cbbdb2b7f1c30f0385c4e05104e218 \
             check config /etc/prometheus/prometheus.yml
 
       - name: Validate Loki config
         run: |
           docker run --rm \
             -v "$PWD/docker/monitoring/loki:/etc/loki:ro" \
-            grafana/loki:3.5.0 \
+            grafana/loki:3.5.0@sha256:4c431d2e6b9b38718694b31c5d56be7c80dc69c513215fde1aeb5b02cd4e2665 \
             -config.file=/etc/loki/loki-config.yml -verify-config
 
       - name: Validate Alloy config
         run: |
           docker run --rm \
             -v "$PWD/docker/monitoring/alloy:/etc/alloy:ro" \
-            grafana/alloy:v1.8.1 \
+            grafana/alloy:v1.8.1@sha256:7790f6f7fbd8e4486b4b6c6fc6a7293a73605bb79aaa7f49003cb366943724f6 \
             fmt /etc/alloy/config.alloy > /dev/null
 
       - name: Validate framework migrations
@@ -169,7 +169,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -208,7 +208,7 @@ jobs:
       # Gate bloccante sull'artefatto che va davvero in produzione (C-01):
       # è l'immagine prod, non quella dev, a spedire le vulnerabilità.
       - name: Enforce Trivy gate on fixable HIGH/CRITICAL (prod image)
-        uses: aquasecurity/trivy-action@v0.36.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: image
           image-ref: ${{ steps.image-tags.outputs.sha }}
@@ -217,12 +217,12 @@ jobs:
           exit-code: '1'
           ignore-unfixed: true
           severity: HIGH,CRITICAL
-          version: v0.71.2
+          version: v0.74.0
           cache: 'true'
 
       - name: Login to GitHub Container Registry
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: docker/login-action@v4
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}

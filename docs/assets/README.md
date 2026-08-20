@@ -15,9 +15,9 @@ questo repository con Node.js 24.18.0 e npm 11.16.0.
   `caec63e8ce4504b90164b1a0a79bf6e081ec991ec76b09e2f489a8f00b7ee085`.
 - `architectui-4.5.0-package-lock-cleanup.json` descrive le dipendenze esatte
   della build finale dopo le esclusioni approvate. SHA-256:
-  `10be224c77849ea73fce54955f075b4f33bdd9bba4260f80f461e1e85520a1df`.
-  Nota: dichiara ancora `pe7-icon`, rimossa in un secondo momento per
-  licenza — vedi la trappola documentata in [REBUILD.md](REBUILD.md) §2.
+  `fc092cd574d3d9a2edd378836d7002f5385f653f6414fa9370d2c89a2babfe53`.
+  Il manifest finale non dichiara `pe7-icon` né `wnumb`: entrambe sono
+  assenti anche dagli artefatti distribuiti.
 
 I file hanno nomi documentali intenzionalmente diversi da `package-lock.json`.
 Non introducono npm o una pipeline frontend nel progetto e non sono usati

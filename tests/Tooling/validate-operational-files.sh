@@ -22,6 +22,8 @@ docker run --rm \
   "$SHELLCHECK_IMAGE" \
   "${SHELL_FILES[@]}"
 
+bash tests/Tooling/supply-chain-pins.sh
+
 docker compose --env-file .env.example -f compose.yml config --quiet
 docker compose \
   --env-file .env.prod.example \

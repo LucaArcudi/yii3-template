@@ -46,12 +46,12 @@ pipeline CI/CD su GitHub Actions. Vedi la [sezione DevOps](#8-devops).
 |---|---|
 | Linguaggio | PHP 8.2 – 8.5 (immagine Docker: PHP 8.4) |
 | Framework | Yii3 (pacchetti `yiisoft/*`: DI, router FastRoute, middleware dispatcher, view renderer, validator, translator, session, CSRF, user/auth, data) |
-| HTTP runtime | FrankenPHP 1 (Caddy embedded) — `dunglas/frankenphp:1-php8.4-bookworm` |
+| HTTP runtime | FrankenPHP 1.12.7 (Caddy embedded), immagine fissata a digest |
 | Database | MySQL 8.4 (`yiisoft/db` + `yiisoft/db-mysql`, query builder senza ORM) |
 | Frontend | Tema ArchitectUI (Bootstrap 5), asset precompilati in `src/Shared/resources/architectui/`, gestiti da `yiisoft/assets` |
 | Test | Codeception 5 (suite Unit, Functional, Console, Web) + PHPUnit 11 |
 | Analisi statica | Psalm 6, Rector 2, PHP CS Fixer 3, composer-dependency-analyser |
-| Sicurezza supply chain | Trivy 0.71 (fs, config, secret, image scan) |
+| Sicurezza supply chain | Trivy 0.74 (fs, config, secret, image scan) |
 | CI/CD | GitHub Actions → GHCR → deploy SSH su VPS |
 | Infrastruttura | Docker Compose, Caddy (caddy-docker-proxy) |
 
@@ -490,7 +490,7 @@ Il CD si attiva **automaticamente** al termine con successo della CI su
 
 | Stage | Base | Contenuto |
 |---|---|---|
-| `base` | `dunglas/frankenphp:1-php8.4-bookworm` | `apt upgrade` dei pacchetti di sistema + estensioni PHP (opcache, intl, dom, pdo_mysql, …) |
+| `base` | `dunglas/frankenphp:1.12.7-php8.4-bookworm` + digest | `apt upgrade` dei pacchetti di sistema + estensioni PHP (opcache, intl, dom, pdo_mysql, …) |
 | `dev` | `base` | + Xdebug, Composer; utente non-root `appuser` con UID/GID dell'host (arg `USER_ID`/`GROUP_ID`), `CAP_NET_BIND_SERVICE` per bind su 80/443 |
 | `prod-builder` | `base` | `composer install --no-dev --classmap-authoritative`, poi rimuove `composer.json`/`composer.lock` |
 | `prod` | `base` | Copia `/app` dal builder, `APP_ENV=prod`, `SERVER_ROOT=/app/public`, esegue come `www-data` |
@@ -506,7 +506,7 @@ Trigger: ogni `push` e `pull_request`. Due job:
    temporanei (SHA vecchio/errato/estraneo, worktree sporco e file locali
    preservati) → Trivy fs/config/secret sul repo (report-only) + gate fs
    bloccante sulle HIGH/CRITICAL con fix disponibile → build dell'immagine
-   dev via `compose.yml` root (`--pull` della base mobile) → Trivy image scan
+   dev via `compose.yml` root (`--pull` dei digest dichiarati) → Trivy image scan
    su `yii3-template-app:latest` → `composer install`,
    `composer validate`, `composer audit` (bloccante) →
    `codecept run --skip-group database` → validazione migration

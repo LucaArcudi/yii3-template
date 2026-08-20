@@ -25,16 +25,14 @@ separatamente banner, confronti con i tag upstream e limiti dell'evidenza.
 | RFS incorporato nel CSS Bootstrap | snapshot coincidente con 10.0.0 | <https://github.com/twbs/rfs/tree/v10.0.0> | MIT. Il file vendorizzato dichiara origine/licenza ed è identico al file `scss.scss` del tag `v10.0.0`; non è una dipendenza del lockfile. |
 | Normalize.css incorporato in Bootstrap Reboot | versione originaria non determinabile | <https://github.com/necolas/normalize.css> | MIT, versione originaria non determinabile perché il fork manuale in Bootstrap Reboot non la conserva. Nessun obbligo residuo. |
 
-`wNumb` 1.2.0 e `pe7-icon` 1.0.4 sono ancora dichiarati nel lockfile documentale
-della precedente pulizia. Nessuno dei due è importato dalla build corrente:
-`pe7-icon` viene eliminata dal manifest temporaneo prima della ricostruzione.
-Non sono quindi codice distribuito e non sono incluse nell'inventario sopra.
-I due sidecar rimasti e tutti i banner
+`wNumb` e `pe7-icon` non sono dichiarati nel lockfile finale e non sono
+presenti negli artefatti distribuiti. Non sono quindi inclusi nell'inventario
+sopra. I due sidecar rimasti e tutti i banner
 `/*! ... */` di `main.css` sono coperti dalle voci elencate.
 
 ## Componenti rimossi
 
-### pe7-icon e Pixeden Stroke 7
+### pe7-icon, Pixeden Stroke 7 e wNumb
 
 La voce di verifica sulla licenza Pixeden è chiusa mediante rimozione. Il
 wrapper npm `pe7-icon`, il blocco CSS Pixeden e i font EOT, WOFF, TTF e SVG non
@@ -42,6 +40,9 @@ fanno più parte dell'artefatto distribuito; tutte le classi applicative sono
 state sostituite con Font Awesome Free. La rimozione è necessaria perché i
 termini Pixeden non concedono la redistribuzione generale della risorsa dentro
 un template pubblico.
+
+Anche `wNumb`, mai importata né emessa dai bundle, è stata rimossa dal
+manifest finale per non esporre a Trivy una dipendenza runtime inesistente.
 
 ## Fonti di verifica
 

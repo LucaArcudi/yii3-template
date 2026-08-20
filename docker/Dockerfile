@@ -1,6 +1,6 @@
-FROM composer/composer:2-bin AS composer
+FROM composer/composer:2-bin@sha256:020cd64e22a251eae7a0cf839907119df2055a42237300697d3023d1306c12d8 AS composer
 
-FROM dunglas/frankenphp:1-php8.4-bookworm AS base
+FROM dunglas/frankenphp:1.12.7-php8.4-bookworm@sha256:a6e78fd9da1640784cb07d606e313ae9f6013b1de39741643f0c256ecd87c8ae AS base
 
 # apt upgrade: la base può restare indietro sui point update Debian; il gate
 # Trivy della CI blocca le HIGH/CRITICAL con fix disponibile, quindi ogni
