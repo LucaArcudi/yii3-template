@@ -47,6 +47,10 @@ assert_contains 'docker build --file docker/Dockerfile --target prod --pull --ta
 # shellcheck disable=SC2016
 assert_contains 'docker run --rm --entrypoint sh "$IMAGE_TAG_SHA" -c'
 # shellcheck disable=SC2016
+assert_contains "healthcheck=\$(docker image inspect --format '{{json .Config.Healthcheck.Test}}' \"\$IMAGE_TAG_SHA\")"
+# shellcheck disable=SC2016
+assert_contains '*curl*127.0.0.1/login*'
+# shellcheck disable=SC2016
 assert_contains 'IMAGE_TAG_SHA: ${{ steps.image-tags.outputs.sha }}'
 # shellcheck disable=SC2016
 assert_contains 'image-ref: ${{ steps.image-tags.outputs.sha }}'

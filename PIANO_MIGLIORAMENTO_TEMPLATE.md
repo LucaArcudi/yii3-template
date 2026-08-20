@@ -98,7 +98,7 @@ GitHub restano nel credential store della postazione di sviluppo.
 Le modifiche vanno eseguite in PR separate e retrocompatibili con il VPS
 attuale.
 
-1. [ ] **Parametrizzare gli script di deploy.** Introdurre variabili per
+1. [x] **Parametrizzare gli script di deploy.** Introdurre variabili per
    directory di deploy, remote, branch, porta SSH e health URL mantenendo gli
    attuali valori come default. Aggiungere test per default e override.
 2. [ ] **Configurare il target GitHub.** Usare un Environment `production`,
@@ -130,7 +130,7 @@ attuale.
 - [ ] **Aggiungere una CSP progressiva.** Partire da
   `Content-Security-Policy-Report-Only` e passare all'enforcement dopo la
   verifica delle pagine principali.
-- [ ] **Aggiungere `HEALTHCHECK` al Dockerfile.** Deve essere coerente con i
+- [x] **Aggiungere `HEALTHCHECK` al Dockerfile.** Deve essere coerente con i
   controlli già usati da Compose e CD.
 - [ ] **Documentare il comportamento same-origin.** Chiarire che, senza
   `Origin` e `Referer`, la barriera CSRF effettiva resta il token.
@@ -139,9 +139,9 @@ attuale.
 
 - [ ] Rendere atomico il rate limiter con incremento lato MySQL o transazione
   con lock e test concorrente sul DB reale.
-- [ ] Proteggere i backup locali con `umask 077`, directory `0700` e dump
+- [x] Proteggere i backup locali con `umask 077`, directory `0700` e dump
   `0600`; evitare parsing fragile di `.env.prod`.
-- [ ] Automatizzare periodicamente un restore in ambiente isolato.
+- [x] Automatizzare periodicamente un restore in ambiente isolato.
 - [ ] Definire retention e cleanup dell'audit log.
 - [ ] Ridurre l'enumerazione account residua.
 - [ ] Definire chiavi esterne e indici di Core tramite migration.

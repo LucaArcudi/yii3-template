@@ -39,7 +39,7 @@ assert_detached_head() {
 
 run_helper() {
   local deploy_sha=$1
-  DEPLOY_REPO="$DEPLOY_REPO" DEPLOY_SHA="$deploy_sha" bash -s < "$HELPER"
+  DEPLOY_DIR="$DEPLOY_REPO" DEPLOY_SHA="$deploy_sha" bash -s < "$HELPER"
 }
 
 git init --bare --initial-branch=main "$REMOTE_REPO" > /dev/null
@@ -157,5 +157,26 @@ assert_detached_head
   || fail "compose.local.yml non è stato preservato"
 [ "$(cat "${DEPLOY_REPO}/backups/db.sql")" = "backup" ] \
   || fail "il backup locale non è stato preservato"
+
+# Remote e branch sono configurabili; i run precedenti hanno già coperto i
+# default origin/main. Questa release branch usa un remote con nome diverso.
+git -C "$SEED_REPO" push origin main:release > /dev/null
+git -C "$DEPLOY_REPO" remote add upstream "$REMOTE_REPO"
+DEPLOY_DIR="$DEPLOY_REPO" \
+DEPLOY_REMOTE=upstream \
+DEPLOY_BRANCH=release \
+DEPLOY_SHA="$REMOTE_ONLY_SHA" \
+  bash -s < "$HELPER" > /dev/null
+assert_head "$REMOTE_ONLY_SHA"
+assert_detached_head
+
+deploy_dir_for_conflict=$DEPLOY_REPO
+legacy_dir_for_conflict="${TEST_ROOT}/different"
+if DEPLOY_DIR="$deploy_dir_for_conflict" \
+  DEPLOY_REPO="$legacy_dir_for_conflict" \
+  DEPLOY_SHA="$REMOTE_ONLY_SHA" \
+  bash -s < "$HELPER" > /dev/null 2>&1; then
+  fail "DEPLOY_DIR e l'alias DEPLOY_REPO discordanti sono stati accettati"
+fi
 
 echo "Test checkout deploy: OK"

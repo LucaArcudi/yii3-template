@@ -3,6 +3,9 @@ name: CI
 on:
   push:
   pull_request:
+  schedule:
+    # Esegue anche il drill backup/restore sulla default branch ogni lunedì.
+    - cron: '17 3 * * 1'
 
 env:
   REGISTRY: ghcr.io
@@ -30,6 +33,9 @@ jobs:
 
       - name: Test deployment checkout helper
         run: bash tests/Deploy/checkout-deploy-commit.sh
+
+      - name: Test production scripts and defaults
+        run: bash tests/Deploy/production-scripts.sh
 
       # I report informativi devono restare completi: TRIVY_IGNOREFILE vuoto
       # perché .trivyignore (raccolto di default dalla cwd) vale solo per i
@@ -155,6 +161,9 @@ jobs:
           # (rinominato, svuotato, escluso) lo step deve fallire, non tacere.
           grep -Eq "OK \([1-9][0-9]* test" /tmp/database-tests.log
 
+      - name: Verify backup and restore on an isolated database
+        run: bash tests/Deploy/backup-restore.sh
+
       - name: Stop services
         if: always()
         run: docker compose -f compose.yml down --remove-orphans
@@ -204,6 +213,14 @@ jobs:
             test -d /app/vendor
             echo "Artefatto prod: OK"
           '
+          healthcheck=$(docker image inspect --format '{{json .Config.Healthcheck.Test}}' "$IMAGE_TAG_SHA")
+          case "$healthcheck" in
+            *curl*127.0.0.1/login*) ;;
+            *)
+              echo "HEALTHCHECK prod assente o inatteso: $healthcheck" >&2
+              exit 1
+              ;;
+          esac
 
       # Gate bloccante sull'artefatto che va davvero in produzione (C-01):
       # è l'immagine prod, non quella dev, a spedire le vulnerabilità.

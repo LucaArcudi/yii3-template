@@ -68,4 +68,6 @@ ENV APP_ENV=prod \
 COPY --from=prod-builder --chown=www-data:www-data /app /app
 RUN mkdir -p /app/runtime /data/caddy /config/caddy && \
     chown -R www-data:www-data /app/runtime /data/caddy /config/caddy
+HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
+    CMD curl -fsS --max-time 5 -H 'X-Forwarded-Proto: https' http://127.0.0.1/login > /dev/null || exit 1
 USER www-data
