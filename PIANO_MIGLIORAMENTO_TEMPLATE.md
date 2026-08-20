@@ -89,8 +89,8 @@ GitHub restano nel credential store della postazione di sviluppo.
 - [x] Creare un indice della documentazione attiva.
 - [x] Documentare visivamente i confini tra Codex, GitHub, Docker, CI/CD,
   proxy Caddy e VPS.
-- [ ] Verificare empiricamente che il ruleset di `main` respinga un push
-  diretto del proprietario.
+- [x] Proteggere `main` con ruleset e merge tramite pull request; configurazione
+  confermata dal proprietario il 20 agosto 2026.
 
 ### P1 — Docker, CI/CD e bootstrap riutilizzabili
 
@@ -99,11 +99,11 @@ Le modifiche devono restare focalizzate e retrocompatibili con il VPS attuale.
 1. [x] **Parametrizzare gli script di deploy.** Introdurre variabili per
    directory di deploy, remote, branch, porta SSH e health URL mantenendo gli
    attuali valori come default. Aggiungere test per default e override.
-2. [ ] **Configurare il target GitHub.** Usare un Environment `production`,
-   GitHub Secrets per le credenziali e GitHub Variables per i valori non
-   sensibili. Il workflow supporta già le Variables, ne valida i valori e
-   fallisce prima dell'SSH se manca un Secret obbligatorio; restano da creare
-   Environment e valori effettivi nelle GitHub Settings.
+2. [x] **Configurare il target GitHub.** Credenziali e valori di deploy usano
+   rispettivamente Repository Secrets e Repository Variables. Il workflow ne
+   valida i valori e fallisce prima dell'SSH se manca un Secret obbligatorio.
+   Un Environment GitHub resta una possibilità facoltativa e non fa parte
+   dell'assetto scelto.
 3. [x] **Separare bootstrap e CD.** Rimossi i playbook Ansible specifici del
    VPS; il proxy Caddy resta versionato come stack Docker con bootstrap
    manuale, mentre la CD distribuisce soltanto le release applicative.
@@ -145,14 +145,16 @@ Le modifiche devono restare focalizzate e retrocompatibili con il VPS attuale.
 - [ ] Definire retention e cleanup dell'audit log.
 - [ ] Ridurre l'enumerazione account residua.
 - [ ] Definire chiavi esterne e indici di Core tramite migration.
-- [ ] Ridurre l'accesso all'host di proxy e monitoring valutando socket proxy,
-  Docker rootless e riduzione di capability/mount.
 - [x] Portare progressivamente GitHub Actions a SHA completi e immagini
   critiche a digest.
 - [x] Rivalutare le eccezioni Trivy alla relativa scadenza, senza proroghe
   automatiche. Il 20 agosto 2026 la release FrankenPHP 1.12.7 contiene
   ancora i due moduli vulnerabili censiti; le eccezioni mantengono la
   scadenza del 31 agosto e richiederanno una nuova decisione esplicita.
+
+La riduzione dell'accesso host tramite socket proxy, Docker rootless e minori
+capability/mount resta un hardening facoltativo del VPS. Non blocca la chiusura
+del percorso Docker, CI/CD e monitoring.
 
 ### P4 — Qualità e debito tecnico
 
@@ -205,7 +207,7 @@ di modificare il codice.
 
 ## 5. Ordine di esecuzione
 
-1. Completare le attività esterne P0/P1 nelle GitHub Settings e provarle.
+1. Configurare e verificare il monitoring reale e le notifiche Telegram.
 2. Chiudere le attività rapide di P2.
 3. Procedere con sicurezza operativa e qualità P3-P5.
 4. Completare la release 1.1 con P6.
@@ -244,17 +246,17 @@ Ogni modifica viene chiusa solo quando:
 
 ## 8. Interventi che richiedono il proprietario
 
-- configurare l'Environment `production`, Secrets, Variables e approval policy
-  nelle GitHub Settings;
-- verificare empiricamente che il ruleset respinga un push diretto su `main`;
-- eseguire e osservare un deploy sulla VPS reale e verificare il percorso
-  pubblico/monitoring;
-- valutare sul VPS socket proxy, Docker rootless e riduzione dei privilegi di
-  monitoring;
+- creare il bot Telegram, inserire token e chat ID nel file locale del VPS e
+  verificare dalla UI Grafana l'arrivo di una notifica di prova;
+- verificare sul VPS che tutti i target Prometheus siano `UP`, che
+  `mysql_up == 1` e che Loki riceva i log;
 - decidere alla scadenza delle eccezioni Trivy se aggiornare l'upstream,
   rimuovere l'eccezione o accettare nuovamente il rischio con nuova scadenza;
-- effettuare, in un ambiente autorizzato, un restore periodico di un backup
-  reale della VPS.
+
+Valutazioni future non bloccanti: restore periodico di un dump reale in un
+ambiente controllato, socket proxy/Docker rootless, riduzione dei privilegi di
+proxy e monitoring, metriche applicative di business ed eventuale eliminazione
+del proxy esterno. Restano annotate, ma non sono requisiti di chiusura.
 
 P6 e P7 restano backlog applicativo e non bloccano la chiusura del percorso
 Docker, CI/CD e monitoring usato come progetto dimostrativo.

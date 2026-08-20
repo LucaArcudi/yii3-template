@@ -127,10 +127,8 @@ essere presente nell'`authorized_keys` dell'utente configurato.
 | `VPS_SSH_PORT` | `22` | Porta SSH |
 | `HEALTH_URL` | `http://127.0.0.1:8080/login` | Endpoint HTTP(S) verificato dalla CD |
 
-Il passo successivo nelle impostazioni GitHub è creare l'Environment
-`production`, spostarvi secrets/variables e applicare le regole di approvazione
-desiderate. È una configurazione esterna e non viene simulata dal codice del
-repository.
+L'assetto scelto usa Repository Secrets e Repository Variables. Un Environment
+GitHub con regole di approvazione è facoltativo e non è necessario al workflow.
 
 ## 3. Primo deploy
 
@@ -196,8 +194,8 @@ l'azione correttiva segue i runbook.
 I backup pre-deploy sono creati con directory `0700`, dump `0600`, `umask 077`
 e retention di 14 giorni sui soli nomi automatici. La CI prova realmente dump,
 svuotamento e restore su uno stack MySQL isolato a ogni run e, tramite schedule,
-anche ogni settimana sulla branch predefinita. Questa prova non sostituisce un
-restore controllato dei backup reali del VPS.
+anche ogni settimana sulla branch predefinita. Un drill su un dump reale del VPS
+resta una valutazione facoltativa e non blocca la chiusura del progetto.
 
 ## 6. Deploy manuale e incidenti
 
@@ -212,6 +210,7 @@ Le procedure operative sono in [`docs/runbooks/`](docs/runbooks/):
 - [deploy fallito](docs/runbooks/deploy-failed.md);
 - [rollback](docs/runbooks/rollback.md);
 - [backup e restore](docs/runbooks/backup-restore.md);
+- [monitoring e Telegram](docs/runbooks/monitoring.md);
 - [accesso DB tramite tunnel](docs/runbooks/accesso-db-tunnel.md).
 
 Non improvvisare reset Git, restore, cancellazioni di volumi o modifiche
@@ -224,6 +223,6 @@ dirette agli script sul VPS. La fonte di verità è sempre il repository.
 | Repository | Compose, Dockerfile, workflow, script, test e runbook versionati |
 | CI | Verifica codice/configurazioni e produce l'artefatto |
 | CD | Distribuisce una release già verificata su un server già predisposto |
-| GitHub Settings | Secrets, Variables, Environment e ruleset: intervento owner |
+| GitHub Settings | Repository Secrets, Repository Variables e ruleset: intervento owner |
 | VPS | OS, Docker, SSH, firewall, DNS, file segreti e bootstrap: intervento owner |
-| Produzione | Deploy/restore/monitoring reali: solo operazioni esplicitamente autorizzate |
+| Produzione | Deploy e monitoring reali: solo operazioni esplicitamente autorizzate |
