@@ -1,82 +1,75 @@
 # Deploy del template Yii3
 
-Il progetto usa Docker Compose, GitHub Actions e GHCR per distribuire
-l'applicazione su un VPS Linux tramite SSH.
+Il progetto distribuisce un'immagine FrankenPHP/Caddy con Docker Compose,
+GitHub Actions e GHCR su un VPS Linux tramite SSH. Il provisioning del server
+è intenzionalmente separato dal ciclo ordinario delle release.
 
-Questa guida descrive il comportamento corrente. I valori specifici
-`/opt/yii3`, `main`, porta `22` e porta applicativa `8080` non sono ancora
-parametrizzati: la relativa attività è tracciata in
-[`PIANO_MIGLIORAMENTO_TEMPLATE.md`](PIANO_MIGLIORAMENTO_TEMPLATE.md).
-
-## Flusso corrente
+## Flusso di una release
 
 ```text
+branch → pull request → CI
+  → validazione file operativi, test, audit e scansioni Trivy
+  → build e verifica dell'unica immagine prod
 merge su main
-  → CI: test, build, verifica e scansione dell'immagine prod
-  → push della stessa immagine su GHCR con tag SHA
-  → CI verde
-  → avvio automatico della CD
-  → verifica del manifest
-  → connessione SSH al VPS
-  → checkout dello stesso SHA
-  → backup database
-  → pull immagine e migration
-  → ricreazione container e health check
-  → rollback applicativo in caso di errore
+  → nuova CI e pubblicazione su GHCR con tag SHA + latest
+  → CD dopo CI verde
+  → preflight configurazione e manifest
+  → checkout dello stesso SHA sul VPS
+  → backup DB → migration → avvio con healthcheck
+  → rollback dell'immagine se il deploy non supera i controlli
 ```
 
-La CI non accede alla produzione. La CD parte soltanto dopo una CI riuscita
-su `main` oppure tramite avvio manuale esplicito.
+La CI non possiede accesso SSH alla produzione. La CD parte automaticamente
+soltanto dopo una CI riuscita, avviata da un push su `main`; può anche essere
+eseguita manualmente indicando uno SHA completo già pubblicato.
 
-## Prerequisiti del VPS
+## 1. Bootstrap del VPS
 
-Il VPS corrente deve avere già:
+Questa fase si esegue una volta per server e richiede intervento manuale. Il
+repository non installa il sistema operativo e non modifica utenti, firewall,
+DNS o daemon Docker.
 
-- Linux con accesso SSH;
-- utente `deploy` autorizzato a usare Docker;
-- Docker Engine e Docker Compose v2;
-- repository clonato in `/opt/yii3`;
-- rete Docker esterna `caddy_public` e proxy Caddy;
-- `/opt/yii3/.env.prod` con i segreti runtime;
-- `/opt/yii3/docker/prod/compose.local.yml`;
-- directory `/opt/yii3/backups`;
-- chiave pubblica del CD in `/home/deploy/.ssh/authorized_keys`.
+Prerequisiti:
 
-Il provisioning completo di questi prerequisiti non è ancora automatizzato.
+- Linux aggiornato con Docker Engine e Docker Compose v2;
+- utente operativo, per esempio `deploy`, autorizzato a usare Docker;
+- accesso SSH a chiave e firewall aperto soltanto sulle porte necessarie;
+- DNS dell'applicazione diretto al VPS;
+- repository clonato nella directory di deploy (default `/opt/yii3`);
+- chiave pubblica dedicata alla CD in `authorized_keys`;
+- accesso in sola lettura a GHCR sul VPS, se il package è privato.
 
-## File sul VPS
+Il checkout sul VPS deve avere un remote e un branch coerenti con le GitHub
+Variables `DEPLOY_REMOTE` e `DEPLOY_BRANCH`. La CD usa un detached HEAD, ma
+accetta soltanto commit appartenenti alla storia del branch configurato.
 
-```text
-/opt/yii3/
-├── .env.prod                         # segreti runtime, fuori da Git
-├── docker/prod/compose.yml           # versione dal repository
-├── docker/prod/compose.local.yml     # configurazione locale, fuori da Git
-├── docker/proxy/                     # proxy Caddy versionato
-├── scripts/                          # backup e deploy versionati
-└── backups/                          # dump pre-deploy e manuali
+### Runtime locale di produzione
+
+Nella directory di deploy:
+
+```bash
+cp .env.prod.example .env.prod
+cp docker/prod/compose.local.example.yml docker/prod/compose.local.yml
+chmod 600 .env.prod
 ```
 
-Il checkout viene portato in detached HEAD sullo stesso commit usato come tag
-dell'immagine. I file locali ignorati da Git non vengono rimossi.
+Compilare `.env.prod` con valori reali. Il file contiene i segreti runtime e
+deve rimanere esclusivamente sul VPS: non va committato, copiato nei log o
+salvato nei GitHub Secrets della pipeline.
 
-Il proxy in esecuzione usa `/home/deploy/caddy-proxy/`; i due file installati
-in quella directory provengono dalla sorgente versionata `docker/proxy/`.
+Le impostazioni principali sono:
 
-## Bootstrap manuale del proxy Caddy
+- `APP_IMAGE`, sostituita dalla CD con il tag SHA della release;
+- `PROD_HOST`, `SERVER_NAME` e `APP_PORT`;
+- `AUTH_COOKIE_SECRET_KEY`;
+- `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`, `MYSQL_ROOT_PASSWORD`;
+- l'eventuale forward loopback del DB per il tunnel SSH.
 
-Il reverse proxy è uno stack Docker Compose separato dall'applicazione, ma la
-sua configurazione resta versionata in [`docker/proxy/`](docker/proxy/). Il
-bootstrap si esegue una volta su un VPS nuovo e si ripete soltanto quando si
-aggiornano intenzionalmente configurazione o immagine del proxy; la CD
-ordinaria non lo riavvia.
+### Proxy Caddy esterno
 
-Prima dell'avvio:
-
-- il DNS di `PROD_HOST` deve puntare al VPS;
-- le porte TCP `80` e `443` devono essere raggiungibili e non occupate;
-- l'utente `deploy` deve poter eseguire Docker Compose.
-
-Dal checkout sul VPS:
+L'assetto corrente usa uno stack separato `caddy-docker-proxy`: termina TLS,
+legge le label Compose e pubblica sia l'app sia Grafana. La configurazione è
+versionata in [`docker/proxy/`](docker/proxy/), ma il bootstrap è manuale.
 
 ```bash
 cd /opt/yii3
@@ -89,112 +82,130 @@ docker compose up -d
 docker compose ps
 ```
 
-La fonte di verità resta nel repository. Installare sempre insieme
-`compose.yml` e `Caddyfile.base`: copiare soltanto il Compose lascia il mount
-del Caddyfile senza sorgente valida.
+Adattare `/opt/yii3` e `/home/deploy` se l'installazione usa percorsi o utenti
+diversi. Installare sempre insieme `compose.yml` e `Caddyfile.base`. La CD
+ordinaria non aggiorna né riavvia questo stack.
 
-Per controllare l'avvio:
+Il proxy monta il socket Docker in sola lettura. È comunque un accesso
+privilegiato all'host: non esporre il socket in rete. La riduzione di questo
+accesso tramite socket proxy/rootless resta un'attività di hardening del VPS.
 
-```bash
-cd /home/deploy/caddy-proxy
-docker compose logs --tail=100 caddy
-```
+L'eliminazione del proxy esterno è una possibile semplificazione futura, non
+un difetto da correggere ora. Richiede prima di ridisegnare terminazione TLS,
+routing di Grafana, persistenza dei certificati e metriche Caddy.
 
-Dopo il primo deploy dell'applicazione, verificare il percorso pubblico:
+## 2. Configurazione GitHub
+
+La configurazione effettiva nel repository GitHub richiede il proprietario.
+Il workflow esegue un preflight e fallisce prima dell'SSH se manca un secret
+obbligatorio o un valore non supera la validazione.
+
+### Secrets obbligatori
+
+| Nome | Contenuto |
+|---|---|
+| `VPS_HOST` | Hostname o IPv4 usato per SSH |
+| `VPS_USER` | Utente operativo sul VPS |
+| `VPS_SSH_KEY` | Chiave privata dedicata esclusivamente alla CD |
+| `VPS_KNOWN_HOSTS` | Riga/e complete e verificate in formato `known_hosts` |
+
+Verificare la fingerprint della chiave host tramite un canale fidato. Non
+disabilitare `StrictHostKeyChecking` e non sostituire il secret con un
+`ssh-keyscan` eseguito durante ogni deploy.
+
+Con una porta SSH diversa da `22`, `VPS_KNOWN_HOSTS` deve contenere l'host nel
+formato `[host]:porta`. La chiave pubblica corrispondente a `VPS_SSH_KEY` deve
+essere presente nell'`authorized_keys` dell'utente configurato.
+
+### Variables opzionali
+
+| Nome | Default | Scopo |
+|---|---|---|
+| `DEPLOY_DIR` | `/opt/yii3` | Directory assoluta del checkout sul VPS |
+| `DEPLOY_REMOTE` | `origin` | Remote Git autorizzato per la release |
+| `DEPLOY_BRANCH` | `main` | Branch di cui lo SHA deve fare parte |
+| `VPS_SSH_PORT` | `22` | Porta SSH |
+| `HEALTH_URL` | `http://127.0.0.1:8080/login` | Endpoint HTTP(S) verificato dalla CD |
+
+Il passo successivo nelle impostazioni GitHub è creare l'Environment
+`production`, spostarvi secrets/variables e applicare le regole di approvazione
+desiderate. È una configurazione esterna e non viene simulata dal codice del
+repository.
+
+## 3. Primo deploy
+
+Prima del merge che attiverà la prima CD:
+
+1. verificare `docker version` e `docker compose version` sul VPS;
+2. verificare il checkout, `.env.prod` e `compose.local.yml`;
+3. avviare il proxy e controllarne i log;
+4. assicurarsi che il VPS possa eseguire il pull dell'immagine GHCR;
+5. configurare Secrets e, se servono, Variables su GitHub;
+6. validare le configurazioni dal repository con `make validate-ops`;
+7. aprire una PR e attendere la CI verde prima del merge.
+
+Il primo merge su `main` pubblica l'immagine e avvia la CD. A deploy concluso:
 
 ```bash
 curl -fsS "https://<PROD_HOST>/login" > /dev/null
+cd /opt/yii3
+docker compose --env-file .env.prod \
+  -f docker/prod/compose.yml \
+  -f docker/prod/compose.local.yml ps
 ```
 
-`caddy-docker-proxy` legge le label dei container tramite il socket Docker.
-Questo accesso è necessario al funzionamento corrente: non pubblicare il
-socket in rete e non montarlo in altri container senza una motivazione
-esplicita.
+La verifica pubblica e l'ispezione del run CD sono controlli manuali: il
+repository non può attestare lo stato reale di una VPS a cui non accede.
 
-## Configurazione GitHub
+## 4. Ciclo ordinario delle release
 
-Il workflow corrente legge quattro repository secrets:
+1. creare una branch da `origin/main` aggiornato;
+2. implementare e verificare la modifica;
+3. aprire la PR e attendere la CI;
+4. fare review e merge manuale;
+5. controllare il run CI su `main` e il successivo run CD;
+6. verificare gli alert e il percorso pubblico dopo modifiche ad alto rischio.
 
-| Secret | Contenuto |
-|---|---|
-| `VPS_HOST` | IP o hostname usato per SSH |
-| `VPS_USER` | utente operativo, normalmente `deploy` |
-| `VPS_SSH_KEY` | chiave privata dedicata alla CD |
-| `VPS_KNOWN_HOSTS` | righe complete `known_hosts` verificate per `VPS_HOST` |
+Il job CD usa il concurrency group `production-deploy`: GitHub mantiene al
+massimo un run attivo e uno pendente per il gruppo. Un run pendente più recente
+può sostituirne uno precedente; nessun deploy viene eseguito in parallelo.
 
-La chiave pubblica corrispondente a `VPS_SSH_KEY` deve essere presente in
-`authorized_keys` sul VPS. Non riutilizzare chiavi personali o credenziali di
-Codex.
+La CD esegue nell'ordine:
 
-`VPS_KNOWN_HOSTS` deve contenere la chiave host effettivamente verificata. Non
-disabilitare `StrictHostKeyChecking` e non sostituire il secret con un
-`ssh-keyscan` eseguito a ogni deploy.
+1. validazione SHA, Secrets, Variables e manifest GHCR;
+2. `scripts/checkout-deploy-commit.sh`;
+3. `scripts/backup-db.sh`;
+4. `scripts/deploy.sh`.
 
-L'evoluzione prevista sposterà questa configurazione in un GitHub Environment
-`production`, separando Secrets e Variables non sensibili.
+Directory, remote, branch, porta SSH e health URL hanno default
+retrocompatibili ma sono tutti parametrizzabili. Lo SHA è la fonte unica per
+checkout e immagine; `latest` non viene usato per il deploy.
 
-## Configurazione runtime
+## 5. Healthcheck, rollback e recovery
 
-Partire da `.env.prod.example` e creare manualmente `/opt/yii3/.env.prod` sul
-VPS. Il file reale non deve transitare nel repository o nei log della CI.
+L'immagine prod include un `HEALTHCHECK` sulla pagina `/login`. Docker Compose
+usa quello stato durante `up --wait`; `deploy.sh` esegue inoltre un controllo
+HTTP con retry e ripristina l'immagine precedente se avvio, invariante o health
+check falliscono. Le migration non vengono annullate automaticamente.
 
-Contiene almeno:
+`restart: unless-stopped` riavvia un processo terminato o un container dopo il
+riavvio del daemon, ma non riavvia da solo un container che resta in stato
+`unhealthy`. In quel caso healthcheck e monitoring rendono il guasto visibile;
+l'azione correttiva segue i runbook.
 
-- immagine applicativa e host pubblico;
-- chiave dei cookie;
-- nome, utente e password del database;
-- password root MySQL;
-- eventuali porte e proxy fidati.
+I backup pre-deploy sono creati con directory `0700`, dump `0600`, `umask 077`
+e retention di 14 giorni sui soli nomi automatici. La CI prova realmente dump,
+svuotamento e restore su uno stack MySQL isolato a ogni run e, tramite schedule,
+anche ogni settimana sulla branch predefinita. Questa prova non sostituisce un
+restore controllato dei backup reali del VPS.
 
-Le modifiche allo schema passano sempre da `./yii migrate:up`. Gli script
-`initdb.d` servono soltanto al primo avvio di un volume MySQL vuoto e non sono
-una procedura di aggiornamento della produzione.
+## 6. Deploy manuale e incidenti
 
-## GHCR
+Da GitHub: **Actions → CD → Run workflow**, passando come `image_tag` lo SHA
+Git completo di 40 caratteri di un'immagine già pubblicata. SHA abbreviati,
+`latest` e manifest inesistenti vengono rifiutati prima dell'SSH.
 
-La CI pubblica:
-
-```text
-ghcr.io/<owner>/<repository>:<sha-completo>
-ghcr.io/<owner>/<repository>:latest
-```
-
-La build prod viene eseguita una sola volta: la CI verifica e scansiona
-l'immagine locale, poi pubblica proprio quella con entrambi i tag. GHCR la
-rende inoltre indirizzabile tramite il digest content-addressed. La CD
-distribuisce il tag associato allo SHA del commit, non `latest`.
-
-Se il package GHCR è pubblico, il VPS può effettuare il pull senza login. Se
-è privato, il VPS necessita di una credenziale separata con il solo permesso
-`read:packages`. Non usare token personali con permessi amministrativi.
-
-## Deploy automatico
-
-Il workflow [`.github/workflows/cd.yml`](.github/workflows/cd.yml) riceve lo
-SHA dalla CI completata, verifica che l'immagine esista e poi esegue:
-
-1. `scripts/checkout-deploy-commit.sh`;
-2. `scripts/backup-db.sh`;
-3. `scripts/deploy.sh`.
-
-Il deploy è serializzato dal concurrency group `production-deploy`: non
-possono essere eseguiti due deploy contemporaneamente.
-
-## Deploy manuale da GitHub
-
-Percorso:
-
-```text
-GitHub → Actions → CD → Run workflow
-```
-
-L'input `image_tag` deve essere lo SHA Git completo di 40 caratteri di una
-release pubblicata. SHA abbreviati, `latest` e manifest inesistenti vengono
-rifiutati prima dell'accesso SSH.
-
-## Operazioni manuali e incidenti
-
-Le procedure operative vivono sotto [`docs/runbooks/`](docs/runbooks/):
+Le procedure operative sono in [`docs/runbooks/`](docs/runbooks/):
 
 - [stato e log](docs/runbooks/stato-e-log.md);
 - [deploy manuale](docs/runbooks/deploy-manuale.md);
@@ -203,18 +214,16 @@ Le procedure operative vivono sotto [`docs/runbooks/`](docs/runbooks/):
 - [backup e restore](docs/runbooks/backup-restore.md);
 - [accesso DB tramite tunnel](docs/runbooks/accesso-db-tunnel.md).
 
-Non improvvisare comandi di cancellazione, reset del repository, restore o
-ricreazione dei volumi fuori dai runbook.
+Non improvvisare reset Git, restore, cancellazioni di volumi o modifiche
+dirette agli script sul VPS. La fonte di verità è sempre il repository.
 
-## Responsabilità operative
+## Confini di responsabilità
 
-```text
-Bootstrap VPS  prepara manualmente macchina e proxy, una volta
-CI             testa e produce l'artefatto, a ogni PR/merge
-CD             distribuisce la release applicativa, dopo CI verde
-Docker         esegue i servizi in sviluppo, CI e produzione
-```
-
-La CD non installa Docker, non configura utenti, firewall, DNS o proxy e non
-riconfigura il sistema operativo. Questi prerequisiti vengono preparati e
-verificati manualmente prima del primo deploy.
+| Ambito | Responsabilità |
+|---|---|
+| Repository | Compose, Dockerfile, workflow, script, test e runbook versionati |
+| CI | Verifica codice/configurazioni e produce l'artefatto |
+| CD | Distribuisce una release già verificata su un server già predisposto |
+| GitHub Settings | Secrets, Variables, Environment e ruleset: intervento owner |
+| VPS | OS, Docker, SSH, firewall, DNS, file segreti e bootstrap: intervento owner |
+| Produzione | Deploy/restore/monitoring reali: solo operazioni esplicitamente autorizzate |

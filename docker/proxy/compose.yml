@@ -3,7 +3,7 @@
 # Installato manualmente dal checkout in ~/caddy-proxy; vedi README_DEPLOY.md.
 services:
   caddy:
-    image: lucaslorentz/caddy-docker-proxy:2.13-alpine
+    image: lucaslorentz/caddy-docker-proxy:2.13-alpine@sha256:3e6cf4a6382da0cd14108a69929d7f8cc59e9a59cae4c9795071fa392ffa8036
     container_name: caddy-proxy
     restart: unless-stopped
     ports:

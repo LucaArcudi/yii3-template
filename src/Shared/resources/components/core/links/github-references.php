@@ -38,7 +38,7 @@ $links = [
     ],
     [
         'title' => Translate::t('Roadmap infrastruttura'),
-        'meta' => Translate::t('Centralizzazione log, notifiche degli alert e self-healing.'),
+        'meta' => Translate::t('Log centralizzati, alert e recovery dei deploy.'),
         'url' => $repoUrl . '/blob/main/docs/roadmap-infrastruttura.md',
         'icon' => 'fa-solid fa-server',
     ],

@@ -23,7 +23,26 @@
 # comando docker ha comunque stdin rediretto, cintura e bretelle.
 set -euo pipefail
 
-cd /opt/yii3
+DEPLOY_DIR="${DEPLOY_DIR:-/opt/yii3}"
+HEALTH_URL="${HEALTH_URL:-http://127.0.0.1:8080/login}"
+
+if [[ "$DEPLOY_DIR" != /* ]] || [ "$DEPLOY_DIR" = / ]; then
+  echo "ERRORE: DEPLOY_DIR deve essere un percorso assoluto specifico" >&2
+  exit 1
+fi
+case "$HEALTH_URL" in
+  http://* | https://*) ;;
+  *)
+    echo "ERRORE: HEALTH_URL deve usare http:// o https://" >&2
+    exit 1
+    ;;
+esac
+if [[ "$HEALTH_URL" == *$'\n'* || "$HEALTH_URL" == *$'\r'* ]]; then
+  echo "ERRORE: HEALTH_URL contiene caratteri di controllo" >&2
+  exit 1
+fi
+
+cd "$DEPLOY_DIR"
 
 C=(docker compose --env-file .env.prod -f docker/prod/compose.yml -f docker/prod/compose.local.yml)
 
@@ -58,7 +77,7 @@ health_check() {
     --retry 12 --retry-delay 5 --retry-all-errors \
     -H 'X-Forwarded-Proto: https' \
     -o /dev/null \
-    http://127.0.0.1:8080/login
+    "$HEALTH_URL"
 }
 
 start_and_check() {

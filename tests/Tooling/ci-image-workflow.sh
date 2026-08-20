@@ -40,12 +40,24 @@ assert_contains "    name: Verify and publish app image"
 assert_contains "    needs: test"
 assert_contains "          persist-credentials: false"
 assert_count "docker build --file docker/Dockerfile --target prod" 1
+# I valori cercati sono intenzionalmente letterali: non devono espandersi
+# durante questa regressione statica.
+# shellcheck disable=SC2016
 assert_contains 'docker build --file docker/Dockerfile --target prod --pull --tag "$IMAGE_TAG_SHA" .'
+# shellcheck disable=SC2016
 assert_contains 'docker run --rm --entrypoint sh "$IMAGE_TAG_SHA" -c'
+# shellcheck disable=SC2016
+assert_contains "healthcheck=\$(docker image inspect --format '{{json .Config.Healthcheck.Test}}' \"\$IMAGE_TAG_SHA\")"
+# shellcheck disable=SC2016
+assert_contains '*curl*127.0.0.1/login*'
+# shellcheck disable=SC2016
 assert_contains 'IMAGE_TAG_SHA: ${{ steps.image-tags.outputs.sha }}'
+# shellcheck disable=SC2016
 assert_contains 'image-ref: ${{ steps.image-tags.outputs.sha }}'
 assert_count "if: github.event_name == 'push' && github.ref == 'refs/heads/main'" 2
+# shellcheck disable=SC2016
 assert_contains 'docker push "$IMAGE_TAG_SHA"'
+# shellcheck disable=SC2016
 assert_contains 'docker push "$IMAGE_TAG_LATEST"'
 assert_not_contains "  publish-image:"
 assert_not_contains "yii3-template-prod:ci-check"

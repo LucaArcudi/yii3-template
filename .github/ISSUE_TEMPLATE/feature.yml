@@ -1,14 +1,8 @@
 name: Richiesta tecnica
-description: Nuova funzionalità o modifica, già pre-analizzata da un tecnico
+description: Nuova funzionalità o modifica con obiettivo verificabile
 title: "[Feature] "
 labels: ["feature"]
 body:
-  - type: markdown
-    attributes:
-      value: |
-        La richiesta tecnica è la pre-analisi della richiesta del cliente:
-        la scrive un tecnico, non il cliente finale. È l'input del prompt
-        `docs/ai/prompts/genera-analisi-tecnica.md`.
   - type: textarea
     id: contesto
     attributes:

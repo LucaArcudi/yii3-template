@@ -21,8 +21,8 @@ TEST_COMPOSE_PROJECT_NAME ?= yii3-template-test
 TEST_DB_PORT ?= 33060
 DOCKER_COMPOSE_TEST := COMPOSE_PROJECT_NAME=$(TEST_COMPOSE_PROJECT_NAME) DB_PORT=$(TEST_DB_PORT) docker compose -f compose.yml
 DOCKER_COMPOSE_TEST_RUN := $(DOCKER_COMPOSE_TEST) run --rm -e APP_ENV=test -e APP_DEBUG=false
-TRIVY_VERSION := 0.71.2
-TRIVY_IMAGE := aquasec/trivy:${TRIVY_VERSION}
+TRIVY_VERSION := 0.74.0
+TRIVY_IMAGE := aquasec/trivy:${TRIVY_VERSION}@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969
 TRIVY_APP_IMAGE := yii3-template-app:latest
 TRIVY_PROD_IMAGE := yii3-template-prod:local
 TRIVY_CACHE_DIR := $(CURDIR)/.cache/trivy
@@ -125,6 +125,11 @@ endif
 ifeq ($(PRIMARY_GOAL),composer-dependency-analyser)
 composer-dependency-analyser: ## Run Composer Dependency Analyser
 	$(DOCKER_COMPOSE) run --rm --no-deps app ./vendor/bin/composer-dependency-analyser --config=composer-dependency-analyser.php $(CLI_ARGS)
+endif
+
+ifeq ($(PRIMARY_GOAL),validate-ops)
+validate-ops: ## Validate GitHub Actions, shell scripts and Docker Compose files
+	bash tests/Tooling/validate-operational-files.sh
 endif
 
 ifeq ($(PRIMARY_GOAL),trivy)

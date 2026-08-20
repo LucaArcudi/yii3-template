@@ -2,9 +2,8 @@
 
 Backlog funzionale del template, estratto dai componenti della dashboard
 (2026-07-05) e aggiornato con lo stato reale. La roadmap infrastrutturale
-vive in [roadmap-infrastruttura.md](roadmap-infrastruttura.md), quella AI
-in [roadmap-ai-codex-claude-code.md](roadmap-ai-codex-claude-code.md);
-lo stato di CI/CD e monitoring è documentato in
+vive in [roadmap-infrastruttura.md](roadmap-infrastruttura.md); lo stato di
+CI/CD e monitoring è documentato in
 [documentazione-progetto.md](documentazione-progetto.md) §8.
 
 ## Fatto
@@ -33,6 +32,6 @@ lo stato di CI/CD e monitoring è documentato in
 
 ## Come si lavora il backlog
 
-Ogni attività segue il flusso standard del repo: issue → branch → PR →
-CI verde → review → merge → deploy automatico. Per le modifiche di schema
-si usa `./yii migrate:create` (mai nuovi file initdb).
+Ogni attività segue il flusso standard del repo: richiesta → branch → PR →
+CI verde → review → merge → deploy automatico. Una issue è facoltativa. Per
+le modifiche di schema si usa `./yii migrate:create` (mai nuovi file initdb).

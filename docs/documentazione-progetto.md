@@ -1,11 +1,11 @@
 # Yii3 Template — Documentazione di progetto
 
-> Ultimo aggiornamento: 7 luglio 2026.
+> Ultimo aggiornamento: 20 agosto 2026.
 >
 > Documenti correlati: [README.md](../README.md) (quick start e release),
 > [README_DEPLOY.md](../README_DEPLOY.md) (runbook deploy passo-passo),
-> [CHANGELOG.md](../CHANGELOG.md),
-> [analisi-sicurezza-e-migliorie-2026-07-02.md](analisi-sicurezza-e-migliorie-2026-07-02.md) (audit di sicurezza).
+> [flusso e confini DevOps](DEVOPS_WORKFLOW.md),
+> [CHANGELOG.md](../CHANGELOG.md).
 
 ## Indice
 
@@ -46,12 +46,12 @@ pipeline CI/CD su GitHub Actions. Vedi la [sezione DevOps](#8-devops).
 |---|---|
 | Linguaggio | PHP 8.2 – 8.5 (immagine Docker: PHP 8.4) |
 | Framework | Yii3 (pacchetti `yiisoft/*`: DI, router FastRoute, middleware dispatcher, view renderer, validator, translator, session, CSRF, user/auth, data) |
-| HTTP runtime | FrankenPHP 1 (Caddy embedded) — `dunglas/frankenphp:1-php8.4-bookworm` |
+| HTTP runtime | FrankenPHP 1.12.7 (Caddy embedded), immagine fissata a digest |
 | Database | MySQL 8.4 (`yiisoft/db` + `yiisoft/db-mysql`, query builder senza ORM) |
 | Frontend | Tema ArchitectUI (Bootstrap 5), asset precompilati in `src/Shared/resources/architectui/`, gestiti da `yiisoft/assets` |
 | Test | Codeception 5 (suite Unit, Functional, Console, Web) + PHPUnit 11 |
 | Analisi statica | Psalm 6, Rector 2, PHP CS Fixer 3, composer-dependency-analyser |
-| Sicurezza supply chain | Trivy 0.71 (fs, config, secret, image scan) |
+| Sicurezza supply chain | Trivy 0.74 (fs, config, secret, image scan) |
 | CI/CD | GitHub Actions → GHCR → deploy SSH su VPS |
 | Infrastruttura | Docker Compose, Caddy (caddy-docker-proxy) |
 
@@ -70,12 +70,10 @@ pipeline CI/CD su GitHub Actions. Vedi la [sezione DevOps](#8-devops).
 │   └── seeders/           # Dati iniziali (gruppi permessi, permessi, ruoli…)
 ├── docker/
 │   ├── Dockerfile         # Multi-stage: base → dev / prod-builder → prod
-│   ├── compose.yml        # Frammento comune (volumi caddy) usato dal Makefile
-│   ├── dev/, test/        # Override compose ereditati dal template upstream (vedi §6.4)
 │   ├── prod/compose.yml   # Compose di produzione (VPS)
 │   ├── proxy/             # Reverse proxy Caddy per il VPS (+ Caddyfile.base metriche)
 │   └── monitoring/        # Stack Prometheus/Grafana/exporter (vedi §8.9)
-├── docs/                  # Documentazione di progetto (questo file, roadmap, audit…)
+├── docs/                  # Documentazione attiva, roadmap e runbook
 ├── public/                # Docroot: index.php, favicon, robots.txt, asset pubblicati
 ├── scripts/               # Script operativi eseguiti sul VPS dal CD (backup, deploy)
 ├── src/                   # Codice applicativo (namespace App\, vedi §4)
@@ -390,8 +388,8 @@ fornito a parte via `DB_DSN`/`DB_USERNAME`/`DB_PASSWORD`.
 
 Il `Makefile` incapsula i flussi Docker: `make up|down|stop|clear`,
 `make shell`, `make yii <cmd>`, `make composer <cmd>`, `make test`,
-`make psalm`, `make rector`, `make cs-fix`, `make trivy|trivy-fs|trivy-config|trivy-image`,
-`make help`.
+`make psalm`, `make rector`, `make cs-fix`, `make validate-ops`,
+`make trivy|trivy-fs|trivy-config|trivy-image|trivy-gate`, `make help`.
 
 Tutti i target applicativi usano il `compose.yml` root (§6.2). `make test`
 crea uno stack isolato (`yii3-template-test`), usa una porta MySQL distinta
@@ -460,12 +458,15 @@ push su main
    ▼
 CI (.github/workflows/ci.yml)
    │  job "test"
-   ├─ regressione helper checkout deploy in repository Git temporanei
+   ├─ actionlint, ShellCheck e render delle configurazioni Compose
+   ├─ regressione degli script di deploy in ambienti temporanei
    ├─ Trivy fs/config/secret scan (report-only) + gate fs bloccante
    ├─ build immagine dev (--pull) + Trivy image scan
-   ├─ composer install / validate / audit
+   ├─ composer validate / audit / dependency analysis
+   ├─ PHP CS Fixer (dry-run) + Psalm
    ├─ codecept run --skip-group database
-   └─ validazione migration + codecept run -g database (su DB migrato)
+   ├─ validazione migration + codecept run -g database (su DB migrato)
+   └─ drill dump/drop/restore su uno stack MySQL isolato
    │  (job "test" verde)
    ▼
 image (ogni push e pull request)
@@ -477,8 +478,8 @@ image (ogni push e pull request)
 CD (.github/workflows/cd.yml — workflow_run su CI / manuale)
    ├─ risoluzione SHA + preflight manifest GHCR (deploy serializzati)
    ├─ SSH sul VPS come utente deploy
-   ├─ checkout detached verificato dello stesso SHA in /opt/yii3
-   ├─ backup DB (mysqldump → /opt/yii3/backups/)
+   ├─ checkout detached verificato dello stesso SHA nella directory configurata
+   ├─ backup DB con permessi restrittivi
    ├─ docker compose pull && up -d --wait (timeout 120s)
    └─ health check HTTP su 127.0.0.1:8080/login
 ```
@@ -490,7 +491,7 @@ Il CD si attiva **automaticamente** al termine con successo della CI su
 
 | Stage | Base | Contenuto |
 |---|---|---|
-| `base` | `dunglas/frankenphp:1-php8.4-bookworm` | `apt upgrade` dei pacchetti di sistema + estensioni PHP (opcache, intl, dom, pdo_mysql, …) |
+| `base` | `dunglas/frankenphp:1.12.7-php8.4-bookworm` + digest | `apt upgrade` dei pacchetti di sistema + estensioni PHP (opcache, intl, dom, pdo_mysql, …) |
 | `dev` | `base` | + Xdebug, Composer; utente non-root `appuser` con UID/GID dell'host (arg `USER_ID`/`GROUP_ID`), `CAP_NET_BIND_SERVICE` per bind su 80/443 |
 | `prod-builder` | `base` | `composer install --no-dev --classmap-authoritative`, poi rimuove `composer.json`/`composer.lock` |
 | `prod` | `base` | Copia `/app` dal builder, `APP_ENV=prod`, `SERVER_ROOT=/app/public`, esegue come `www-data` |
@@ -500,19 +501,23 @@ FrankenPHP incorpora Caddy: il container serve HTTP direttamente
 
 ### 8.3 CI (`.github/workflows/ci.yml`)
 
-Trigger: ogni `push` e `pull_request`. Due job:
+Trigger: ogni `push`, `pull_request` e schedule settimanale. Due job:
 
-1. **test** — regressione dell'helper di checkout su repository Git
+1. **test** — validazione di workflow, shell e configurazioni Compose;
+   regressione dell'helper di checkout su repository Git
    temporanei (SHA vecchio/errato/estraneo, worktree sporco e file locali
    preservati) → Trivy fs/config/secret sul repo (report-only) + gate fs
    bloccante sulle HIGH/CRITICAL con fix disponibile → build dell'immagine
-   dev via `compose.yml` root (`--pull` della base mobile) → Trivy image scan
+   dev via `compose.yml` root (`--pull` dei digest dichiarati) → Trivy image scan
    su `yii3-template-app:latest` → `composer install`,
    `composer validate`, `composer audit` (bloccante) →
+   PHP CS Fixer in dry-run → dependency analysis → Psalm →
    `codecept run --skip-group database` → validazione migration
    (idempotenza + bootstrap da zero) → `codecept run -g database` sul DB
-   migrato, con guardia sul numero di test eseguiti. Eccezioni ai gate solo
-   via `.trivyignore` (motivazione + scadenza `exp:`).
+   migrato, con guardia sul numero di test eseguiti → prova completa di backup
+   e restore su uno stack MySQL isolato. Eccezioni ai gate solo via
+   `.trivyignore` (motivazione + scadenza `exp:`). Lo schedule mantiene attivo
+   il drill di recovery anche in assenza di push.
 2. **image** — dipende da `test` e gira su ogni push e pull request. Esegue
    l'unica build `docker/Dockerfile --target prod` del workflow, verifica
    nell'immagine i file richiesti dal deploy e applica il gate Trivy
@@ -528,8 +533,9 @@ Il tag `<sha>` per ogni release è ciò che rende possibile il rollback
 
 Trigger: `workflow_run` (CI conclusa con successo su `main`, solo per run
 innescati da `push`) o `workflow_dispatch`. Il job `deploy` usa il concurrency
-group `production-deploy`: un solo deploy alla volta, con gli altri in coda e
-senza cancellare quello attivo. La logica remota vive negli helper versionati
+group `production-deploy`: un solo deploy alla volta e al massimo uno pendente;
+un run pendente più recente può sostituire il precedente, mentre quello attivo
+non viene cancellato. La logica remota vive negli helper versionati
 `scripts/checkout-deploy-commit.sh`, `scripts/backup-db.sh` e
 `scripts/deploy.sh`; il workflow li invoca soltanto. **Mai** logica remota via
 heredoc: `docker compose run`/`exec` leggono stdin e divorano il resto dello
@@ -541,23 +547,27 @@ script — il deploy risulterebbe verde ma interrotto a metà.
    caratteri. Lo stesso valore forma `APP_IMAGE`. Prima dell'SSH il CD accede
    a GHCR in sola lettura e verifica che il manifest del tag esista: `latest`,
    SHA abbreviati/malformati e immagini assenti falliscono senza modificare il
-   VPS;
+   VPS. Prima dell'SSH vengono inoltre verificati tutti i Secrets e validate le
+   Variables opzionali `DEPLOY_DIR`, `DEPLOY_REMOTE`, `DEPLOY_BRANCH`,
+   `VPS_SSH_PORT` e `HEALTH_URL`;
 2. **Setup SSH** — chiave privata dal secret `VPS_SSH_KEY`; `known_hosts`
    popolato dal secret `VPS_KNOWN_HOSTS` (fingerprint pinnata: sostituisce
    l'`ssh-keyscan` a ogni deploy, che era trust-on-first-use ripetuto), con
-   verifica immediata che il secret contenga una riga per `VPS_HOST`;
+   verifica immediata che il secret contenga una riga per `VPS_HOST` (nel
+   formato `[host]:porta` quando la porta non è `22`);
 3. **Allineamento repo sul VPS** — l'helper di checkout rifiuta modifiche a
-   file tracciati, aggiorna `origin/main`, verifica che `DEPLOY_SHA` esista e
+   file tracciati, aggiorna remote/branch configurati, verifica che
+   `DEPLOY_SHA` esista e
    appartenga alla sua storia, poi esegue un checkout detached senza
    `--force` e controlla `HEAD == DEPLOY_SHA`. I file locali ignorati
    (`.env.prod`, override compose e backup) non vengono toccati. La stessa
    invariante viene ricontrollata immediatamente prima di backup e deploy;
-4. **Backup DB** — `mysqldump` dentro il container `db` →
-   `/opt/yii3/backups/db_<timestamp>.sql`. Le credenziali sono lette da
-   `.env.prod` sul VPS (non dall'env del container, che riflette `.env.prod`
-   solo al momento della *creazione* del container: dopo una rotazione
-   password sarebbe stantio); `--single-transaction` evita lock sull'app
-   live e un dump vuoto fa fallire lo step. Retention automatica: i dump
+4. **Backup DB** — `mysqldump` dentro il container `db` nella directory
+   `backups/` del deploy. Le credenziali vengono interpretate da Docker Compose
+   a partire da `.env.prod`, evitando il parsing fragile del dotenv e valori
+   host stantii; `umask 077`, directory `0700` e dump `0600` limitano la
+   lettura. `--single-transaction` evita lock sull'app live e un dump vuoto fa
+   fallire lo step. Retention automatica: i dump
    più vecchi di 14 giorni vengono eliminati (glob stretto sul timestamp:
    i backup rinominati a mano si salvano);
 5. **Deploy** — il CD passa a `deploy.sh` l'immagine sullo stesso
@@ -584,19 +594,26 @@ script — il deploy risulterebbe verde ma interrotto a metà.
    [runbooks/backup-restore.md](runbooks/backup-restore.md)) e il run
    fallisce comunque, perché il deploy non è avvenuto.
 
+Il `HEALTHCHECK` dell'immagine rende lo stato disponibile a Docker e a
+`compose up --wait`. `restart: unless-stopped` non riavvia da solo un processo
+ancora vivo ma `unhealthy`: fuori dal deploy intervengono alert e runbook.
+
 **Secrets richiesti** (repository secrets): `VPS_HOST`, `VPS_USER`,
-`VPS_SSH_KEY` (chiave dedicata `yii3_github_actions_cd`; la pubblica sta in
-`/home/deploy/.ssh/authorized_keys` sul VPS), `VPS_KNOWN_HOSTS` (righe
-complete in formato `known_hosts` per lo stesso host di `VPS_HOST`, generate
-con `ssh-keyscan -t ed25519,ecdsa,rsa <VPS_IP>`; **non** la sola
-fingerprint `SHA256:...`).
+`VPS_SSH_KEY` (chiave dedicata alla CD; la pubblica sta
+nell'`authorized_keys` dell'utente sul VPS), `VPS_KNOWN_HOSTS` (righe complete
+in formato `known_hosts` per lo stesso host/porta di `VPS_HOST`, con fingerprint
+verificata tramite un canale fidato; **non** la sola stringa `SHA256:...`).
+
+**Variables opzionali**: `DEPLOY_DIR` (`/opt/yii3`), `DEPLOY_REMOTE`
+(`origin`), `DEPLOY_BRANCH` (`main`), `VPS_SSH_PORT` (`22`) e `HEALTH_URL`
+(`http://127.0.0.1:8080/login`). La configurazione di un Environment GitHub
+`production` e delle relative protection rules richiede il proprietario.
 
 ### 8.5 Infrastruttura di produzione
 
-**Server**: VPS Contabo, IP `<VPS_IP>`, host pubblico
-`yii3-template.duckdns.org`. Utente operativo `deploy` (gruppo `docker`, sudo
-con password); `root` solo per emergenze. Il DB **non è esposto
-pubblicamente** (solo loopback + tunnel SSH).
+**Server**: VPS Linux già predisposto, con utente operativo dedicato autorizzato
+a usare Docker; `root` resta riservato alle attività di sistema. Il DB **non è
+esposto pubblicamente** (solo loopback + tunnel SSH).
 
 Layout sul server:
 
@@ -625,8 +642,9 @@ docker compose --env-file .env.prod \
   (`127.0.0.1:8080:80`, per health check e debug dal VPS); reti
   `app_internal` (verso il DB) e `caddy_public` (verso il proxy); label
   `caddy: ${PROD_HOST}` + `caddy.reverse_proxy: {{upstreams 80}}` per la
-  pubblicazione automatica; `restart: unless-stopped`; il compose **rifiuta di
-  partire** se `DB_PASSWORD` o `AUTH_COOKIE_SECRET_KEY` mancano (`:?` in yaml).
+  pubblicazione automatica; `HEALTHCHECK` ereditato dall'immagine prod e
+  `restart: unless-stopped`; il compose **rifiuta di partire** se `DB_PASSWORD`
+  o `AUTH_COOKIE_SECRET_KEY` mancano (`:?` in yaml).
 - `db` — MySQL 8.4 su rete interna, volume `db_data`, migration/seed montati
   in initdb.d (solo primo avvio del volume).
 
@@ -661,23 +679,26 @@ La configurazione del proxy resta versionata in `docker/proxy/`. Sul VPS i
 file `compose.yml` e `Caddyfile.base` vengono installati insieme in
 `/home/deploy/caddy-proxy/`, dopo avere creato la rete esterna
 `caddy_public`. Comandi, prerequisiti e verifiche sono definiti in
-[`README_DEPLOY.md`](../README_DEPLOY.md#bootstrap-manuale-del-proxy-caddy).
+[`README_DEPLOY.md`](../README_DEPLOY.md#proxy-caddy-esterno).
 
 La CD distribuisce soltanto le release applicative: non installa Docker, non
 configura il server e non riavvia il proxy.
 
 ### 8.8 Scansioni di sicurezza
 
-- **Trivy** in CI a ogni push (fs + config + secret sul repo, image scan
-  sull'immagine buildata) e in locale via `make trivy` / `make trivy-image`
-  (usa l'immagine `aquasec/trivy:0.71.2`, nessuna installazione richiesta).
-  Attualmente report-only; per renderlo bloccante alzare `exit-code` in
-  `trivy.yaml`/workflow.
+- **Trivy** in CI a ogni push, pull request e schedule (fs + config + secret
+  sul repo, image scan sull'immagine buildata) e in locale via `make trivy` /
+  `make trivy-image`
+  (usa l'immagine `aquasec/trivy:0.74.0` fissata a digest, nessuna installazione
+  richiesta). I report completi sono informativi; `make trivy-gate` e i due
+  gate CI bloccano le HIGH/CRITICAL con fix disponibile sul filesystem e
+  sull'immagine prod. Le sole eccezioni ammesse sono motivate e datate in
+  `.trivyignore`.
 - **`composer audit`** in CI, **bloccante**: una advisory nuova ferma il
   run. **Psalm** è anch'esso uno step obbligatorio, con baseline committata
   (`psalm-baseline.xml`) per il debito storico.
-- Audit manuale completo: vedi
-  [analisi-sicurezza-e-migliorie-2026-07-02.md](analisi-sicurezza-e-migliorie-2026-07-02.md).
+- GitHub Actions e immagini operative sono fissate a commit SHA o digest;
+  Dependabot propone gli aggiornamenti delle fonti Docker censite.
 
 ### 8.9 Monitoring (Prometheus + Grafana)
 
@@ -733,8 +754,7 @@ cAdvisor (metriche container), mysqld-exporter (utente MySQL dedicato
 ## 9. Runbook operativi
 
 I runbook vivono in file singoli sotto [`docs/runbooks/`](runbooks/) — uno
-per scenario, citabili singolarmente (anche dall'AI nei prompt di
-`docs/ai/prompts/`). La base comune è
+per scenario, citabile dalla conversazione o da una issue. La base comune è
 [stato-e-log.md](runbooks/stato-e-log.md): definisce accesso SSH e alias
 `$DC` usati da tutti gli altri.
 
@@ -758,7 +778,8 @@ fare, istruzioni per l'AI.
 
 ## 10. Limiti noti e lavori futuri
 
-Dall'audit del 2 luglio 2026 e dallo stato attuale dell'infrastruttura:
+Lo stato residuo dell'infrastruttura è deliberatamente separato tra codice e
+servizi esterni:
 
 - **Trivy**: gate bloccante in CI sulle sole HIGH/CRITICAL **con fix
   disponibile** (eccezioni in `.trivyignore`, con scadenza); il resto dello
@@ -767,5 +788,11 @@ Dall'audit del 2 luglio 2026 e dallo stato attuale dell'infrastruttura:
 - **Provisioning server non automatizzato**: installazione di Docker,
   utenti, SSH, firewall, hardening e bootstrap iniziale restano manuali e
   sono separati dalla CD applicativa.
-- **Target Makefile ereditati dal template upstream** parzialmente non
-  funzionanti (vedi §6.4).
+- **GitHub Settings**: Environment `production`, Secrets, Variables, approval
+  policy e prova empirica del ruleset richiedono il proprietario.
+- **Accesso all'host**: proxy e Alloy leggono il socket Docker; cAdvisor usa
+  mount e privilegi estesi. Socket proxy/rootless e riduzione dei privilegi
+  richiedono test sul VPS reale.
+- **Proxy esterno**: può essere eliminato in futuro, ma oggi gestisce TLS,
+  routing di app/Grafana e metriche. La semplificazione richiede un disegno
+  sostitutivo esplicito e non blocca la chiusura del progetto DevOps.

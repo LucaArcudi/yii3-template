@@ -24,10 +24,7 @@ versione diversa e non va "corretto".
 - `architectui-4.5.0-package-lock-control.json` — dipendenze della build
   upstream **non modificata**, usata come confronto di controllo.
 - `architectui-4.5.0-package-lock-cleanup.json` — dipendenze della build dopo
-  le esclusioni. **Attenzione: è stantio rispetto alla build corrente** —
-  dichiara ancora `pe7-icon`, rimossa in un secondo momento per licenza
-  (vedi §3). Un rebuild che parte da questo lockfile senza togliere
-  `pe7-icon` dal manifest **reintrodurrebbe un asset non ridistribuibile**.
+  le esclusioni, inclusa la rimozione dal manifest di `pe7-icon` e `wnumb`.
 - Gli SHA-256 correnti sono nel [README](README.md). I nomi sono documentali
   di proposito (diversi da `package-lock.json`): npm non deve attivarsi nel
   repo. Trivy analizza comunque il lockfile *cleanup* via `file-patterns` in
@@ -50,9 +47,7 @@ Rimossi entry point, import e — dove applicabile — dipendenze di:
 | Selettori residui react-datepicker e Slick | Residui della variante React / demo, librerie non incluse |
 | Snippet Google Analytics in `chart_js.js` | Inerte, eliminato col bundle |
 | **`pe7-icon` / Pixeden Stroke 7** | **Licenza**: i termini Pixeden non consentono la redistribuzione in un template pubblico. Icone sostituite con Font Awesome nel markup. Va eliminata dal manifest **prima** della build |
-
-Presente ma tollerata: `wnumb` resta dichiarata nel lockfile ma il
-tree-shaking non la emette nei bundle.
+| `wnumb` | Non importata e non emessa dai bundle; rimossa anche dal manifest finale per mantenere corretto l'inventario letto da Trivy |
 
 Modifica additiva upstream: il tema non esponeva il `font-face` **Font
 Awesome Regular (peso 400)** pur usandolo nel markup (fallback errato su
@@ -71,8 +66,8 @@ Tutto **fuori dal repository**, in una directory temporanea:
    la release upstream / gli asset correnti per fissare la baseline (le
    dipendenze `^` risolverebbero versioni diverse senza lockfile).
 3. **Applicare le esclusioni** (§3) a `package.json`, agli entry point e
-   agli import del tema — inclusa la rimozione di `pe7-icon` — e l'aggiunta
-   del `font-face` FA Regular.
+   agli import del tema — inclusa la rimozione di `pe7-icon` e `wnumb` — e
+   l'aggiunta del `font-face` FA Regular.
 4. `npm install` (rigenera il lockfile) e `npm run build`.
 5. **Fix dei prefissi URL** in `main.css`: l'output upstream usa `../../`,
    la copia nel repo usa `../` (6 occorrenze attese con le esclusioni di §3:
@@ -134,5 +129,7 @@ rimosso.
   upstream registrato).
 - jQuery 4.0.0 duplicata in `main.js` e `demo.js`; `demo.js` caricato su
   tutte le pagine.
-- Hamburgers (1.1.3, MIT) e RFS vendorizzati dentro `main.css` senza
-  dichiarazione upstream.
+
+Le provenienze e le licenze di Hamburgers e RFS incorporate nel CSS sono
+state ricostruite con confronti sui tag upstream e sono registrate, con i
+limiti dell'evidenza, in [`THIRD-PARTY-NOTICES.md`](../../THIRD-PARTY-NOTICES.md).

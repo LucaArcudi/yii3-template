@@ -24,7 +24,6 @@ jobs:
     concurrency:
       group: production-deploy
       cancel-in-progress: false
-      queue: max
 
     if: >
       github.event_name == 'workflow_dispatch' ||
@@ -34,11 +33,20 @@ jobs:
     steps:
       # DEPLOY_SHA è l'unica fonte di verità per immagine e checkout. Gli
       # input GitHub passano dall'env: mai interpolare dati esterni nel Bash.
-      - name: Resolve deployment target
+      - name: Resolve deployment target and configuration
         env:
           EVENT_NAME: ${{ github.event_name }}
           WORKFLOW_RUN_SHA: ${{ github.event.workflow_run.head_sha }}
           MANUAL_IMAGE_TAG: ${{ inputs.image_tag }}
+          CONFIG_DEPLOY_DIR: ${{ vars.DEPLOY_DIR }}
+          CONFIG_DEPLOY_REMOTE: ${{ vars.DEPLOY_REMOTE }}
+          CONFIG_DEPLOY_BRANCH: ${{ vars.DEPLOY_BRANCH }}
+          CONFIG_VPS_SSH_PORT: ${{ vars.VPS_SSH_PORT }}
+          CONFIG_HEALTH_URL: ${{ vars.HEALTH_URL }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
         run: |
           set -euo pipefail
           if [ "$EVENT_NAME" = "workflow_run" ]; then
@@ -52,15 +60,66 @@ jobs:
             exit 1
           fi
 
+          for required_secret in VPS_HOST VPS_USER VPS_SSH_KEY VPS_KNOWN_HOSTS; do
+            if [ -z "${!required_secret}" ]; then
+              echo "::error::Secret GitHub obbligatorio assente: ${required_secret}"
+              exit 1
+            fi
+          done
+          if [[ ! "$VPS_HOST" =~ ^[A-Za-z0-9.-]+$ ]]; then
+            echo "::error::VPS_HOST deve essere un hostname o indirizzo IPv4 valido per SSH"
+            exit 1
+          fi
+          if [[ ! "$VPS_USER" =~ ^[A-Za-z_][A-Za-z0-9_-]*$ ]]; then
+            echo "::error::VPS_USER non valido"
+            exit 1
+          fi
+
+          DEPLOY_DIR="${CONFIG_DEPLOY_DIR:-/opt/yii3}"
+          DEPLOY_REMOTE="${CONFIG_DEPLOY_REMOTE:-origin}"
+          DEPLOY_BRANCH="${CONFIG_DEPLOY_BRANCH:-main}"
+          VPS_SSH_PORT="${CONFIG_VPS_SSH_PORT:-22}"
+          HEALTH_URL="${CONFIG_HEALTH_URL:-http://127.0.0.1:8080/login}"
+
+          if [[ ! "$DEPLOY_DIR" =~ ^/[A-Za-z0-9._/-]+$ ]] \
+            || [ "$DEPLOY_DIR" = / ] \
+            || [[ "$DEPLOY_DIR" == *"/../"* || "$DEPLOY_DIR" == */.. ]]; then
+            echo "::error::DEPLOY_DIR deve essere un percorso assoluto specifico, senza segmenti .."
+            exit 1
+          fi
+          if [[ ! "$DEPLOY_REMOTE" =~ ^[A-Za-z0-9._-]+$ ]]; then
+            echo "::error::DEPLOY_REMOTE non valido"
+            exit 1
+          fi
+          if [[ ! "$DEPLOY_BRANCH" =~ ^[A-Za-z0-9._/-]+$ ]] \
+            || ! git check-ref-format --branch "$DEPLOY_BRANCH" > /dev/null 2>&1; then
+            echo "::error::DEPLOY_BRANCH non valido"
+            exit 1
+          fi
+          if [[ ! "$VPS_SSH_PORT" =~ ^[0-9]+$ || ${#VPS_SSH_PORT} -gt 5 ]] \
+            || (( 10#$VPS_SSH_PORT < 1 || 10#$VPS_SSH_PORT > 65535 )); then
+            echo "::error::VPS_SSH_PORT deve essere compresa tra 1 e 65535"
+            exit 1
+          fi
+          if [[ ! "$HEALTH_URL" =~ ^https?://[A-Za-z0-9._:/?\&=%+-]+$ ]]; then
+            echo "::error::HEALTH_URL deve essere un URL HTTP(S) senza spazi o caratteri shell"
+            exit 1
+          fi
+
           APP_IMAGE="ghcr.io/${GITHUB_REPOSITORY,,}:${DEPLOY_SHA}"
           {
             echo "DEPLOY_SHA=$DEPLOY_SHA"
             echo "APP_IMAGE=$APP_IMAGE"
+            echo "DEPLOY_DIR=$DEPLOY_DIR"
+            echo "DEPLOY_REMOTE=$DEPLOY_REMOTE"
+            echo "DEPLOY_BRANCH=$DEPLOY_BRANCH"
+            echo "VPS_SSH_PORT=$VPS_SSH_PORT"
+            echo "HEALTH_URL=$HEALTH_URL"
           } >> "$GITHUB_ENV"
-          echo "Target di deploy: commit $DEPLOY_SHA, immagine $APP_IMAGE"
+          echo "Target di deploy: commit $DEPLOY_SHA, immagine $APP_IMAGE, directory $DEPLOY_DIR"
 
       - name: Login to GHCR for image preflight
-        uses: docker/login-action@v4
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -74,32 +133,44 @@ jobs:
       # Il workflow esegue l'helper appartenente alla propria revisione:
       # la logica remota resta versionata, non duplicata in un heredoc.
       - name: Checkout deployment helper
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.workflow_sha }}
 
       - name: Setup SSH
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
         run: |
           set -euo pipefail
           install -m 700 -d ~/.ssh
-          printf '%s\n' "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/vps_key
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/vps_key
           chmod 600 ~/.ssh/vps_key
           # tr -d '\r' tollera un secret incollato con fine riga Windows.
-          printf '%s\n' "${{ secrets.VPS_KNOWN_HOSTS }}" | tr -d '\r' > ~/.ssh/known_hosts
+          printf '%s\n' "$VPS_KNOWN_HOSTS" | tr -d '\r' > ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
           # Un secret vuoto o senza la riga per VPS_HOST emergerebbe solo come
           # "Host key verification failed" (exit 255) opaco al primo ssh.
-          ssh-keygen -F "${{ secrets.VPS_HOST }}" -f ~/.ssh/known_hosts > /dev/null || {
+          KNOWN_HOST="$VPS_HOST"
+          if [ "$VPS_SSH_PORT" != 22 ]; then
+            KNOWN_HOST="[$VPS_HOST]:$VPS_SSH_PORT"
+          fi
+          ssh-keygen -F "$KNOWN_HOST" -f ~/.ssh/known_hosts > /dev/null || {
             echo "::error::VPS_KNOWN_HOSTS non contiene una riga known_hosts per l'host di VPS_HOST"
             exit 1
           }
 
       - name: Update repo files on VPS
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
         run: |
           set -euo pipefail
-          ssh -i ~/.ssh/vps_key -o IdentitiesOnly=yes -o BatchMode=yes \
-            "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
-            "DEPLOY_SHA='$DEPLOY_SHA' bash -s" \
+          ssh -p "$VPS_SSH_PORT" -i ~/.ssh/vps_key \
+            -o IdentitiesOnly=yes -o BatchMode=yes \
+            "${VPS_USER}@${VPS_HOST}" \
+            "DEPLOY_SHA='$DEPLOY_SHA' DEPLOY_DIR='$DEPLOY_DIR' DEPLOY_REMOTE='$DEPLOY_REMOTE' DEPLOY_BRANCH='$DEPLOY_BRANCH' bash -s" \
             < scripts/checkout-deploy-commit.sh
 
       # La logica di backup e deploy vive in scripts/*.sh, versionati nel
@@ -108,29 +179,37 @@ jobs:
       # leggono stdin e divorano il resto dello script (deploy "verdi" ma
       # interrotti a metà, 2026-07-04).
       - name: Backup DB on VPS
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
         run: |
           set -euo pipefail
-          ssh -i ~/.ssh/vps_key -o IdentitiesOnly=yes -o BatchMode=yes \
-            "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
+          ssh -p "$VPS_SSH_PORT" -i ~/.ssh/vps_key \
+            -o IdentitiesOnly=yes -o BatchMode=yes \
+            "${VPS_USER}@${VPS_HOST}" \
             "set -eu
-             ACTUAL_SHA=\$(git -c safe.directory=/opt/yii3 -C /opt/yii3 rev-parse HEAD)
+             ACTUAL_SHA=\$(git -c safe.directory='$DEPLOY_DIR' -C '$DEPLOY_DIR' rev-parse HEAD)
              if [ \"\$ACTUAL_SHA\" != \"$DEPLOY_SHA\" ]; then
                echo \"ERRORE: checkout VPS \$ACTUAL_SHA, atteso $DEPLOY_SHA prima del backup\" >&2
                exit 1
              fi
              echo \"Checkout VPS verificato prima del backup: \$ACTUAL_SHA\"
-             bash /opt/yii3/scripts/backup-db.sh"
+             DEPLOY_DIR='$DEPLOY_DIR' bash '$DEPLOY_DIR/scripts/backup-db.sh'"
 
       - name: Deploy on VPS
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
         run: |
           set -euo pipefail
-          ssh -i ~/.ssh/vps_key -o IdentitiesOnly=yes -o BatchMode=yes \
-            "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
+          ssh -p "$VPS_SSH_PORT" -i ~/.ssh/vps_key \
+            -o IdentitiesOnly=yes -o BatchMode=yes \
+            "${VPS_USER}@${VPS_HOST}" \
             "set -eu
-             ACTUAL_SHA=\$(git -c safe.directory=/opt/yii3 -C /opt/yii3 rev-parse HEAD)
+             ACTUAL_SHA=\$(git -c safe.directory='$DEPLOY_DIR' -C '$DEPLOY_DIR' rev-parse HEAD)
              if [ \"\$ACTUAL_SHA\" != \"$DEPLOY_SHA\" ]; then
                echo \"ERRORE: checkout VPS \$ACTUAL_SHA, atteso $DEPLOY_SHA prima del deploy\" >&2
                exit 1
              fi
              echo \"Checkout VPS verificato prima del deploy: \$ACTUAL_SHA\"
-             APP_IMAGE='$APP_IMAGE' bash /opt/yii3/scripts/deploy.sh"
+             APP_IMAGE='$APP_IMAGE' DEPLOY_DIR='$DEPLOY_DIR' HEALTH_URL='$HEALTH_URL' bash '$DEPLOY_DIR/scripts/deploy.sh'"
