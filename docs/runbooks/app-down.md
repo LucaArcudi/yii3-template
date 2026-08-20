@@ -41,9 +41,8 @@ CURRENT=$(docker inspect --format '{{.Config.Image}}' "$cid")
 [ -n "$CURRENT" ] && APP_IMAGE="$CURRENT" $DC up -d app
 ```
 
-In alternativa il percorso canonico completo:
-`ansible-playbook playbooks/app.yml` (ricrea pinnando l'immagine in
-esecuzione) oppure un deploy mirato ([deploy-manuale.md](deploy-manuale.md)).
+In alternativa usare il percorso canonico completo: un deploy mirato con lo
+SHA dell'ultimo run CI/CD verde ([deploy-manuale.md](deploy-manuale.md)).
 
 ## Cosa NON fare
 

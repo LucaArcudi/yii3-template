@@ -50,5 +50,5 @@ backups/
 *.dump
 *.bak
 
-# Ansible inventory reale (partire da ansible/inventory.example.ini)
+# Inventory locale legacy, conservato soltanto sulle postazioni esistenti
 ansible/inventory.ini

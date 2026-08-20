@@ -6,7 +6,7 @@ base (incident automation, fix CI assistiti, ecc.) vive in
 [roadmap-ai-codex-claude-code.md](roadmap-ai-codex-claude-code.md).
 Lo stato attuale di CI/CD e monitoring è documentato in
 [documentazione-progetto.md](documentazione-progetto.md) §8; i limiti noti
-minori (provisioning Ansible) in §10.
+minori del provisioning manuale in §10.
 
 ## Stato attuale (2026-07-07)
 

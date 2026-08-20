@@ -89,11 +89,11 @@ GitHub restano nel credential store della postazione di sviluppo.
   richiesta diretta → branch → PR.
 - [ ] Creare un indice della documentazione attiva.
 - [ ] Documentare visivamente i confini tra Codex, GitHub, Docker, CI/CD,
-  Ansible e VPS.
+  proxy Caddy e VPS.
 - [ ] Verificare empiricamente che il ruleset di `main` respinga un push
   diretto del proprietario.
 
-### P1 — Docker, CI/CD e provisioning riutilizzabili
+### P1 — Docker, CI/CD e bootstrap riutilizzabili
 
 Le modifiche vanno eseguite in PR separate e retrocompatibili con il VPS
 attuale.
@@ -104,19 +104,15 @@ attuale.
 2. [ ] **Configurare il target GitHub.** Usare un Environment `production`,
    GitHub Secrets per le credenziali e GitHub Variables per i valori non
    sensibili. Fallire prima dell'SSH se manca una configurazione obbligatoria.
-3. [ ] **Separare Ansible dalla CD.** Ansible prepara e verifica la macchina;
-   la CD distribuisce le release. Rimuovere da `app.yml` la modifica
-   dell'immagine e la ricreazione ordinaria dell'app.
-4. [ ] **Rendere Ansible riutilizzabile.** Documentare l'installazione locale
-   di Ansible, usare inventory e variabili di esempio, eliminare dominio,
-   percorso e utente cablati, poi coprire Docker, utente deploy, SSH,
-   firewall, directory, Caddy e monitoring.
-5. [ ] **Pubblicare l'artefatto verificato.** Costruire una sola immagine di
+3. [x] **Separare bootstrap e CD.** Rimossi i playbook Ansible specifici del
+   VPS; il proxy Caddy resta versionato come stack Docker con bootstrap
+   manuale, mentre la CD distribuisce soltanto le release applicative.
+4. [ ] **Pubblicare l'artefatto verificato.** Costruire una sola immagine di
    produzione, scansionarla e pubblicare quella stessa immagine con SHA e
    digest immutabili.
-6. [ ] **Validare i file operativi.** Aggiungere controlli per workflow GitHub,
-   shell, Docker Compose e Ansible senza indebolire i gate esistenti.
-7. [ ] **Riscrivere la guida di installazione production-ready.** Separare
+5. [ ] **Validare i file operativi.** Aggiungere controlli per workflow GitHub,
+   shell e Docker Compose senza indebolire i gate esistenti.
+6. [ ] **Riscrivere la guida di installazione production-ready.** Separare
    chiaramente bootstrap del VPS, configurazione GitHub, primo deploy e ciclo
    ordinario delle release.
 
