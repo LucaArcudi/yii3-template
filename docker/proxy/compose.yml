@@ -1,6 +1,6 @@
 # Reverse proxy per il VPS: legge le label caddy.* dei container sulla rete
 # caddy_public e genera la config con HTTPS automatico (Let's Encrypt).
-# Deployato da ansible/playbooks/proxy.yml in ~/caddy-proxy sul server.
+# Installato manualmente dal checkout in ~/caddy-proxy; vedi README_DEPLOY.md.
 services:
   caddy:
     image: lucaslorentz/caddy-docker-proxy:2.13-alpine

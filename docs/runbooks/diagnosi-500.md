@@ -18,7 +18,8 @@ Alias `$DC`: vedi [stato-e-log.md](stato-e-log.md).
 3. verificare che `.env.prod` contenga `AUTH_COOKIE_SECRET_KEY` non di
    default e `DB_PASSWORD` corretti (il compose fallisce fast se mancano) —
    verificare la **presenza**, non leggere i valori;
-4. `ansible-playbook playbooks/server_check.yml` per un check completo.
+4. seguire i controlli completi di [stato-e-log.md](stato-e-log.md), senza
+   modificare configurazione o container durante la diagnosi.
 
 ## Azioni sicure
 

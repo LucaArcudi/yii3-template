@@ -50,12 +50,65 @@ Il provisioning completo di questi prerequisiti non è ancora automatizzato.
 ├── .env.prod                         # segreti runtime, fuori da Git
 ├── docker/prod/compose.yml           # versione dal repository
 ├── docker/prod/compose.local.yml     # configurazione locale, fuori da Git
+├── docker/proxy/                     # proxy Caddy versionato
 ├── scripts/                          # backup e deploy versionati
 └── backups/                          # dump pre-deploy e manuali
 ```
 
 Il checkout viene portato in detached HEAD sullo stesso commit usato come tag
 dell'immagine. I file locali ignorati da Git non vengono rimossi.
+
+Il proxy in esecuzione usa `/home/deploy/caddy-proxy/`; i due file installati
+in quella directory provengono dalla sorgente versionata `docker/proxy/`.
+
+## Bootstrap manuale del proxy Caddy
+
+Il reverse proxy è uno stack Docker Compose separato dall'applicazione, ma la
+sua configurazione resta versionata in [`docker/proxy/`](docker/proxy/). Il
+bootstrap si esegue una volta su un VPS nuovo e si ripete soltanto quando si
+aggiornano intenzionalmente configurazione o immagine del proxy; la CD
+ordinaria non lo riavvia.
+
+Prima dell'avvio:
+
+- il DNS di `PROD_HOST` deve puntare al VPS;
+- le porte TCP `80` e `443` devono essere raggiungibili e non occupate;
+- l'utente `deploy` deve poter eseguire Docker Compose.
+
+Dal checkout sul VPS:
+
+```bash
+cd /opt/yii3
+docker network inspect caddy_public >/dev/null 2>&1 || docker network create caddy_public
+install -d -m 0755 /home/deploy/caddy-proxy
+install -m 0644 docker/proxy/compose.yml docker/proxy/Caddyfile.base /home/deploy/caddy-proxy/
+cd /home/deploy/caddy-proxy
+docker compose pull
+docker compose up -d
+docker compose ps
+```
+
+La fonte di verità resta nel repository. Installare sempre insieme
+`compose.yml` e `Caddyfile.base`: copiare soltanto il Compose lascia il mount
+del Caddyfile senza sorgente valida.
+
+Per controllare l'avvio:
+
+```bash
+cd /home/deploy/caddy-proxy
+docker compose logs --tail=100 caddy
+```
+
+Dopo il primo deploy dell'applicazione, verificare il percorso pubblico:
+
+```bash
+curl -fsS "https://<PROD_HOST>/login" > /dev/null
+```
+
+`caddy-docker-proxy` legge le label dei container tramite il socket Docker.
+Questo accesso è necessario al funzionamento corrente: non pubblicare il
+socket in rete e non montarlo in altri container senza una motivazione
+esplicita.
 
 ## Configurazione GitHub
 
@@ -149,37 +202,15 @@ Le procedure operative vivono sotto [`docs/runbooks/`](docs/runbooks/):
 Non improvvisare comandi di cancellazione, reset del repository, restore o
 ricreazione dei volumi fuori dai runbook.
 
-## Ansible
-
-Ansible non viene installato dal repository: chi amministra il server deve
-installarlo separatamente sulla propria postazione di controllo e verificare:
-
-```bash
-ansible-playbook --version
-```
-
-Sul VPS normalmente non serve installare Ansible; sono sufficienti SSH e
-Python. L'inventory reale parte da `ansible/inventory.example.ini`, viene
-salvato come `ansible/inventory.ini` ed è ignorato da Git.
-
-I playbook attuali sono ancora specifici dell'installazione esistente:
-
-- `server_check.yml` verifica un VPS già preparato;
-- `proxy.yml` gestisce rete e proxy Caddy;
-- `app.yml` modifica configurazione e ricrea l'app, sovrapponendosi alla CD.
-
-Non costituiscono ancora un bootstrap riutilizzabile per un VPS nuovo. Prima
-di presentarli come percorso supportato dovranno essere parametrizzati,
-completati e separati dal deploy applicativo.
-
-## Responsabilità definitive
+## Responsabilità operative
 
 ```text
-Ansible  prepara e verifica la macchina, raramente
-CI       testa e produce l'artefatto, a ogni PR/merge
-CD       distribuisce la release, dopo CI verde
-Docker   esegue i servizi in dev, CI e produzione
+Bootstrap VPS  prepara manualmente macchina e proxy, una volta
+CI             testa e produce l'artefatto, a ogni PR/merge
+CD             distribuisce la release applicativa, dopo CI verde
+Docker         esegue i servizi in sviluppo, CI e produzione
 ```
 
-Ansible non deve essere eseguito a ogni merge e la CD non deve installare o
-riconfigurare il sistema operativo.
+La CD non installa Docker, non configura utenti, firewall, DNS o proxy e non
+riconfigura il sistema operativo. Questi prerequisiti vengono preparati e
+verificati manualmente prima del primo deploy.

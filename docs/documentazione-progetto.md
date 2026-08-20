@@ -53,13 +53,12 @@ pipeline CI/CD su GitHub Actions. Vedi la [sezione DevOps](#8-devops).
 | Analisi statica | Psalm 6, Rector 2, PHP CS Fixer 3, composer-dependency-analyser |
 | Sicurezza supply chain | Trivy 0.71 (fs, config, secret, image scan) |
 | CI/CD | GitHub Actions → GHCR → deploy SSH su VPS |
-| Infrastruttura | Docker Compose, Caddy (caddy-docker-proxy), Ansible |
+| Infrastruttura | Docker Compose, Caddy (caddy-docker-proxy) |
 
 ## 3. Struttura del repository
 
 ```
 .
-├── ansible/               # Inventory e playbook per il VPS (proxy, app, check)
 ├── assets/                # Asset sorgente dell'app (main/site.css)
 ├── config/                # Configurazione yiisoft/config (vedi §4.2)
 │   ├── common/            #   DI, params, routes condivisi web+console
@@ -599,7 +598,7 @@ Layout sul server:
 |---|---|
 | `/opt/yii3` | Clone del repo in detached HEAD sullo SHA dell'immagine deployata |
 | `/opt/yii3/.env.prod` | Segreti reali di produzione — **fuori git** |
-| `/opt/yii3/docker/prod/compose.local.yml` | Override locale del VPS — **fuori git** (generato da Ansible, vedi §8.7) |
+| `/opt/yii3/docker/prod/compose.local.yml` | Override locale del VPS — **fuori git** (creato dall'esempio versionato) |
 | `/opt/yii3/backups/` | Dump DB pre-deploy e manuali |
 | `/home/deploy/caddy-proxy/` | Compose del reverse proxy Caddy |
 
@@ -625,8 +624,8 @@ docker compose --env-file .env.prod \
 - `db` — MySQL 8.4 su rete interna, volume `db_data`, migration/seed montati
   in initdb.d (solo primo avvio del volume).
 
-**Override locale** (`compose.local.yml`, esempio versionato in
-`compose.local.example.yml`, scritto da ansible): espone il DB su
+**Override locale** (`compose.local.yml`, creato manualmente dall'esempio
+versionato `compose.local.example.yml`): espone il DB su
 `127.0.0.1:3307` per il tunnel SSH. Nessun override per l'app: cookie
 Secure e HSTS sono emessi dall'app grazie a `TrustedProxyMiddleware`
 (niente label HSTS sul proxy: per RFC 6797 conta solo il primo header
@@ -646,26 +645,20 @@ configurazione con **HTTPS automatico Let's Encrypt**. Gira in
 `MYSQL_ROOT_PASSWORD`, `DB_FORWARD_HOST/PORT`. Va creato/aggiornato **a mano
 sul VPS**; non transita mai da git né dalla CI.
 
-### 8.7 Ansible (`ansible/`)
+### 8.7 Bootstrap manuale del VPS e del proxy
 
-Automazione idempotente lato server (eseguita dalla postazione di lavoro; non
-richiede root: l'utente `deploy` è nel gruppo `docker`):
+Il repository non automatizza il provisioning del sistema operativo. Docker,
+utente `deploy`, SSH, firewall, DNS, directory e file locali vengono preparati
+manualmente prima del primo deploy.
 
-| Playbook | Scopo |
-|---|---|
-| `playbooks/server_check.yml` | Diagnosi/assert: Docker presente, `/opt/yii3`, `.env.prod`, compose, backups, servizi up, health 200 |
-| `playbooks/proxy.yml` | Crea la rete `caddy_public`, installa e avvia il proxy Caddy in `/home/deploy/caddy-proxy` |
-| `playbooks/app.yml` | Imposta `PROD_HOST` in `.env.prod`, scrive `compose.local.yml`, ricrea il container app **senza cambiarne l'immagine** (pin a quella in esecuzione: l'`APP_IMAGE` di `.env.prod` è `latest`, spesso stantio ora che il CD deploya i tag SHA), verifica health su loopback e via HTTPS pubblico |
+La configurazione del proxy resta versionata in `docker/proxy/`. Sul VPS i
+file `compose.yml` e `Caddyfile.base` vengono installati insieme in
+`/home/deploy/caddy-proxy/`, dopo avere creato la rete esterna
+`caddy_public`. Comandi, prerequisiti e verifiche sono definiti in
+[`README_DEPLOY.md`](../README_DEPLOY.md#bootstrap-manuale-del-proxy-caddy).
 
-```bash
-cd ansible
-ansible-playbook playbooks/server_check.yml
-```
-
-Inventory: `inventory.ini` (host `yii3-vps`, utente `deploy`, chiave
-`~/.ssh/yii3_github_actions_cd`). Provisioning completo del server (install
-Docker, utente deploy, firewall, hardening) è previsto ma non ancora
-automatizzato (vedi §10).
+La CD distribuisce soltanto le release applicative: non installa Docker, non
+configura il server e non riavvia il proxy.
 
 ### 8.8 Scansioni di sicurezza
 
@@ -765,7 +758,8 @@ Dall'audit del 2 luglio 2026 e dallo stato attuale dell'infrastruttura:
   disponibile** (eccezioni in `.trivyignore`, con scadenza); il resto dello
   scan resta report-only. `composer audit` è bloccante e senza advisory
   aperte.
-- **Provisioning server non automatizzato**: Ansible copre proxy, app config
-  e check; install Docker/utenti/firewall/hardening sono ancora manuali.
+- **Provisioning server non automatizzato**: installazione di Docker,
+  utenti, SSH, firewall, hardening e bootstrap iniziale restano manuali e
+  sono separati dalla CD applicativa.
 - **Target Makefile ereditati dal template upstream** parzialmente non
   funzionanti (vedi §6.4).
