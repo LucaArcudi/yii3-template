@@ -120,7 +120,7 @@ services:
     restart: unless-stopped
 
   mysqld-exporter:
-    image: prom/mysqld-exporter:v0.16.0@sha256:617b7244a31922c30eeddb0e3b39b4c125e890d46179be4a30561b20f111ca6c
+    image: prom/mysqld-exporter:v0.20.0@sha256:abed8dac117b4ae5b70757f988e44795935b9a72c3b58d720c67ba688f8cb79e
     # Si collega al MySQL dello stack app attraverso la sua network
     # (external): serve l'utente dedicato "exporter" con soli grant di
     # monitoraggio (PROCESS, REPLICATION CLIENT, SELECT ON *.*).
